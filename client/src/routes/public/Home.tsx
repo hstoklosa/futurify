@@ -1,13 +1,13 @@
 import stars from "@assets/stars.svg";
 import { Link } from "react-router-dom";
 
-import Button from "@components/common/Button";
+import Button from "@components/ui/button/Button";
 import PathConstants from "@/utils/pathConstants";
 
 const Home = () => {
     return (
         <div className="flex flex-col justify-center items-center">
-            <h1 className="flex items-center text-5xl text-primary-text">
+            <h1 className="flex items-center text-5xl text-primary-foreground">
                 <img
                     src={stars}
                     className="w-10 mx-3"
@@ -25,10 +25,10 @@ const Home = () => {
             </h1>
 
             <div className="flex text-center flex-col items-center justify-center max-w-2xl">
-                <h1 className="text-primary-text text-6xl my-3 font-extrabold">
+                <h1 className="text-primary-foreground text-6xl my-3 font-extrabold">
                     Manage Your Interviews Like a Pro
                 </h1>
-                <p className="text-primary-text text-xl">
+                <p className="text-primary-foreground/80 text-xl">
                     Stay organized throughout your job search journey and never miss
                     an interview with our comprehensive AI-powered interview tracking
                     and management tool.
@@ -37,15 +37,10 @@ const Home = () => {
 
             <div className="flex items-center justify-center mt-6">
                 <Link to={PathConstants.SIGN_IN}>
-                    <Button
-                        variant="primary"
-                        className="mr-2"
-                    >
-                        Get Started
-                    </Button>
+                    <Button className="mr-2">Get Started</Button>
                 </Link>
                 <Button
-                    variant="secondary"
+                    variant="outline"
                     className="cursor-not-allowed"
                     disabled
                 >
