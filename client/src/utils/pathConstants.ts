@@ -1,5 +1,5 @@
 const PathConstants = {
-    HOME: "/",
+    LANDING: "/",
 };
 
 export default PathConstants;

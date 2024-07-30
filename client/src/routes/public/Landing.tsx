@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import Button from "@components/ui/button/Button";
 import PathConstants from "@/utils/pathConstants";
 
-const Home = () => {
+const Landing = () => {
     return (
         <div className="flex flex-col justify-center items-center">
             <h1 className="flex items-center text-5xl text-primary-foreground">
@@ -51,4 +51,4 @@ const Home = () => {
     );
 };
 
-export default Home;
+export default Landing;
