@@ -1,13 +1,16 @@
 package dev.hstoklosa.futurify.service;
 
-import dev.hstoklosa.futurify.config.JwtService;
 import dev.hstoklosa.futurify.domain.UserRole;
 import dev.hstoklosa.futurify.domain.entities.User;
-import dev.hstoklosa.futurify.dto.AuthenticationResponse;
-import dev.hstoklosa.futurify.dto.LoginRequest;
-import dev.hstoklosa.futurify.dto.RegisterRequest;
+import dev.hstoklosa.futurify.dto.AuthenticationResult;
+import dev.hstoklosa.futurify.dto.UserDTO;
+import dev.hstoklosa.futurify.mapper.UserDTOMapper;
+import dev.hstoklosa.futurify.payload.request.LoginRequest;
+import dev.hstoklosa.futurify.payload.request.RegisterRequest;
 import dev.hstoklosa.futurify.repositories.UserRepository;
+import dev.hstoklosa.futurify.config.JwtService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseCookie;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -25,7 +28,11 @@ public class AuthenticationService {
 
     private final AuthenticationManager authManager;
 
-    public AuthenticationResponse register(RegisterRequest request) {
+    private final UserDTOMapper userDTOMapper;
+
+    public AuthenticationResult register(RegisterRequest request) {
+        // if (repository.existsByEmail(request.getEmail())) {}
+
         var user = User.builder()
             .firstName(request.getFirstName())
             .lastName(request.getLastName())
@@ -34,15 +41,20 @@ public class AuthenticationService {
             .role(UserRole.USER)
             .build();
 
-        repository.save(user);
+        var savedUser = repository.save(user);
 
-        var jwtToken = jwtService.generateToken(user);
-        return AuthenticationResponse.builder()
-            .token(jwtToken)
+        ResponseCookie accessTokenCookie = jwtService.generateAccessTokenCookie(user);
+        ResponseCookie refreshTokenCookie = jwtService.generateRefreshTokenCookie(user);
+        UserDTO userDTO = userDTOMapper.apply(savedUser);
+
+        return AuthenticationResult.builder()
+            .accessTokenCookie(accessTokenCookie)
+            .refreshTokenCookie(refreshTokenCookie)
+            .userDTO(userDTO)
             .build();
     }
 
-    public AuthenticationResponse login(LoginRequest request) {
+    public AuthenticationResult login(LoginRequest request) {
         authManager.authenticate(
             new UsernamePasswordAuthenticationToken(
                 request.getEmail(),
@@ -52,10 +64,16 @@ public class AuthenticationService {
 
         var user = repository.findByEmail(request.getEmail())
             .orElseThrow(); // TODO: throw correct exception, handle it etc
-        var jwtToken = jwtService.generateToken(user);
 
-        return AuthenticationResponse.builder()
-            .token(jwtToken)
+        ResponseCookie accessTokenCookie = jwtService.generateAccessTokenCookie(user);
+        ResponseCookie refreshTokenCookie = jwtService.generateRefreshTokenCookie(user);
+        UserDTO userDTO = userDTOMapper.apply(user);
+
+        return AuthenticationResult.builder()
+            .accessTokenCookie(accessTokenCookie)
+            .refreshTokenCookie(refreshTokenCookie)
+            .userDTO(userDTO)
             .build();
     }
+
 }

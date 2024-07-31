@@ -4,15 +4,18 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.http.ResponseCookie;
 
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class LoginRequest {
+public class AuthenticationResult {
 
-    private String email;
+    private ResponseCookie accessTokenCookie;
 
-    private String password;
+    private ResponseCookie refreshTokenCookie;
+
+    private UserDTO userDTO;
 
 }

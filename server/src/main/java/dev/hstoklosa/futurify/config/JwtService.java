@@ -6,6 +6,7 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseCookie;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
@@ -28,19 +29,8 @@ public class JwtService {
     @Value("${application.security.jwt.refresh-token.expiration}")
     private long refreshExpiration;
 
-    public<T> T extractClaim(String token, Function<Claims, T> resolver) {
-        final Claims claims = extractAllClaims(token);
-        return resolver.apply(claims);
-    }
-
-    private Claims extractAllClaims(String token) {
-        return Jwts
-                .parser()
-                .verifyWith((SecretKey) getSignInKey())
-                .build()
-                .parseSignedClaims(token)
-                .getPayload();
-    }
+    @Value("${application.security.jwt.cookie.expiration}")
+    private long cookieExpiry;
 
     public String generateToken(UserDetails userDetails) {
         return generateToken(new HashMap<>(), userDetails);
@@ -51,6 +41,10 @@ public class JwtService {
         UserDetails userDetails
     ) {
         return buildToken(extraClaims, userDetails, jwtExpiration);
+    }
+
+    public String generateRefreshToken(UserDetails userDetails) {
+        return buildToken(new HashMap<>(), userDetails, refreshExpiration);
     }
 
     private String buildToken(
@@ -65,6 +59,39 @@ public class JwtService {
             .setExpiration(new Date(System.currentTimeMillis() + expiration))
             .signWith(getSignInKey(), SignatureAlgorithm.HS256)
             .compact();
+    }
+
+    public ResponseCookie generateAccessTokenCookie(UserDetails user) {
+        String accessToken = generateToken(user);
+        return generateCookie("accessToken", accessToken, "/api/v1");
+    }
+
+    public ResponseCookie generateRefreshTokenCookie(UserDetails user) {
+        String refreshToken = generateRefreshToken(user);
+        return generateCookie("refreshToken", refreshToken, "/api/v1/auth/refresh-token");
+    }
+
+    private ResponseCookie generateCookie(String name, String value, String path) {
+        return ResponseCookie.from(name, value)
+                .httpOnly(true)
+                .secure(false) // true in production
+                .path(path)
+                .maxAge(cookieExpiry)
+                .build();
+    }
+
+    public<T> T extractClaim(String token, Function<Claims, T> resolver) {
+        final Claims claims = extractAllClaims(token);
+        return resolver.apply(claims);
+    }
+
+    private Claims extractAllClaims(String token) {
+        return Jwts
+                .parser()
+                .verifyWith((SecretKey) getSignInKey())
+                .build()
+                .parseSignedClaims(token)
+                .getPayload();
     }
 
     public boolean isTokenValid(String token, UserDetails userDetails) {
