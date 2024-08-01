@@ -52,6 +52,6 @@ public class AuthenticationController {
         return ResponseEntity.ok()
             .header(HttpHeaders.SET_COOKIE, result.getAccessTokenCookie().toString())
             .header(HttpHeaders.SET_COOKIE, result.getRefreshTokenCookie().toString())
-            .body(result.getUserDTO());
+            .body("Token has been refreshed successfully!");
     }
 }

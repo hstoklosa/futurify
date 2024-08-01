@@ -71,6 +71,14 @@ public class JwtService {
         return generateCookie("refreshToken", refreshToken, "/api/v1/auth/refresh-token");
     }
 
+    public ResponseCookie getCleanAccessTokenCookie() {
+        return ResponseCookie.from("accessToken", null).path("/api/v1").maxAge(0).build();
+    }
+
+    public ResponseCookie getCleanRefreshTokenCookie() {
+        return ResponseCookie.from("refreshToken", null).path("/api/auth/refresh-token").maxAge(0).build();
+    }
+
     private ResponseCookie generateCookie(String name, String value, String path) {
         return ResponseCookie.from(name, value)
                 .httpOnly(true)
