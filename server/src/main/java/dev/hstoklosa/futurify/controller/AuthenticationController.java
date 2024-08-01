@@ -4,6 +4,8 @@ import dev.hstoklosa.futurify.dto.AuthenticationResult;
 import dev.hstoklosa.futurify.payload.request.LoginRequest;
 import dev.hstoklosa.futurify.payload.request.RegisterRequest;
 import dev.hstoklosa.futurify.service.AuthenticationService;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
@@ -25,9 +27,9 @@ public class AuthenticationController {
     ) {
         AuthenticationResult result = service.register(request);
         return ResponseEntity.ok()
-                .header(HttpHeaders.SET_COOKIE, result.getAccessTokenCookie().toString())
-                .header(HttpHeaders.SET_COOKIE, result.getRefreshTokenCookie().toString())
-                .body(result.getUserDTO());
+            .header(HttpHeaders.SET_COOKIE, result.getAccessTokenCookie().toString())
+            .header(HttpHeaders.SET_COOKIE, result.getRefreshTokenCookie().toString())
+            .body(result.getUserDTO());
     }
 
     @PostMapping("/login")
@@ -36,9 +38,20 @@ public class AuthenticationController {
     ) {
         AuthenticationResult result = service.login(request);
         return ResponseEntity.ok()
-                .header(HttpHeaders.SET_COOKIE, result.getAccessTokenCookie().toString())
-                .header(HttpHeaders.SET_COOKIE, result.getRefreshTokenCookie().toString())
-                .body(result.getUserDTO());
+            .header(HttpHeaders.SET_COOKIE, result.getAccessTokenCookie().toString())
+            .header(HttpHeaders.SET_COOKIE, result.getRefreshTokenCookie().toString())
+            .body(result.getUserDTO());
     }
 
+    @PostMapping("/refresh-token")
+    public ResponseEntity<?> refreshToken(
+        HttpServletRequest request,
+        HttpServletResponse response
+    ) {
+        AuthenticationResult result = service.refreshToken(request);
+        return ResponseEntity.ok()
+            .header(HttpHeaders.SET_COOKIE, result.getAccessTokenCookie().toString())
+            .header(HttpHeaders.SET_COOKIE, result.getRefreshTokenCookie().toString())
+            .body(result.getUserDTO());
+    }
 }

@@ -34,7 +34,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         @NonNull HttpServletResponse response,
         @NonNull FilterChain filterChain
     ) throws ServletException, IOException {
-        final String accessToken = getJwtFromCookie(request);
+        final String accessToken = jwtService.getAccessTokenFromCookie(request);
         final String userEmail;
 
         if (accessToken == null) {
@@ -64,19 +64,5 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
 
         filterChain.doFilter(request, response);
-    }
-
-    private String getJwtFromCookie(HttpServletRequest request) {
-        Cookie[] cookies = request.getCookies();
-
-        if (cookies != null) {
-            for (Cookie cookie : cookies) {
-                if ("accessToken".equals(cookie.getName())) {
-                    return cookie.getValue();
-                }
-            }
-        }
-
-        return null;
     }
 }

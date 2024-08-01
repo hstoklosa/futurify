@@ -12,6 +12,8 @@ import dev.hstoklosa.futurify.payload.request.RegisterRequest;
 import dev.hstoklosa.futurify.repositories.TokenRepository;
 import dev.hstoklosa.futurify.repositories.UserRepository;
 import dev.hstoklosa.futurify.config.JwtService;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseCookie;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -91,6 +93,41 @@ public class AuthenticationService {
             .refreshTokenCookie(refreshTokenCookie)
             .userDTO(userDTO)
             .build();
+    }
+
+    public AuthenticationResult refreshToken(HttpServletRequest request) {
+        final String refreshToken;
+        final String userEmail;
+
+        refreshToken = jwtService.getRefreshTokenFromCookie(request);
+        if (refreshToken == null)
+            return null;
+
+        userEmail = jwtService.extractUsername(refreshToken);
+        if (userEmail != null) {
+            var user = userRepository.findByEmail(userEmail)
+                    .orElseThrow();
+
+            if (jwtService.isTokenValid(refreshToken, user)) {
+                String accessToken = jwtService.generateToken(user);
+                String newRefreshToken = jwtService.generateRefreshToken(user);
+
+                revokeAllUserTokens(user);
+                saveUserToken(user, accessToken);
+
+                ResponseCookie accessTokenCookie = jwtService.generateAccessTokenCookie(accessToken);
+                ResponseCookie refreshTokenCookie = jwtService.generateRefreshTokenCookie(newRefreshToken);
+                UserDTO userDTO = userDTOMapper.apply(user);
+
+                return AuthenticationResult.builder()
+                        .accessTokenCookie(accessTokenCookie)
+                        .refreshTokenCookie(refreshTokenCookie)
+                        .userDTO(userDTO)
+                        .build();
+            }
+        }
+
+        return null;
     }
 
     public void saveUserToken(User user, String accessToken) {

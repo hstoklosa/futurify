@@ -5,6 +5,8 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseCookie;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -76,6 +78,28 @@ public class JwtService {
                 .path(path)
                 .maxAge(cookieExpiry)
                 .build();
+    }
+
+    public String getAccessTokenFromCookie(HttpServletRequest request) {
+        return getTokenFromCookie(request, "accessToken");
+    }
+
+    public String getRefreshTokenFromCookie(HttpServletRequest request) {
+        return getTokenFromCookie(request, "refreshToken");
+    }
+
+    public String getTokenFromCookie(HttpServletRequest request, String tokenName) {
+        Cookie[] cookies = request.getCookies();
+
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if (tokenName.equals(cookie.getName())) {
+                    return cookie.getValue();
+                }
+            }
+        }
+
+        return null;
     }
 
     public<T> T extractClaim(String token, Function<Claims, T> resolver) {
