@@ -61,13 +61,11 @@ public class JwtService {
             .compact();
     }
 
-    public ResponseCookie generateAccessTokenCookie(UserDetails user) {
-        String accessToken = generateToken(user);
+    public ResponseCookie generateAccessTokenCookie(String accessToken) {
         return generateCookie("accessToken", accessToken, "/api/v1");
     }
 
-    public ResponseCookie generateRefreshTokenCookie(UserDetails user) {
-        String refreshToken = generateRefreshToken(user);
+    public ResponseCookie generateRefreshTokenCookie(String refreshToken) {
         return generateCookie("refreshToken", refreshToken, "/api/v1/auth/refresh-token");
     }
 
@@ -87,11 +85,11 @@ public class JwtService {
 
     private Claims extractAllClaims(String token) {
         return Jwts
-                .parser()
-                .verifyWith((SecretKey) getSignInKey())
-                .build()
-                .parseSignedClaims(token)
-                .getPayload();
+            .parser()
+            .verifyWith((SecretKey) getSignInKey())
+            .build()
+            .parseSignedClaims(token)
+            .getPayload();
     }
 
     public boolean isTokenValid(String token, UserDetails userDetails) {
