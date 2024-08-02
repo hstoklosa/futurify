@@ -6,6 +6,8 @@ import dev.hstoklosa.futurify.domain.entities.Token;
 import dev.hstoklosa.futurify.domain.entities.User;
 import dev.hstoklosa.futurify.dto.AuthenticationResult;
 import dev.hstoklosa.futurify.dto.UserDTO;
+import dev.hstoklosa.futurify.exception.DuplicateResourceException;
+import dev.hstoklosa.futurify.exception.ResourceNotFoundException;
 import dev.hstoklosa.futurify.mapper.UserDTOMapper;
 import dev.hstoklosa.futurify.payload.request.LoginRequest;
 import dev.hstoklosa.futurify.payload.request.RegisterRequest;
@@ -39,7 +41,11 @@ public class AuthenticationService {
 
 
     public AuthenticationResult register(RegisterRequest request) {
-        // if (repository.existsByEmail(request.getEmail())) {}
+         if (userRepository.existsByEmail(request.getEmail())) {
+             throw new DuplicateResourceException(
+                "The email address is already taken."
+             );
+         }
 
         var user = User.builder()
             .firstName(request.getFirstName())
@@ -76,7 +82,9 @@ public class AuthenticationService {
         );
 
         var user = userRepository.findByEmail(request.getEmail())
-            .orElseThrow(); // TODO: throw correct exception, handle it etc
+            .orElseThrow(() -> new ResourceNotFoundException(
+                "User with email [%s] wasn't found.".formatted(request.getEmail())
+            ));
 
         String accessToken = jwtService.generateToken(user);
         String refreshToken = jwtService.generateRefreshToken(user);
@@ -106,7 +114,9 @@ public class AuthenticationService {
         userEmail = jwtService.extractUsername(refreshToken);
         if (userEmail != null) {
             var user = userRepository.findByEmail(userEmail)
-                    .orElseThrow();
+                .orElseThrow(() -> new ResourceNotFoundException(
+                    "User with email %s wasn't found.".formatted(userEmail)
+                ));
 
             if (jwtService.isTokenValid(refreshToken, user)) {
                 String accessToken = jwtService.generateToken(user);
@@ -120,10 +130,10 @@ public class AuthenticationService {
                 UserDTO userDTO = userDTOMapper.apply(user);
 
                 return AuthenticationResult.builder()
-                        .accessTokenCookie(accessTokenCookie)
-                        .refreshTokenCookie(refreshTokenCookie)
-                        .userDTO(userDTO)
-                        .build();
+                    .accessTokenCookie(accessTokenCookie)
+                    .refreshTokenCookie(refreshTokenCookie)
+                    .userDTO(userDTO)
+                    .build();
             }
         }
 
