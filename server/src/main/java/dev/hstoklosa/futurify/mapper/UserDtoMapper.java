@@ -1,20 +1,19 @@
 package dev.hstoklosa.futurify.mapper;
 
 import dev.hstoklosa.futurify.domain.entities.User;
-import dev.hstoklosa.futurify.dto.UserDTO;
+import dev.hstoklosa.futurify.dto.UserDto;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
-public class UserDTOMapper implements Function<User, UserDTO> {
+public class UserDtoMapper implements Function<User, UserDto> {
 
     @Override
-    public UserDTO apply(User user) {
-        return new UserDTO(
+    public UserDto apply(User user) {
+        return new UserDto(
                 user.getId(),
                 user.getFirstName(),
                 user.getLastName(),

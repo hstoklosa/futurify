@@ -1,11 +1,13 @@
 package dev.hstoklosa.futurify.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import dev.hstoklosa.futurify.payload.response.GenericApiResponse;
 import dev.hstoklosa.futurify.repositories.TokenRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseCookie;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -52,11 +54,13 @@ public class LogoutService implements LogoutHandler {
 
         ResponseCookie refreshTokenCookie = jwtService.getCleanRefreshTokenCookie();
         response.addHeader(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString());
-
+        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+        
         SecurityContextHolder.clearContext();
 
         try {
-            objectMapper.writeValue(response.getWriter(), "Successfully logged out.");
+            GenericApiResponse<String> apiResponse = GenericApiResponse.success("Logged out successfully");
+            objectMapper.writeValue(response.getWriter(), apiResponse);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

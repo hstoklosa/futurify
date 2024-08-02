@@ -2,7 +2,7 @@ package dev.hstoklosa.futurify.dto;
 
 import java.util.List;
 
-public record UserDTO (
+public record UserDto (
         Integer id,
         String firstName,
         String lastName,

@@ -4,20 +4,18 @@ import dev.hstoklosa.futurify.domain.TokenType;
 import dev.hstoklosa.futurify.domain.UserRole;
 import dev.hstoklosa.futurify.domain.entities.Token;
 import dev.hstoklosa.futurify.domain.entities.User;
-import dev.hstoklosa.futurify.dto.AuthenticationResult;
-import dev.hstoklosa.futurify.dto.UserDTO;
+import dev.hstoklosa.futurify.dto.AuthenticationResultDto;
+import dev.hstoklosa.futurify.dto.UserDto;
 import dev.hstoklosa.futurify.exception.DuplicateResourceException;
 import dev.hstoklosa.futurify.exception.ResourceNotFoundException;
-import dev.hstoklosa.futurify.mapper.UserDTOMapper;
+import dev.hstoklosa.futurify.mapper.UserDtoMapper;
 import dev.hstoklosa.futurify.payload.request.LoginRequest;
 import dev.hstoklosa.futurify.payload.request.RegisterRequest;
 import dev.hstoklosa.futurify.repositories.TokenRepository;
 import dev.hstoklosa.futurify.repositories.UserRepository;
 import dev.hstoklosa.futurify.config.JwtService;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseCookie;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -31,7 +29,7 @@ public class AuthenticationService {
 
     private final TokenRepository tokenRepository;
 
-    private final UserDTOMapper userDTOMapper;
+    private final UserDtoMapper userDtoMapper;
 
     private final JwtService jwtService;
 
@@ -40,7 +38,7 @@ public class AuthenticationService {
     private final PasswordEncoder passwordEncoder;
 
 
-    public AuthenticationResult register(RegisterRequest request) {
+    public AuthenticationResultDto register(RegisterRequest request) {
          if (userRepository.existsByEmail(request.getEmail())) {
              throw new DuplicateResourceException(
                 "The email address is already taken."
@@ -57,23 +55,20 @@ public class AuthenticationService {
 
         var savedUser = userRepository.save(user);
 
+        UserDto userDto = userDtoMapper.apply(savedUser);
         String accessToken = jwtService.generateToken(user);
         String refreshToken = jwtService.generateRefreshToken(user);
 
         saveUserToken(savedUser, accessToken);
 
-        ResponseCookie accessTokenCookie = jwtService.generateAccessTokenCookie(accessToken);
-        ResponseCookie refreshTokenCookie = jwtService.generateRefreshTokenCookie(refreshToken);
-        UserDTO userDTO = userDTOMapper.apply(savedUser);
-
-        return AuthenticationResult.builder()
-            .accessTokenCookie(accessTokenCookie)
-            .refreshTokenCookie(refreshTokenCookie)
-            .userDTO(userDTO)
+        return AuthenticationResultDto.builder()
+            .accessToken(accessToken)
+            .refreshToken(refreshToken)
+            .userDto(userDto)
             .build();
     }
 
-    public AuthenticationResult login(LoginRequest request) {
+    public AuthenticationResultDto login(LoginRequest request) {
         authManager.authenticate(
             new UsernamePasswordAuthenticationToken(
                 request.getEmail(),
@@ -88,22 +83,19 @@ public class AuthenticationService {
 
         String accessToken = jwtService.generateToken(user);
         String refreshToken = jwtService.generateRefreshToken(user);
+        UserDto userDto = userDtoMapper.apply(user);
 
         revokeAllUserTokens(user);
         saveUserToken(user, accessToken);
 
-        ResponseCookie accessTokenCookie = jwtService.generateAccessTokenCookie(accessToken);
-        ResponseCookie refreshTokenCookie = jwtService.generateRefreshTokenCookie(refreshToken);
-        UserDTO userDTO = userDTOMapper.apply(user);
-
-        return AuthenticationResult.builder()
-            .accessTokenCookie(accessTokenCookie)
-            .refreshTokenCookie(refreshTokenCookie)
-            .userDTO(userDTO)
+        return AuthenticationResultDto.builder()
+            .accessToken(accessToken)
+            .refreshToken(refreshToken)
+            .userDto(userDto)
             .build();
     }
 
-    public AuthenticationResult refreshToken(HttpServletRequest request) {
+    public AuthenticationResultDto refreshToken(HttpServletRequest request) {
         final String refreshToken;
         final String userEmail;
 
@@ -121,18 +113,15 @@ public class AuthenticationService {
             if (jwtService.isTokenValid(refreshToken, user)) {
                 String accessToken = jwtService.generateToken(user);
                 String newRefreshToken = jwtService.generateRefreshToken(user);
+                UserDto userDto = userDtoMapper.apply(user);
 
                 revokeAllUserTokens(user);
                 saveUserToken(user, accessToken);
 
-                ResponseCookie accessTokenCookie = jwtService.generateAccessTokenCookie(accessToken);
-                ResponseCookie refreshTokenCookie = jwtService.generateRefreshTokenCookie(newRefreshToken);
-                UserDTO userDTO = userDTOMapper.apply(user);
-
-                return AuthenticationResult.builder()
-                    .accessTokenCookie(accessTokenCookie)
-                    .refreshTokenCookie(refreshTokenCookie)
-                    .userDTO(userDTO)
+                return AuthenticationResultDto.builder()
+                    .accessToken(accessToken)
+                    .refreshToken(newRefreshToken)
+                    .userDto(userDto)
                     .build();
             }
         }
