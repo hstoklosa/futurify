@@ -55,11 +55,11 @@ public class JwtService {
             long expiration
     ) {
         return Jwts.builder()
-            .setClaims(extraClaims)
-            .setSubject(userDetails.getUsername())
-            .setIssuedAt(new Date(System.currentTimeMillis()))
-            .setExpiration(new Date(System.currentTimeMillis() + expiration))
-            .signWith(getSignInKey(), SignatureAlgorithm.HS256)
+            .claims(extraClaims)
+            .subject(userDetails.getUsername())
+            .issuedAt(new Date(System.currentTimeMillis()))
+            .expiration(new Date(System.currentTimeMillis() + expiration))
+            .signWith(getSignInKey())
             .compact();
     }
 
@@ -76,7 +76,7 @@ public class JwtService {
     }
 
     public ResponseCookie getCleanRefreshTokenCookie() {
-        return ResponseCookie.from("refreshToken", null).path("/api/auth/refresh-token").maxAge(0).build();
+        return ResponseCookie.from("refreshToken", null).path("/api/v1/auth/refresh-token").maxAge(0).build();
     }
 
     private ResponseCookie generateCookie(String name, String value, String path) {
