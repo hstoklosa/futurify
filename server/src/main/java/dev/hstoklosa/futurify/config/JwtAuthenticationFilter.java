@@ -1,6 +1,6 @@
 package dev.hstoklosa.futurify.config;
 
-import dev.hstoklosa.futurify.repositories.TokenRepository;
+import dev.hstoklosa.futurify.repositories.AccessTokenRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
@@ -26,7 +26,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final UserDetailsService userDetailsService;
 
-    private final TokenRepository tokenRepository;
+    private final AccessTokenRepository accessTokenRepository;
 
     @Override
     protected void doFilterInternal(
@@ -47,7 +47,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails userDetails = this.userDetailsService.loadUserByUsername(userEmail);
 
-            var isTokenValid = tokenRepository.findByToken(accessToken)
+            var isTokenValid = accessTokenRepository.findByToken(accessToken)
                     .map(t -> !t.isExpired() && !t.isRevoked())
                     .orElse(false);
 

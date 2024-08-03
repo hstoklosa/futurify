@@ -7,16 +7,14 @@ import dev.hstoklosa.futurify.payload.request.LoginRequest;
 import dev.hstoklosa.futurify.payload.request.RegisterRequest;
 import dev.hstoklosa.futurify.payload.response.GenericApiResponse;
 import dev.hstoklosa.futurify.service.AuthenticationService;
+import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/auth")
@@ -30,7 +28,7 @@ public class AuthenticationController {
     @PostMapping("/register")
     public ResponseEntity<GenericApiResponse<UserDto>> register(
         @RequestBody RegisterRequest request
-    ) {
+    ) throws MessagingException {
         AuthenticationResultDto result = service.register(request);
         ResponseCookie accessTokenCookie = jwtService.generateAccessTokenCookie(result.getAccessToken());
         ResponseCookie refreshTokenCookie = jwtService.generateRefreshTokenCookie(result.getAccessToken());
@@ -43,7 +41,7 @@ public class AuthenticationController {
 
     @PostMapping("/login")
     public ResponseEntity<GenericApiResponse<UserDto>> login(
-            @RequestBody LoginRequest request
+        @RequestBody LoginRequest request
     ) {
         AuthenticationResultDto result = service.login(request);
         ResponseCookie accessTokenCookie = jwtService.generateAccessTokenCookie(result.getAccessToken());
@@ -68,5 +66,14 @@ public class AuthenticationController {
             .header(HttpHeaders.SET_COOKIE, accessTokenCookie.toString())
             .header(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString())
             .body(GenericApiResponse.success("Token has been successfully refreshed."));
+    }
+
+    @GetMapping("/activate-account")
+    public ResponseEntity<GenericApiResponse<String>> activateAccount(
+        @RequestParam String token
+    ) throws MessagingException {
+        service.activateAccount(token);
+        return ResponseEntity.ok()
+            .body(GenericApiResponse.success("The account has been successfully verified."));
     }
 }

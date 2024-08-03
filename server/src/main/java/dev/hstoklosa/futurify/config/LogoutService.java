@@ -2,7 +2,7 @@ package dev.hstoklosa.futurify.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import dev.hstoklosa.futurify.payload.response.GenericApiResponse;
-import dev.hstoklosa.futurify.repositories.TokenRepository;
+import dev.hstoklosa.futurify.repositories.AccessTokenRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +20,7 @@ import java.io.IOException;
 @RequiredArgsConstructor
 public class LogoutService implements LogoutHandler {
 
-    private final TokenRepository tokenRepository;
+    private final AccessTokenRepository accessTokenRepository;
 
     private final JwtService jwtService;
 
@@ -38,7 +38,7 @@ public class LogoutService implements LogoutHandler {
         if (accessToken == null)
             return;
 
-        var storedToken = tokenRepository.findByToken(accessToken)
+        var storedToken = accessTokenRepository.findByToken(accessToken)
             .orElse(null);
 
         if (storedToken == null)
@@ -47,7 +47,7 @@ public class LogoutService implements LogoutHandler {
         storedToken.setExpired(true);
         storedToken.setRevoked(true);
 
-        tokenRepository.save(storedToken);
+        accessTokenRepository.save(storedToken);
 
         ResponseCookie accessTokenCookie = jwtService.getCleanAccessTokenCookie();
         response.addHeader(HttpHeaders.SET_COOKIE, accessTokenCookie.toString());
@@ -55,7 +55,7 @@ public class LogoutService implements LogoutHandler {
         ResponseCookie refreshTokenCookie = jwtService.getCleanRefreshTokenCookie();
         response.addHeader(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString());
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-        
+
         SecurityContextHolder.clearContext();
 
         try {

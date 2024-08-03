@@ -1,8 +1,10 @@
 package dev.hstoklosa.futurify.service;
 
+import dev.hstoklosa.futurify.domain.EmailTemplateName;
 import dev.hstoklosa.futurify.domain.TokenType;
 import dev.hstoklosa.futurify.domain.UserRole;
-import dev.hstoklosa.futurify.domain.entities.Token;
+import dev.hstoklosa.futurify.domain.entities.ActivationToken;
+import dev.hstoklosa.futurify.domain.entities.AccessToken;
 import dev.hstoklosa.futurify.domain.entities.User;
 import dev.hstoklosa.futurify.dto.AuthenticationResultDto;
 import dev.hstoklosa.futurify.dto.UserDto;
@@ -11,34 +13,44 @@ import dev.hstoklosa.futurify.exception.ResourceNotFoundException;
 import dev.hstoklosa.futurify.mapper.UserDtoMapper;
 import dev.hstoklosa.futurify.payload.request.LoginRequest;
 import dev.hstoklosa.futurify.payload.request.RegisterRequest;
-import dev.hstoklosa.futurify.repositories.TokenRepository;
+import dev.hstoklosa.futurify.repositories.ActivationTokenRepository;
+import dev.hstoklosa.futurify.repositories.AccessTokenRepository;
 import dev.hstoklosa.futurify.repositories.UserRepository;
 import dev.hstoklosa.futurify.config.JwtService;
+import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.security.SecureRandom;
+import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
 public class AuthenticationService {
 
     private final UserRepository userRepository;
-
-    private final TokenRepository tokenRepository;
-
-    private final UserDtoMapper userDtoMapper;
+    private final AccessTokenRepository accessTokenRepository;
+    private final ActivationTokenRepository activationTokenRepository;
 
     private final JwtService jwtService;
+    private final EmailService emailService;
+
+    private final UserDtoMapper userDtoMapper;
 
     private final AuthenticationManager authManager;
 
     private final PasswordEncoder passwordEncoder;
 
+    @Value("${application.mailing.frontend.activation-url}")
+    private String activationUrl;
 
-    public AuthenticationResultDto register(RegisterRequest request) {
+    public AuthenticationResultDto register(RegisterRequest request) throws MessagingException {
          if (userRepository.existsByEmail(request.getEmail())) {
              throw new DuplicateResourceException(
                 "The email address is already taken."
@@ -50,6 +62,7 @@ public class AuthenticationService {
             .lastName(request.getLastName())
             .email(request.getEmail())
             .password(passwordEncoder.encode(request.getPassword()))
+            .enabled(false)
             .role(UserRole.USER)
             .build();
 
@@ -60,6 +73,7 @@ public class AuthenticationService {
         String refreshToken = jwtService.generateRefreshToken(user);
 
         saveUserToken(savedUser, accessToken);
+        sendVerificationEmail(user);
 
         return AuthenticationResultDto.builder()
             .accessToken(accessToken)
@@ -129,8 +143,67 @@ public class AuthenticationService {
         return null;
     }
 
+    @Transactional
+    public void activateAccount(String token) throws MessagingException {
+        ActivationToken savedToken = activationTokenRepository.findByToken(token)
+                .orElseThrow(() -> new RuntimeException("Invalid activation code."));
+
+        if (LocalDateTime.now().isAfter(savedToken.getExpiresAt())) {
+            sendVerificationEmail(savedToken.getUser());
+            throw new RuntimeException("Activation code has expired. A new token has been sent to your email address.");
+        }
+
+        var user = userRepository.findById(savedToken.getUser().getId())
+                .orElseThrow(() -> new ResourceNotFoundException("The user wasn't found."));
+
+        user.setEnabled(true);
+        userRepository.save(user);
+
+        savedToken.setValidatedAt(LocalDateTime.now());
+        activationTokenRepository.save(savedToken);
+    }
+
+    private void sendVerificationEmail(User user) throws MessagingException {
+        String verificationToken = generateAndSaveActivationToken(user);
+
+        emailService.sendEmail(
+                user.getEmail(),
+                user.getFullName(),
+                EmailTemplateName.ACTIVATE_ACCOUNT,
+                activationUrl,
+                verificationToken,
+                "Account Activation"
+        );
+    }
+
+    private String generateAndSaveActivationToken(User user) {
+        String generatedToken = generateActivationToken(6);
+        var token = ActivationToken.builder()
+                .token(generatedToken)
+                .createdAt(LocalDateTime.now())
+                .expiresAt(LocalDateTime.now().plusMinutes(15))
+                .user(user)
+                .build();
+
+        activationTokenRepository.save(token);
+        return generatedToken;
+    }
+
+    private String generateActivationToken(int length) {
+        String chars = "0123456789";
+        StringBuilder codeBuilder = new StringBuilder();
+        SecureRandom random = new SecureRandom(); // generated value is cryptographically secure
+
+        for (int i = 0; i < length; i++) {
+            int randomIndex = random.nextInt(chars.length());
+            codeBuilder.append(chars.charAt(randomIndex));
+        }
+
+        return codeBuilder.toString();
+    }
+
     public void saveUserToken(User user, String accessToken) {
-        var token = Token.builder()
+        var token = AccessToken.builder()
             .user(user)
             .token(accessToken)
             .type(TokenType.BEARER)
@@ -138,11 +211,11 @@ public class AuthenticationService {
             .revoked(false)
             .build();
 
-        tokenRepository.save(token);
+        accessTokenRepository.save(token);
     }
 
     public void revokeAllUserTokens(User user) {
-        var validTokens = tokenRepository.findAllValidTokenByUser(user.getId());
+        var validTokens = accessTokenRepository.findAllValidTokenByUser(user.getId());
 
         if (validTokens.isEmpty())
             return;
@@ -152,7 +225,6 @@ public class AuthenticationService {
             token.setExpired(true);
         });
 
-        tokenRepository.saveAll(validTokens);
+        accessTokenRepository.saveAll(validTokens);
     }
-
 }

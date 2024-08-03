@@ -1,21 +1,21 @@
 package dev.hstoklosa.futurify.repositories;
 
-import dev.hstoklosa.futurify.domain.entities.Token;
+import dev.hstoklosa.futurify.domain.entities.AccessToken;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 import java.util.Optional;
 
-public interface TokenRepository extends JpaRepository<Token, Integer> {
+public interface AccessTokenRepository extends JpaRepository<AccessToken, Integer> {
 
     @Query(value = """
-        SELECT t FROM Token t INNER JOIN User u\s
+        SELECT t FROM AccessToken t INNER JOIN User u\s
         ON t.user.id = u.id\s
         WHERE u.id = :id AND (t.expired = FALSE OR t.revoked = FALSE)\s
     """)
-    List<Token> findAllValidTokenByUser(Integer id);
+    List<AccessToken> findAllValidTokenByUser(Integer id);
 
-    Optional<Token> findByToken(String id);
+    Optional<AccessToken> findByToken(String id);
 
 }

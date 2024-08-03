@@ -42,11 +42,13 @@ public class User implements UserDetails {
 
     private String password;
 
+    private boolean enabled;
+
     @Enumerated(EnumType.STRING)
     private UserRole role;
 
     @OneToMany(mappedBy = "user")
-    private List<Token> tokens;
+    private List<AccessToken> tokens;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -65,21 +67,25 @@ public class User implements UserDetails {
 
     @Override
     public boolean isAccountNonExpired() {
-        return UserDetails.super.isAccountNonExpired();
+        return true;
     }
 
     @Override
     public boolean isAccountNonLocked() {
-        return UserDetails.super.isAccountNonLocked();
+        return false;
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return UserDetails.super.isCredentialsNonExpired();
+        return false;
     }
 
     @Override
     public boolean isEnabled() {
-        return UserDetails.super.isEnabled();
+        return enabled;
+    }
+
+    public String getFullName() {
+        return firstName + " " + lastName;
     }
 }
