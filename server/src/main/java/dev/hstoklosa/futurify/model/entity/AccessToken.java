@@ -1,6 +1,7 @@
-package dev.hstoklosa.futurify.domain.entities;
+package dev.hstoklosa.futurify.model.entity;
 
-import dev.hstoklosa.futurify.domain.TokenType;
+import dev.hstoklosa.futurify.model.entity.User;
+import dev.hstoklosa.futurify.model.enums.TokenType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

@@ -1,9 +1,9 @@
 package dev.hstoklosa.futurify.config;
 
-import dev.hstoklosa.futurify.repositories.AccessTokenRepository;
+import dev.hstoklosa.futurify.repository.AccessTokenRepository;
+import dev.hstoklosa.futurify.util.CookieUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -23,9 +23,8 @@ import java.io.IOException;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtService jwtService;
-
+    private final CookieUtil cookieUtil;
     private final UserDetailsService userDetailsService;
-
     private final AccessTokenRepository accessTokenRepository;
 
     @Override
@@ -34,7 +33,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         @NonNull HttpServletResponse response,
         @NonNull FilterChain filterChain
     ) throws ServletException, IOException {
-        final String accessToken = jwtService.getAccessTokenFromCookie(request);
+        final String accessToken = cookieUtil.getAccessTokenFromCookie(request);
         final String userEmail;
 
         if (accessToken == null) {
@@ -43,7 +42,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
 
         userEmail = jwtService.extractUsername(accessToken);
-
         if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails userDetails = this.userDetailsService.loadUserByUsername(userEmail);
 

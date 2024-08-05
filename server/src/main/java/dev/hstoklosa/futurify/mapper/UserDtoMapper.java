@@ -1,6 +1,6 @@
 package dev.hstoklosa.futurify.mapper;
 
-import dev.hstoklosa.futurify.domain.entities.User;
+import dev.hstoklosa.futurify.model.entity.User;
 import dev.hstoklosa.futurify.dto.UserDto;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Service;

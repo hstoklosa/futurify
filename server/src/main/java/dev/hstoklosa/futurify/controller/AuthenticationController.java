@@ -3,10 +3,11 @@ package dev.hstoklosa.futurify.controller;
 import dev.hstoklosa.futurify.config.JwtService;
 import dev.hstoklosa.futurify.dto.AuthenticationResultDto;
 import dev.hstoklosa.futurify.dto.UserDto;
-import dev.hstoklosa.futurify.payload.request.LoginRequest;
-import dev.hstoklosa.futurify.payload.request.RegisterRequest;
-import dev.hstoklosa.futurify.payload.response.GenericApiResponse;
+import dev.hstoklosa.futurify.dto.request.LoginRequest;
+import dev.hstoklosa.futurify.dto.request.RegisterRequest;
+import dev.hstoklosa.futurify.dto.response.GenericApiResponse;
 import dev.hstoklosa.futurify.service.AuthenticationService;
+import dev.hstoklosa.futurify.util.CookieUtil;
 import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -22,16 +23,16 @@ import org.springframework.web.bind.annotation.*;
 public class AuthenticationController {
 
     private final AuthenticationService service;
-
     private final JwtService jwtService;
+    private final CookieUtil cookieUtil;
 
     @PostMapping("/register")
     public ResponseEntity<GenericApiResponse<UserDto>> register(
         @RequestBody RegisterRequest request
     ) throws MessagingException {
         AuthenticationResultDto result = service.register(request);
-        ResponseCookie accessTokenCookie = jwtService.generateAccessTokenCookie(result.getAccessToken());
-        ResponseCookie refreshTokenCookie = jwtService.generateRefreshTokenCookie(result.getAccessToken());
+        ResponseCookie accessTokenCookie = cookieUtil.generateAccessTokenCookie(result.getAccessToken());
+        ResponseCookie refreshTokenCookie = cookieUtil.generateRefreshTokenCookie(result.getAccessToken());
 
         return ResponseEntity.ok()
             .header(HttpHeaders.SET_COOKIE, accessTokenCookie.toString())
@@ -44,8 +45,8 @@ public class AuthenticationController {
         @RequestBody LoginRequest request
     ) {
         AuthenticationResultDto result = service.login(request);
-        ResponseCookie accessTokenCookie = jwtService.generateAccessTokenCookie(result.getAccessToken());
-        ResponseCookie refreshTokenCookie = jwtService.generateRefreshTokenCookie(result.getRefreshToken());
+        ResponseCookie accessTokenCookie = cookieUtil.generateAccessTokenCookie(result.getAccessToken());
+        ResponseCookie refreshTokenCookie = cookieUtil.generateRefreshTokenCookie(result.getRefreshToken());
 
         return ResponseEntity.ok()
             .header(HttpHeaders.SET_COOKIE, accessTokenCookie.toString())
@@ -59,8 +60,8 @@ public class AuthenticationController {
         HttpServletResponse response
     ) {
         AuthenticationResultDto result = service.refreshToken(request);
-        ResponseCookie accessTokenCookie = jwtService.generateAccessTokenCookie(result.getAccessToken());
-        ResponseCookie refreshTokenCookie = jwtService.generateRefreshTokenCookie(result.getRefreshToken());
+        ResponseCookie accessTokenCookie = cookieUtil.generateAccessTokenCookie(result.getAccessToken());
+        ResponseCookie refreshTokenCookie = cookieUtil.generateRefreshTokenCookie(result.getRefreshToken());
 
         return ResponseEntity.ok()
             .header(HttpHeaders.SET_COOKIE, accessTokenCookie.toString())

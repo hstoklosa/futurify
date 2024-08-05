@@ -1,4 +1,4 @@
-package dev.hstoklosa.futurify.domain;
+package dev.hstoklosa.futurify.model.enums;
 
 public enum EmailTemplateName {
 

@@ -1,8 +1,9 @@
 package dev.hstoklosa.futurify.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import dev.hstoklosa.futurify.payload.response.GenericApiResponse;
-import dev.hstoklosa.futurify.repositories.AccessTokenRepository;
+import dev.hstoklosa.futurify.dto.response.GenericApiResponse;
+import dev.hstoklosa.futurify.repository.AccessTokenRepository;
+import dev.hstoklosa.futurify.util.CookieUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -21,11 +22,8 @@ import java.io.IOException;
 public class LogoutService implements LogoutHandler {
 
     private final AccessTokenRepository accessTokenRepository;
-
-    private final JwtService jwtService;
-
+    private final CookieUtil cookieUtil;
     private final ObjectMapper objectMapper;
-
 
     @Override
     public void logout(
@@ -33,7 +31,7 @@ public class LogoutService implements LogoutHandler {
         HttpServletResponse response,
         Authentication authentication
     ) {
-        final String accessToken = jwtService.getAccessTokenFromCookie(request);
+        final String accessToken = cookieUtil.getAccessTokenFromCookie(request);
 
         if (accessToken == null)
             return;
@@ -46,13 +44,12 @@ public class LogoutService implements LogoutHandler {
 
         storedToken.setExpired(true);
         storedToken.setRevoked(true);
-
         accessTokenRepository.save(storedToken);
 
-        ResponseCookie accessTokenCookie = jwtService.getCleanAccessTokenCookie();
-        response.addHeader(HttpHeaders.SET_COOKIE, accessTokenCookie.toString());
+        ResponseCookie accessTokenCookie = cookieUtil.getCleanAccessTokenCookie();
+        ResponseCookie refreshTokenCookie = cookieUtil.getCleanRefreshTokenCookie();
 
-        ResponseCookie refreshTokenCookie = jwtService.getCleanRefreshTokenCookie();
+        response.addHeader(HttpHeaders.SET_COOKIE, accessTokenCookie.toString());
         response.addHeader(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString());
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
 

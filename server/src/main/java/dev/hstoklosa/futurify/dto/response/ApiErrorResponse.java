@@ -1,4 +1,4 @@
-package dev.hstoklosa.futurify.payload.response;
+package dev.hstoklosa.futurify.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

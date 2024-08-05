@@ -1,6 +1,6 @@
-package dev.hstoklosa.futurify.repositories;
+package dev.hstoklosa.futurify.repository;
 
-import dev.hstoklosa.futurify.domain.entities.ActivationToken;
+import dev.hstoklosa.futurify.model.entity.ActivationToken;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
@@ -8,4 +8,5 @@ import java.util.Optional;
 public interface ActivationTokenRepository extends JpaRepository<ActivationToken, Integer> {
 
     Optional<ActivationToken> findByToken(String token);
+
 }

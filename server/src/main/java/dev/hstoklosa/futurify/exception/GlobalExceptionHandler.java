@@ -1,12 +1,13 @@
 package dev.hstoklosa.futurify.exception;
 
-import dev.hstoklosa.futurify.payload.response.ApiErrorResponse;
-import dev.hstoklosa.futurify.payload.response.GenericApiResponse;
+import dev.hstoklosa.futurify.dto.response.ApiErrorResponse;
+import dev.hstoklosa.futurify.dto.response.GenericApiResponse;
 import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.InsufficientAuthenticationException;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -33,10 +34,27 @@ public class GlobalExceptionHandler {
                 );
     }
 
+    @ExceptionHandler(DisabledException.class)
+    public ResponseEntity<GenericApiResponse<?>> handleDisabledException(
+        DisabledException exp,
+        HttpServletRequest request
+    ) {
+        return ResponseEntity
+                .status(HttpStatus.FORBIDDEN)
+                .body(GenericApiResponse.error(
+                                ApiErrorResponse.builder()
+                                        .path(request.getRequestURI())
+                                        .message("Verify your account by email before logging in.")
+                                        .timestamp(LocalDateTime.now())
+                                        .build()
+                        )
+                );
+    }
+
     @ExceptionHandler(DuplicateResourceException.class)
     public ResponseEntity<GenericApiResponse<?>> handleException(
-            DuplicateResourceException exp,
-            HttpServletRequest request
+        DuplicateResourceException exp,
+        HttpServletRequest request
     ) {
         return ResponseEntity
                 .status(HttpStatus.CONFLICT)

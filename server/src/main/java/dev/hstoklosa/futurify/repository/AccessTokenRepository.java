@@ -1,6 +1,6 @@
-package dev.hstoklosa.futurify.repositories;
+package dev.hstoklosa.futurify.repository;
 
-import dev.hstoklosa.futurify.domain.entities.AccessToken;
+import dev.hstoklosa.futurify.model.entity.AccessToken;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 

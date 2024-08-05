@@ -1,6 +1,6 @@
-package dev.hstoklosa.futurify.repositories;
+package dev.hstoklosa.futurify.repository;
 
-import dev.hstoklosa.futurify.domain.entities.User;
+import dev.hstoklosa.futurify.model.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

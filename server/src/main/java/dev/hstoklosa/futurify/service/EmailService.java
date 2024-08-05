@@ -1,6 +1,6 @@
 package dev.hstoklosa.futurify.service;
 
-import dev.hstoklosa.futurify.domain.EmailTemplateName;
+import dev.hstoklosa.futurify.model.enums.EmailTemplateName;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +20,6 @@ import java.util.Map;
 public class EmailService {
 
     private final JavaMailSender mailSender;
-
     private final SpringTemplateEngine templateEngine;
 
     @Async

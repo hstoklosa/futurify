@@ -1,4 +1,4 @@
-package dev.hstoklosa.futurify.payload.response;
+package dev.hstoklosa.futurify.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -10,9 +10,7 @@ import lombok.Data;
 public class GenericApiResponse<T> {
 
     private boolean success;
-
     private T data;
-
     private ApiErrorResponse error;
 
     public static <T> GenericApiResponse<T> success(T data) {

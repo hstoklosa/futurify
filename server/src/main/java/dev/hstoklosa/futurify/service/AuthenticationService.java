@@ -1,22 +1,23 @@
 package dev.hstoklosa.futurify.service;
 
-import dev.hstoklosa.futurify.domain.EmailTemplateName;
-import dev.hstoklosa.futurify.domain.TokenType;
-import dev.hstoklosa.futurify.domain.UserRole;
-import dev.hstoklosa.futurify.domain.entities.ActivationToken;
-import dev.hstoklosa.futurify.domain.entities.AccessToken;
-import dev.hstoklosa.futurify.domain.entities.User;
+import dev.hstoklosa.futurify.model.enums.EmailTemplateName;
+import dev.hstoklosa.futurify.model.enums.TokenType;
+import dev.hstoklosa.futurify.model.enums.UserRole;
+import dev.hstoklosa.futurify.model.entity.ActivationToken;
+import dev.hstoklosa.futurify.model.entity.AccessToken;
+import dev.hstoklosa.futurify.model.entity.User;
 import dev.hstoklosa.futurify.dto.AuthenticationResultDto;
 import dev.hstoklosa.futurify.dto.UserDto;
 import dev.hstoklosa.futurify.exception.DuplicateResourceException;
 import dev.hstoklosa.futurify.exception.ResourceNotFoundException;
 import dev.hstoklosa.futurify.mapper.UserDtoMapper;
-import dev.hstoklosa.futurify.payload.request.LoginRequest;
-import dev.hstoklosa.futurify.payload.request.RegisterRequest;
-import dev.hstoklosa.futurify.repositories.ActivationTokenRepository;
-import dev.hstoklosa.futurify.repositories.AccessTokenRepository;
-import dev.hstoklosa.futurify.repositories.UserRepository;
+import dev.hstoklosa.futurify.dto.request.LoginRequest;
+import dev.hstoklosa.futurify.dto.request.RegisterRequest;
+import dev.hstoklosa.futurify.repository.ActivationTokenRepository;
+import dev.hstoklosa.futurify.repository.AccessTokenRepository;
+import dev.hstoklosa.futurify.repository.UserRepository;
 import dev.hstoklosa.futurify.config.JwtService;
+import dev.hstoklosa.futurify.util.CookieUtil;
 import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
@@ -42,9 +43,8 @@ public class AuthenticationService {
     private final EmailService emailService;
 
     private final UserDtoMapper userDtoMapper;
-
+    private final CookieUtil cookieUtil;
     private final AuthenticationManager authManager;
-
     private final PasswordEncoder passwordEncoder;
 
     @Value("${application.mailing.frontend.activation-url}")
@@ -113,7 +113,7 @@ public class AuthenticationService {
         final String refreshToken;
         final String userEmail;
 
-        refreshToken = jwtService.getRefreshTokenFromCookie(request);
+        refreshToken = cookieUtil.getRefreshTokenFromCookie(request);
         if (refreshToken == null)
             return null;
 
@@ -167,23 +167,23 @@ public class AuthenticationService {
         String verificationToken = generateAndSaveActivationToken(user);
 
         emailService.sendEmail(
-                user.getEmail(),
-                user.getFullName(),
-                EmailTemplateName.ACTIVATE_ACCOUNT,
-                activationUrl,
-                verificationToken,
-                "Account Activation"
+            user.getEmail(),
+            user.getFullName(),
+            EmailTemplateName.ACTIVATE_ACCOUNT,
+            activationUrl,
+            verificationToken,
+            "Account Activation"
         );
     }
 
     private String generateAndSaveActivationToken(User user) {
         String generatedToken = generateActivationToken(6);
         var token = ActivationToken.builder()
-                .token(generatedToken)
-                .createdAt(LocalDateTime.now())
-                .expiresAt(LocalDateTime.now().plusMinutes(15))
-                .user(user)
-                .build();
+            .token(generatedToken)
+            .createdAt(LocalDateTime.now())
+            .expiresAt(LocalDateTime.now().plusMinutes(15))
+            .user(user)
+            .build();
 
         activationTokenRepository.save(token);
         return generatedToken;

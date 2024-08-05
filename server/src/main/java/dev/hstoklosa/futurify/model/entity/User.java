@@ -1,6 +1,6 @@
-package dev.hstoklosa.futurify.domain.entities;
+package dev.hstoklosa.futurify.model.entity;
 
-import dev.hstoklosa.futurify.domain.UserRole;
+import dev.hstoklosa.futurify.model.enums.UserRole;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -72,12 +72,12 @@ public class User implements UserDetails {
 
     @Override
     public boolean isAccountNonLocked() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return false;
+        return true;
     }
 
     @Override
