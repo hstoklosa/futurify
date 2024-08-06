@@ -12,6 +12,7 @@ import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
+import org.springframework.web.cors.CorsConfigurationSource;
 
 @Configuration
 @EnableWebSecurity
@@ -19,17 +20,16 @@ import org.springframework.security.web.authentication.logout.LogoutHandler;
 public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthFilter;
-
     private final AuthenticationProvider authenticationProvider;
-
     private final LogoutHandler logoutHandler;
-
     private final AuthenticationEntryPoint authenticationEntryPoint;
+    private final CorsConfigurationSource corsConfigurationSource;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
             .csrf(csrf -> csrf.disable())
+            .cors(cors -> cors.configurationSource(corsConfigurationSource))
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/api/v1/auth/**").permitAll()
                 .anyRequest().authenticated()
@@ -50,5 +50,4 @@ public class SecurityConfig {
 
         return http.build();
     }
-
 }
