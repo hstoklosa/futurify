@@ -1,7 +1,7 @@
 import stars from "@assets/stars.svg";
 import { Link } from "react-router-dom";
 
-import Button from "@components/ui/button/Button";
+import { Button } from "@components/ui/button";
 import PathConstants from "@/utils/pathConstants";
 
 const Landing = () => {
