@@ -2,11 +2,10 @@ import React from "react";
 import { createBrowserRouter, RouteObject } from "react-router-dom";
 
 import Root from "./Root";
+import { PathConstants } from "@utils/constants";
 
 const Page404 = React.lazy(() => import("./public/Page404"));
 const Landing = React.lazy(() => import("./public/Landing"));
-
-import PathConstants from "@utils/pathConstants";
 
 const routes: RouteObject[] = [
     {
