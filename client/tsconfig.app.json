@@ -26,7 +26,10 @@
         "paths": {
             "@/*": ["./src/*"],
             "@assets/*": ["./src/assets/*"],
+            "@features/*": ["./src/features/*"],
             "@components/*": ["./src/components/*"],
+            "@lib/*": ["./src/lib/*"],
+            "@types/*": ["./src/types/*"],
             "@utils/*": ["./src/utils/*"]
         }
     },
