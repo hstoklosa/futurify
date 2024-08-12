@@ -17,6 +17,8 @@ import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+
 @RestController
 @RequestMapping("/api/v1/auth")
 @RequiredArgsConstructor
@@ -25,6 +27,16 @@ public class AuthenticationController {
     private final AuthenticationService service;
     private final JwtService jwtService;
     private final CookieUtil cookieUtil;
+
+    @GetMapping("/me")
+    public ResponseEntity<GenericApiResponse<UserDto>> me() {
+        UserDto userDto = service.getCurrentUser();
+        return ResponseEntity.ok()
+            .body(GenericApiResponse.success(
+                userDto,
+                "User data has been successfully retrieved.")
+            );
+    }
 
     @PostMapping("/register")
     public ResponseEntity<GenericApiResponse<UserDto>> register(
@@ -37,7 +49,10 @@ public class AuthenticationController {
         return ResponseEntity.ok()
             .header(HttpHeaders.SET_COOKIE, accessTokenCookie.toString())
             .header(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString())
-            .body(GenericApiResponse.success(result.getUserDto()));
+            .body(GenericApiResponse.success(
+                result.getUserDto(),
+                "Logged in successfully."
+            ));
     }
 
     @PostMapping("/login")
@@ -51,7 +66,10 @@ public class AuthenticationController {
         return ResponseEntity.ok()
             .header(HttpHeaders.SET_COOKIE, accessTokenCookie.toString())
             .header(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString())
-            .body(GenericApiResponse.success(result.getUserDto()));
+            .body(GenericApiResponse.success(
+                result.getUserDto(),
+                "Logged in successfully.")
+            );
     }
 
     @PostMapping("/refresh-token")
@@ -66,7 +84,7 @@ public class AuthenticationController {
         return ResponseEntity.ok()
             .header(HttpHeaders.SET_COOKIE, accessTokenCookie.toString())
             .header(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString())
-            .body(GenericApiResponse.success("Token has been successfully refreshed."));
+            .body(GenericApiResponse.success(null, "Token has been successfully refreshed."));
     }
 
     @GetMapping("/activate-account")
@@ -75,6 +93,6 @@ public class AuthenticationController {
     ) throws MessagingException {
         service.activateAccount(token);
         return ResponseEntity.ok()
-            .body(GenericApiResponse.success("The account has been successfully verified."));
+            .body(GenericApiResponse.success(null, "The account has been successfully verified."));
     }
 }

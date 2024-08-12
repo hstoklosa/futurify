@@ -24,7 +24,10 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.InsufficientAuthenticationException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -50,6 +53,11 @@ public class AuthenticationService {
     @Value("${application.mailing.frontend.activation-url}")
     private String activationUrl;
 
+    public UserDto getCurrentUser() {
+        final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return userDtoMapper.apply((User) authentication.getPrincipal());
+    }
+
     public AuthenticationResultDto register(RegisterRequest request) throws MessagingException {
          if (userRepository.existsByEmail(request.getEmail())) {
              throw new DuplicateResourceException(
@@ -68,9 +76,9 @@ public class AuthenticationService {
 
         var savedUser = userRepository.save(user);
 
-        UserDto userDto = userDtoMapper.apply(savedUser);
         String accessToken = jwtService.generateToken(user);
         String refreshToken = jwtService.generateRefreshToken(user);
+        UserDto userDto = userDtoMapper.apply(user);
 
         saveUserToken(savedUser, accessToken);
         sendVerificationEmail(user);
@@ -92,7 +100,7 @@ public class AuthenticationService {
 
         var user = userRepository.findByEmail(request.getEmail())
             .orElseThrow(() -> new ResourceNotFoundException(
-                "User with email [%s] wasn't found.".formatted(request.getEmail())
+                "User with the email [%s] wasn't found.".formatted(request.getEmail())
             ));
 
         String accessToken = jwtService.generateToken(user);
