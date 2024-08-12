@@ -15,7 +15,7 @@ export type FieldWrapperPassThroughProps = Omit<
     "className" | "children"
 >;
 
-const labelVariants = cva("text-primary-foreground text-sm font-semibold mb-2");
+const labelVariants = cva("text-foreground text-sm font-semibold mb-2");
 
 export const FieldWrapper = ({
     label,

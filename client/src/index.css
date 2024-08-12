@@ -59,6 +59,13 @@
         font-style: normal;
     }
 
+    :root {
+        --background: 251, 251, 255;
+        --primary: 106, 79, 235;
+        --foreground: 25, 4, 69;
+        --border: 25, 4, 69, 0.1;
+    }
+
     html {
         font-family: "Lato", system-ui, sans-serif;
     }

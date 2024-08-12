@@ -7,7 +7,7 @@ import { PathConstants } from "@utils/constants";
 const Landing = () => {
     return (
         <div className="flex flex-col justify-center items-center">
-            <h1 className="flex items-center text-5xl text-primary-foreground">
+            <h1 className="flex items-center text-5xl text-foreground">
                 <img
                     src={stars}
                     className="w-10 mx-3"
@@ -25,10 +25,10 @@ const Landing = () => {
             </h1>
 
             <div className="flex text-center flex-col items-center justify-center max-w-2xl">
-                <h1 className="text-primary-foreground text-6xl my-3 font-extrabold">
+                <h1 className="text-foreground text-6xl my-3 font-extrabold">
                     Manage Your Interviews Like a Pro
                 </h1>
-                <p className="text-primary-foreground/80 text-xl">
+                <p className="text-foreground/80 text-xl">
                     Stay organized throughout your job search journey and never miss
                     an interview with our comprehensive AI-powered interview tracking
                     and management tool.

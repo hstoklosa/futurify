@@ -1,7 +1,7 @@
 import { cva } from "class-variance-authority";
 import { cn } from "@utils/cn";
 
-const labelVariants = cva("text-primary-foreground text-sm font-semibold mb-2");
+const labelVariants = cva("text-foreground text-sm font-semibold mb-2");
 
 type LabelProps = {
     label: string;
