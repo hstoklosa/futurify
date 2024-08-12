@@ -10,11 +10,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class AuthenticationResultDto {
-
     private String accessToken;
-
     private String refreshToken;
-
     private UserDto userDto;
-
 }
