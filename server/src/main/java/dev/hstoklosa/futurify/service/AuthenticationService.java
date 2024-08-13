@@ -1,5 +1,6 @@
 package dev.hstoklosa.futurify.service;
 
+import dev.hstoklosa.futurify.exception.InvalidTokenException;
 import dev.hstoklosa.futurify.model.enums.EmailTemplateName;
 import dev.hstoklosa.futurify.model.enums.TokenType;
 import dev.hstoklosa.futurify.model.enums.UserRole;
@@ -154,11 +155,11 @@ public class AuthenticationService {
     @Transactional
     public void activateAccount(String token) throws MessagingException {
         ActivationToken savedToken = activationTokenRepository.findByToken(token)
-                .orElseThrow(() -> new RuntimeException("Invalid activation code."));
+                .orElseThrow(() -> new InvalidTokenException("Invalid activation code."));
 
         if (LocalDateTime.now().isAfter(savedToken.getExpiresAt())) {
             sendVerificationEmail(savedToken.getUser());
-            throw new RuntimeException("Activation code has expired. A new token has been sent to your email address.");
+            throw new InvalidTokenException("Activation code has expired. A new token has been sent to your email address.");
         }
 
         var user = userRepository.findById(savedToken.getUser().getId())
