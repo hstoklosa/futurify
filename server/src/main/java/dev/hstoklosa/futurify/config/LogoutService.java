@@ -56,7 +56,7 @@ public class LogoutService implements LogoutHandler {
         SecurityContextHolder.clearContext();
 
         try {
-            GenericApiResponse<String> apiResponse = GenericApiResponse.success("Logged out successfully");
+            GenericApiResponse<String> apiResponse = GenericApiResponse.success(null, "Logged out successfully");
             objectMapper.writeValue(response.getWriter(), apiResponse);
         } catch (IOException e) {
             throw new RuntimeException(e);

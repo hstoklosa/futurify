@@ -18,10 +18,8 @@ public class UserDtoMapper implements Function<User, UserDto> {
                 user.getFirstName(),
                 user.getLastName(),
                 user.getEmail(),
-                user.getAuthorities()
-                        .stream()
-                        .map(GrantedAuthority::getAuthority)
-                        .collect(Collectors.toList())
+                user.getRole().name(),
+                user.isEnabled()
         );
     }
 }
