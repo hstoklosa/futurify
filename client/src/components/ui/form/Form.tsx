@@ -1,34 +1,40 @@
 import {
     useForm,
     SubmitHandler,
-    UseFormRegister,
     FieldValues,
-    FormState,
     UseFormProps,
+    UseFormReturn,
 } from "react-hook-form";
+import { z, ZodType } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { cn } from "@utils/cn";
 
-type FormWrapperProps<T extends FieldValues> = {
-    options: UseFormProps<T>;
+type FormWrapperProps<T extends FieldValues, Schema> = {
     onSubmit: SubmitHandler<T>;
-    children: (methods: {
-        register: UseFormRegister<T>;
-        formState: FormState<T>;
-    }) => React.ReactNode;
+    schema: Schema;
+    className?: string;
+    options?: UseFormProps<T>;
+    children: (methods: UseFormReturn<T>) => React.ReactNode;
 };
 
-const Form = <T extends FieldValues>({
+const Form = <
+    Schema extends ZodType<any, any, any>,
+    T extends FieldValues = z.infer<Schema>
+>({
     options,
     onSubmit,
+    className,
+    schema,
     children,
-}: FormWrapperProps<T>) => {
-    const { register, handleSubmit, formState } = useForm<T>(options);
+}: FormWrapperProps<T, Schema>) => {
+    const form = useForm<T>({ ...options, resolver: zodResolver(schema) });
 
     return (
-        <form onSubmit={handleSubmit(onSubmit)}>
-            {children({
-                register,
-                formState,
-            })}
+        <form
+            className={cn("space-y-4", className)}
+            onSubmit={form.handleSubmit(onSubmit)}
+        >
+            {children(form)}
         </form>
     );
 };
