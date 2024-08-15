@@ -29,6 +29,7 @@
             "@features/*": ["./src/features/*"],
             "@components/*": ["./src/components/*"],
             "@lib/*": ["./src/lib/*"],
+            "@hooks/*": ["./src/hooks/*"],
             "@types/*": ["./src/types/*"],
             "@utils/*": ["./src/utils/*"]
         }
