@@ -28,3 +28,24 @@ export const verificationSchema = z.object({
 });
 
 export type VerificationInput = z.infer<typeof verificationSchema>;
+
+export const loginInputSchema = z.object({
+    email: z.string().email({ message: "Invalid email was provided." }),
+    password: z
+        .string()
+        .min(3)
+        .refine((password) => /[A-Z]/.test(password), {
+            message: "Password must include at least one uppercase letter.",
+        })
+        .refine((password) => /[a-z]/.test(password), {
+            message: "Password must include at least one lowercase letter.",
+        })
+        .refine((password) => /[0-9]/.test(password), {
+            message: "Password must include at least one number.",
+        })
+        .refine((password) => /[!@#$%^&*]/.test(password), {
+            message: "Password must include at least one special character.",
+        }),
+});
+
+export type LoginInput = z.infer<typeof loginInputSchema>;
