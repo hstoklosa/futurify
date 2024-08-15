@@ -7,6 +7,7 @@ import { PathConstants } from "@utils/constants";
 const NotFound = React.lazy(() => import("./public/NotFound"));
 const Landing = React.lazy(() => import("./public/Landing"));
 const SignUp = React.lazy(() => import("./public/SignUp"));
+const VerifyAccount = React.lazy(() => import("./public/VerifyAccount"));
 
 const routes: RouteObject[] = [
     {
@@ -17,6 +18,10 @@ const routes: RouteObject[] = [
     {
         path: PathConstants.SIGN_UP,
         element: <SignUp />,
+    },
+    {
+        path: PathConstants.VERIFY_ACCOUNT,
+        element: <VerifyAccount />,
     },
 ];
 

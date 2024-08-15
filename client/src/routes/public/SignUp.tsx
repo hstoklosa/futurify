@@ -1,7 +1,12 @@
-import RegisterForm from "@features/auth/components/RegisterForm";
+import { useNavigate } from "react-router-dom";
+
 import { AuthLayout } from "@components/layout";
+import RegisterForm from "@features/auth/components/RegisterForm";
+import { PathConstants } from "@utils/constants";
 
 const SignUp = () => {
+    const navigate = useNavigate();
+
     return (
         <AuthLayout
             title="Sign Up for Free"
@@ -9,7 +14,9 @@ const SignUp = () => {
         >
             <RegisterForm
                 onSuccess={() => {
-                    // TODO: Navigate to verification page
+                    navigate(PathConstants.VERIFY_ACCOUNT, {
+                        replace: true,
+                    });
                 }}
             />
         </AuthLayout>

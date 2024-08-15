@@ -22,3 +22,9 @@ export const registerInputSchema = z.object({
 });
 
 export type RegisterInput = z.infer<typeof registerInputSchema>;
+
+export const verificationSchema = z.object({
+    otp: z.string().length(6),
+});
+
+export type VerificationInput = z.infer<typeof verificationSchema>;

@@ -1,3 +1,8 @@
+import { useLocation, Navigate } from "react-router-dom";
+
+import useAuthStatus from "@hooks/useAuthStatus";
+import { PathConstants } from "@utils/constants";
+
 type AuthLayoutProps = {
     title: string;
     subtitle: string;
@@ -5,6 +10,31 @@ type AuthLayoutProps = {
 };
 
 const AuthLayout = ({ title, subtitle, children }: AuthLayoutProps) => {
+    const { isAuthenticated, isVerified } = useAuthStatus();
+    const location = useLocation();
+
+    if (
+        isAuthenticated &&
+        !isVerified &&
+        location.pathname !== PathConstants.VERIFY_ACCOUNT
+    ) {
+        return (
+            <Navigate
+                to={PathConstants.VERIFY_ACCOUNT}
+                replace
+            />
+        );
+    }
+
+    if (isAuthenticated && isVerified) {
+        return (
+            <Navigate
+                to={PathConstants.HOME}
+                replace
+            />
+        );
+    }
+
     return (
         <div className="w-full h-full flex flex-col justify-center items-center">
             <div className="w-[100%] max-w-[325px]">
