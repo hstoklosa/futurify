@@ -1,6 +1,5 @@
 package dev.hstoklosa.futurify.model.entity;
 
-import dev.hstoklosa.futurify.model.entity.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -20,13 +19,16 @@ public class ActivationToken {
     @GeneratedValue
     private Integer id;
 
-    @Column(unique = true)
+    @Column(unique = true, updatable = false, nullable = false)
     private String token;
 
+    @Column(updatable = false, nullable = false)
     private LocalDateTime createdAt;
 
+    @Column(updatable = false, nullable = false)
     private LocalDateTime expiresAt;
 
+    @Column(insertable = false)
     private LocalDateTime validatedAt;
 
     @ManyToOne
