@@ -11,31 +11,31 @@ const SignIn = React.lazy(() => import("./public/SignIn"));
 const VerifyAccount = React.lazy(() => import("./public/VerifyAccount"));
 
 const routes: RouteObject[] = [
-    {
-        path: PathConstants.LANDING,
-        element: <Landing />,
-        index: true,
-    },
-    {
-        path: PathConstants.SIGN_UP,
-        element: <SignUp />,
-    },
-    {
-        path: PathConstants.SIGN_IN,
-        element: <SignIn />,
-    },
-    {
-        path: PathConstants.VERIFY_ACCOUNT,
-        element: <VerifyAccount />,
-    },
+  {
+    path: PathConstants.LANDING,
+    element: <Landing />,
+    index: true,
+  },
+  {
+    path: PathConstants.SIGN_UP,
+    element: <SignUp />,
+  },
+  {
+    path: PathConstants.SIGN_IN,
+    element: <SignIn />,
+  },
+  {
+    path: PathConstants.VERIFY_ACCOUNT,
+    element: <VerifyAccount />,
+  },
 ];
 
 const router = createBrowserRouter([
-    {
-        element: <Root />,
-        errorElement: <NotFound />,
-        children: routes,
-    },
+  {
+    element: <Root />,
+    errorElement: <NotFound />,
+    children: routes,
+  },
 ]);
 
 export default router;
