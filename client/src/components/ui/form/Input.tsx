@@ -3,28 +3,28 @@ import { FieldWrapper, FieldWrapperPassThroughProps } from "./FieldWrapper";
 import { cn } from "@/utils/cn";
 
 type InputProps = {
-    label: string;
-    register: UseFormRegisterReturn;
+  label: string;
+  register: UseFormRegisterReturn;
 } & React.InputHTMLAttributes<HTMLInputElement> &
-    FieldWrapperPassThroughProps;
+  FieldWrapperPassThroughProps;
 
 const Input = ({ className, name, label, type, register, ...rest }: InputProps) => {
-    return (
-        <div className="flex flex-col">
-            <FieldWrapper label={label}>
-                <input
-                    id={name}
-                    type={type}
-                    className={cn(
-                        "bg-background px-3 py-2 w-full text-[1rem] text-foreground/80 placeholder-foreground/50 focus:border-primary focus:outline-none focus:ring-0 border-border border-2 rounded-md autofill:bg-background",
-                        className
-                    )}
-                    {...register}
-                    {...rest}
-                />
-            </FieldWrapper>
-        </div>
-    );
+  return (
+    <div className="flex flex-col">
+      <FieldWrapper label={label}>
+        <input
+          id={name}
+          type={type}
+          className={cn(
+            "bg-background px-3 py-2 w-full text-[1rem] text-foreground/80 placeholder-foreground/50  border-border border-2 rounded-md autofill:bg-background focus:border-primary focus:outline-none focus:ring-0 transition ease-out duration-150",
+            className
+          )}
+          {...register}
+          {...rest}
+        />
+      </FieldWrapper>
+    </div>
+  );
 };
 
 export default Input;
