@@ -17,7 +17,6 @@ import dev.hstoklosa.futurify.dto.request.RegisterRequest;
 import dev.hstoklosa.futurify.repository.ActivationTokenRepository;
 import dev.hstoklosa.futurify.repository.AccessTokenRepository;
 import dev.hstoklosa.futurify.repository.UserRepository;
-import dev.hstoklosa.futurify.config.JwtService;
 import dev.hstoklosa.futurify.util.CookieUtil;
 import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -35,11 +34,11 @@ import org.springframework.stereotype.Service;
 
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class AuthenticationService {
-
     private final UserRepository userRepository;
     private final AccessTokenRepository accessTokenRepository;
     private final ActivationTokenRepository activationTokenRepository;
@@ -84,11 +83,10 @@ public class AuthenticationService {
 
         var savedUser = userRepository.save(user);
 
+        UserDto userDto = userDtoMapper.apply(user);
         String accessToken = jwtService.generateToken(user);
         String refreshToken = jwtService.generateRefreshToken(user);
-        UserDto userDto = userDtoMapper.apply(user);
-
-        saveUserToken(savedUser, accessToken);
+        saveUserToken(savedUser, accessToken, refreshToken);
         sendVerificationEmail(user);
 
         return AuthenticationResultDto.builder()
@@ -111,52 +109,59 @@ public class AuthenticationService {
                 "User with the email [%s] wasn't found.".formatted(request.getEmail())
             ));
 
+        UserDto userDto = userDtoMapper.apply(user);
         String accessToken = jwtService.generateToken(user);
         String refreshToken = jwtService.generateRefreshToken(user);
-        UserDto userDto = userDtoMapper.apply(user);
-
         revokeAllUserTokens(user);
-        saveUserToken(user, accessToken);
+        saveUserToken(user, accessToken, refreshToken);
 
         return AuthenticationResultDto.builder()
-            .accessToken(accessToken)
-            .refreshToken(refreshToken)
-            .userDto(userDto)
-            .build();
+                .accessToken(accessToken)
+                .refreshToken(refreshToken)
+                .userDto(userDto)
+                .build();
     }
 
+    @Transactional
     public AuthenticationResultDto refreshToken(HttpServletRequest request) {
         final String refreshToken;
         final String userEmail;
 
         refreshToken = cookieUtil.getRefreshTokenFromCookie(request);
-        if (refreshToken == null)
-            return null;
-
-        userEmail = jwtService.extractUsername(refreshToken);
-        if (userEmail != null) {
-            var user = userRepository.findByEmail(userEmail)
-                .orElseThrow(() -> new ResourceNotFoundException(
-                    "User with email %s wasn't found.".formatted(userEmail)
-                ));
-
-            if (jwtService.isTokenValid(refreshToken, user)) {
-                String accessToken = jwtService.generateToken(user);
-                String newRefreshToken = jwtService.generateRefreshToken(user);
-                UserDto userDto = userDtoMapper.apply(user);
-
-                revokeAllUserTokens(user);
-                saveUserToken(user, accessToken);
-
-                return AuthenticationResultDto.builder()
-                    .accessToken(accessToken)
-                    .refreshToken(newRefreshToken)
-                    .userDto(userDto)
-                    .build();
-            }
+        if (refreshToken == null) {
+            throw new InvalidTokenException("Refresh token is missing.");
         }
 
-        return null;
+        userEmail = jwtService.extractUsername(refreshToken);
+        if (userEmail == null) {
+            throw new InvalidTokenException("Unable to extract user email from refresh token");
+        }
+
+        var user = userRepository.findByEmail(userEmail)
+            .orElseThrow(() -> new ResourceNotFoundException(
+                "User with email %s wasn't found.".formatted(userEmail)
+            ));
+
+        var isTokenValid = accessTokenRepository.findByToken(refreshToken)
+                .map(t -> !t.isExpired() && !t.isRevoked())
+                .orElse(false);
+
+        if (!isTokenValid || !jwtService.isTokenValid(refreshToken, user)) {
+            throw new InvalidTokenException("Refresh token is invalid or expired");
+        }
+
+        UserDto userDto = userDtoMapper.apply(user);
+        String accessToken = jwtService.generateToken(user);
+        String newRefreshToken = jwtService.generateRefreshToken(user);
+        revokeAllUserTokens(user);
+        saveUserToken(user, accessToken, newRefreshToken);
+
+        return AuthenticationResultDto.builder()
+                .accessToken(accessToken)
+                .refreshToken(newRefreshToken)
+                .userDto(userDto)
+                .build();
+
     }
 
     @Transactional
@@ -174,7 +179,6 @@ public class AuthenticationService {
 
         user.setEnabled(true);
         userRepository.save(user);
-
         savedToken.setValidatedAt(LocalDateTime.now());
         activationTokenRepository.save(savedToken);
     }
@@ -200,7 +204,6 @@ public class AuthenticationService {
             .expiresAt(LocalDateTime.now().plusMinutes(15))
             .user(user)
             .build();
-
         activationTokenRepository.save(token);
         return generatedToken;
     }
@@ -218,16 +221,24 @@ public class AuthenticationService {
         return codeBuilder.toString();
     }
 
-    public void saveUserToken(User user, String accessToken) {
-        var token = AccessToken.builder()
+    public void saveUserToken(User user, String access, String refresh) {
+        var accessToken = AccessToken.builder()
             .user(user)
-            .token(accessToken)
+            .token(access)
             .type(TokenType.BEARER)
             .expired(false)
             .revoked(false)
             .build();
 
-        accessTokenRepository.save(token);
+        var refreshToken = AccessToken.builder()
+            .user(user)
+            .token(refresh)
+            .type(TokenType.REFRESH)
+            .expired(false)
+            .revoked(false)
+            .build();
+
+        accessTokenRepository.saveAll(List.of(accessToken, refreshToken));
     }
 
     public void revokeAllUserTokens(User user) {

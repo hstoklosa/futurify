@@ -6,7 +6,7 @@ export const registerInputSchema = z.object({
     email: z.string().email({ message: "Invalid email was provided." }),
     password: z
         .string()
-        .min(3)
+        .min(8)
         .refine((password) => /[A-Z]/.test(password), {
             message: "Password must include at least one uppercase letter.",
         })
@@ -33,7 +33,7 @@ export const loginInputSchema = z.object({
     email: z.string().email({ message: "Invalid email was provided." }),
     password: z
         .string()
-        .min(3)
+        .min(8)
         .refine((password) => /[A-Z]/.test(password), {
             message: "Password must include at least one uppercase letter.",
         })

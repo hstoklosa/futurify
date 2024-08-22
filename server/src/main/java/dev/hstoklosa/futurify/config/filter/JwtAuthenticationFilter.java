@@ -1,6 +1,7 @@
-package dev.hstoklosa.futurify.config;
+package dev.hstoklosa.futurify.config.filter;
 
 import dev.hstoklosa.futurify.repository.AccessTokenRepository;
+import dev.hstoklosa.futurify.service.JwtService;
 import dev.hstoklosa.futurify.util.CookieUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -50,9 +51,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
             if (jwtService.isTokenValid(accessToken, userDetails) && isTokenValid) {
                 UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-                    userDetails,
-                    null,
-                    userDetails.getAuthorities()
+                        userDetails,
+                        null,
+                        userDetails.getAuthorities()
                 ); // required by SecurityContextHolder to update the context
 
                 authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
