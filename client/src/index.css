@@ -3,82 +3,104 @@
 @tailwind utilities;
 
 @layer base {
-    @font-face {
-        font-family: "Lato";
-        src: url("path/to/Lato-Black.ttf") format("truetype");
-        font-weight: 900;
-        font-style: normal;
-    }
+  @font-face {
+    font-family: "Lato";
+    src: url("path/to/Lato-Black.ttf") format("truetype");
+    font-weight: 900;
+    font-style: normal;
+  }
 
-    @font-face {
-        font-family: "Lato";
-        src: url("path/to/Lato-BlackItalic.ttf") format("truetype");
-        font-weight: 900;
-        font-style: italic;
-    }
+  @font-face {
+    font-family: "Lato";
+    src: url("path/to/Lato-BlackItalic.ttf") format("truetype");
+    font-weight: 900;
+    font-style: italic;
+  }
 
-    @font-face {
-        font-family: "Lato";
-        src: url("assets/fonts/Lato-Bold.ttf") format("truetype");
-        font-weight: 700;
-        font-style: normal;
-    }
+  @font-face {
+    font-family: "Lato";
+    src: url("assets/fonts/Lato-Bold.ttf") format("truetype");
+    font-weight: 700;
+    font-style: normal;
+  }
 
-    @font-face {
-        font-family: "Lato";
-        src: url("assets/fonts/Lato-BoldItalic.ttf") format("truetype");
-        font-weight: 700;
-        font-style: italic;
-    }
+  @font-face {
+    font-family: "Lato";
+    src: url("assets/fonts/Lato-BoldItalic.ttf") format("truetype");
+    font-weight: 700;
+    font-style: italic;
+  }
 
-    @font-face {
-        font-family: "Lato";
-        src: url("assets/fonts/Lato-Italic.ttf") format("truetype");
-        font-weight: 400;
-        font-style: italic;
-    }
+  @font-face {
+    font-family: "Lato";
+    src: url("assets/fonts/Lato-Italic.ttf") format("truetype");
+    font-weight: 400;
+    font-style: italic;
+  }
 
-    @font-face {
-        font-family: "Lato";
-        src: url("assets/fonts/Lato-Light.ttf") format("truetype");
-        font-weight: 300;
-        font-style: normal;
-    }
+  @font-face {
+    font-family: "Lato";
+    src: url("assets/fonts/Lato-Light.ttf") format("truetype");
+    font-weight: 300;
+    font-style: normal;
+  }
 
-    @font-face {
-        font-family: "Lato";
-        src: url("assets/fonts/Lato-LightItalic.ttf") format("truetype");
-        font-weight: 300;
-        font-style: italic;
-    }
+  @font-face {
+    font-family: "Lato";
+    src: url("assets/fonts/Lato-LightItalic.ttf") format("truetype");
+    font-weight: 300;
+    font-style: italic;
+  }
 
-    @font-face {
-        font-family: "Lato";
-        src: url("assets/fonts/Lato-Regular.ttf") format("truetype");
-        font-weight: 400;
-        font-style: normal;
-    }
+  @font-face {
+    font-family: "Lato";
+    src: url("assets/fonts/Lato-Regular.ttf") format("truetype");
+    font-weight: 400;
+    font-style: normal;
+  }
 
-    :root {
-        --background: 251, 251, 255;
-        --primary: 106, 79, 235;
-        --foreground: 25, 4, 69;
-        --border: 25, 4, 69, 0.1;
-    }
+  :root {
+    --background: 251, 251, 255;
+    --foreground: 25, 4, 69;
+    --primary: 106, 79, 235;
+    --primary-foreground: 255, 255, 255;
+    --secondary: 25, 4, 69;
+    --border: 25, 4, 69, 0.1;
+  }
 
-    html {
-        font-family: "Lato", system-ui, sans-serif;
-    }
+  html {
+    font-family: "Lato", system-ui, sans-serif;
+  }
+
+  input:-webkit-autofill:focus,
+  textarea:-webkit-autofill:focus,
+  select:-webkit-autofill:focus {
+    box-shadow: 0px 0px 0px 1px rgb(var(--primary));
+  }
+
+  input:-webkit-autofill,
+  input:-webkit-autofill:hover,
+  textarea:-webkit-autofill,
+  textarea:-webkit-autofill:hover,
+  select:-webkit-autofill,
+  select:-webkit-autofill:hover,
+  input:-webkit-autofill:active {
+    -webkit-background-clip: text;
+    border: 1px solid rgb(var(--border));
+    -webkit-box-shadow: 0 0 0px 1000px #e8f0fe inset;
+    box-shadow: 0 0 0px 1000px #e8f0fe inset;
+    -webkit-text-fill-color: rgb(var(--foreground));
+  }
 }
 
 :root {
-    line-height: 1.5;
-    font-weight: 400;
+  line-height: 1.5;
+  font-weight: 400;
 
-    color-scheme: light dark;
+  color-scheme: light dark;
 
-    font-synthesis: none;
-    text-rendering: optimizeLegibility;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
