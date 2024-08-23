@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Outlet, NavLink } from "react-router-dom";
+import { Outlet, NavLink, useNavigate } from "react-router-dom";
 import {
   LuFile,
   LuHome,
@@ -20,7 +20,9 @@ import {
 import { Button } from "@components/ui/button";
 import { Avatar } from "@components/ui/avatar";
 import { useUser } from "@features/auth/api/getUser";
+import { useLogout } from "@features/auth/api/logout";
 import { cn } from "@utils/cn";
+import { PathConstants } from "@/utils/constants";
 
 type SidebarItem = {
   name: string;
@@ -45,8 +47,10 @@ const tempBoards = [
 
 const AppLayout = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const navigate = useNavigate();
 
   const user = useUser();
+  const logout = useLogout();
 
   return (
     <div className="flex h-full w-full bg-background">
@@ -65,6 +69,7 @@ const AppLayout = () => {
               <h1>X</h1>
             </button>
           </div>
+
           <nav className="[&>*]:border-b [&>*]:border-border">
             <div className="overflow-y-auto space-y-2 pb-3">
               {navigation.map((item) => (
@@ -83,6 +88,7 @@ const AppLayout = () => {
                 </NavLink>
               ))}
             </div>
+
             <div className="py-4 border-b border-border">
               <div className="flex items-center justify-between pl-4 pr-2 pb-3">
                 <p className="font-semibold text-sm text-foreground/50">
@@ -95,6 +101,7 @@ const AppLayout = () => {
                   <LuPlus className="stroke-foreground/50" />
                 </Button>
               </div>
+
               <div className="">
                 {tempBoards.map((board) => (
                   <NavLink
@@ -143,7 +150,19 @@ const AppLayout = () => {
               sideOffset={6}
             >
               <DropdownMenuItem>Account Settings</DropdownMenuItem>
-              <DropdownMenuItem>Log out</DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() =>
+                  logout.mutate({
+                    onSuccess: () => {
+                      navigate(PathConstants.LANDING, {
+                        replace: true,
+                      });
+                    },
+                  })
+                }
+              >
+                Log out
+              </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
