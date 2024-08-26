@@ -15,11 +15,19 @@ public class GenericApiResponse<T> {
     private T data;
     private ApiErrorResponse error;
 
-    public static <T> GenericApiResponse<T> success(T data, String message) {
+    public static <T> GenericApiResponse<T> success(String message, T data) {
         return GenericApiResponse.<T>builder()
                 .success(true)
                 .message(message)
                 .data(data)
+                .build();
+    }
+
+    public static <T> GenericApiResponse<T> success(String message) {
+        return GenericApiResponse.<T>builder()
+                .success(true)
+                .message(message)
+                .data(null)
                 .build();
     }
 

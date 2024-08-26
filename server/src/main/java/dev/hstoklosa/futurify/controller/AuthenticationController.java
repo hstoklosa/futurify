@@ -29,7 +29,7 @@ public class AuthenticationController {
         UserDto userDto = service.getCurrentUser();
         return ResponseEntity.ok()
             .body(GenericApiResponse.success(
-                userDto, "User data has been successfully retrieved."
+                    "User data has been successfully retrieved.", userDto
             ));
     }
 
@@ -45,7 +45,7 @@ public class AuthenticationController {
             .header(HttpHeaders.SET_COOKIE, accessTokenCookie.toString())
             .header(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString())
             .body(GenericApiResponse.success(
-                result.getUserDto(), "Logged in successfully."
+                    "Logged in successfully.", result.getUserDto()
             ));
     }
 
@@ -61,7 +61,7 @@ public class AuthenticationController {
             .header(HttpHeaders.SET_COOKIE, accessTokenCookie.toString())
             .header(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString())
             .body(GenericApiResponse.success(
-                result.getUserDto(), "Logged in successfully."
+                    "Logged in successfully.", result.getUserDto()
             ));
     }
 
@@ -77,7 +77,7 @@ public class AuthenticationController {
         return ResponseEntity.ok()
             .header(HttpHeaders.SET_COOKIE, accessTokenCookie.toString())
             .header(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString())
-            .body(GenericApiResponse.success(null, "Token has been successfully refreshed."));
+            .body(GenericApiResponse.success("Token has been successfully refreshed."));
     }
 
     @GetMapping("/activate-account")
@@ -86,6 +86,6 @@ public class AuthenticationController {
     ) throws MessagingException {
         service.activateAccount(token);
         return ResponseEntity.ok()
-            .body(GenericApiResponse.success(null, "The account has been successfully verified."));
+            .body(GenericApiResponse.success("The account has been successfully verified."));
     }
 }
