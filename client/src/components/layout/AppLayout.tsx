@@ -21,8 +21,9 @@ import { Button } from "@components/ui/button";
 import { Avatar } from "@components/ui/avatar";
 import { useUser } from "@features/auth/api/getUser";
 import { useLogout } from "@features/auth/api/logout";
+import CreateBoard from "@features/boards/components/CreateBoard";
 import { cn } from "@utils/cn";
-import { PathConstants } from "@/utils/constants";
+import { PathConstants } from "@utils/constants";
 
 type SidebarItem = {
   name: string;
@@ -94,12 +95,14 @@ const AppLayout = () => {
                 <p className="font-semibold text-sm text-foreground/50">
                   Job Boards
                 </p>
-                <Button
-                  variant="outlineMuted"
-                  className="flex items-center justify-center w-5 h-5 p-1"
-                >
-                  <LuPlus className="stroke-foreground/50" />
-                </Button>
+                <CreateBoard>
+                  <Button
+                    variant="outlineMuted"
+                    className="flex items-center justify-center w-5 h-5 p-1"
+                  >
+                    <LuPlus className="stroke-foreground/50" />
+                  </Button>
+                </CreateBoard>
               </div>
 
               <div className="">
