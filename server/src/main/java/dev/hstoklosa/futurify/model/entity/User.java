@@ -2,24 +2,20 @@ package dev.hstoklosa.futurify.model.entity;
 
 import dev.hstoklosa.futurify.model.enums.UserRole;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
+import lombok.*;
+import lombok.experimental.SuperBuilder;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Collections;
 
+@EqualsAndHashCode(callSuper = true)
 @Data
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@SuperBuilder
 @Entity
 @Table(
     name = "_user",
@@ -30,11 +26,7 @@ import java.util.Collections;
         )
     }
 )
-public class User implements UserDetails {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "user_id_seq")
-    private Integer id;
+public class User extends BaseEntity implements UserDetails {
 
     @Column(nullable = false)
     private String firstName;
@@ -54,14 +46,6 @@ public class User implements UserDetails {
     @Column(length = 32, nullable = false)
     @Enumerated(EnumType.STRING)
     private UserRole role;
-
-    @CreationTimestamp
-    @Column(nullable = false, updatable = false)
-    private LocalDateTime createdAt;
-
-    @UpdateTimestamp
-    @Column(insertable = false)
-    private LocalDateTime updatedAt;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
