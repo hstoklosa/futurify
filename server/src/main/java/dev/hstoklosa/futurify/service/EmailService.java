@@ -1,6 +1,6 @@
 package dev.hstoklosa.futurify.service;
 
-import dev.hstoklosa.futurify.model.enums.EmailTemplateName;
+import dev.hstoklosa.futurify.model.enums.EmailTemplate;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
@@ -26,7 +26,7 @@ public class EmailService {
     public void sendEmail(
             String to,
             String username,
-            EmailTemplateName emailTemplateName,
+            EmailTemplate emailTemplateName,
             String confirmationUrl,
             String activationCode,
             String subject

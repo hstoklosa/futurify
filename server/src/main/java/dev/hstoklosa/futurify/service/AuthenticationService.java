@@ -1,7 +1,7 @@
 package dev.hstoklosa.futurify.service;
 
 import dev.hstoklosa.futurify.exception.InvalidTokenException;
-import dev.hstoklosa.futurify.model.enums.EmailTemplateName;
+import dev.hstoklosa.futurify.model.enums.EmailTemplate;
 import dev.hstoklosa.futurify.model.enums.TokenType;
 import dev.hstoklosa.futurify.model.enums.UserRole;
 import dev.hstoklosa.futurify.model.entity.ActivationToken;
@@ -164,10 +164,10 @@ public class AuthenticationService {
 
     }
 
-    @Transactional
+    @Transactional(dontRollbackOn = InvalidTokenException.class)
     public void activateAccount(String token) throws MessagingException {
         ActivationToken savedToken = activationTokenRepository.findByToken(token)
-                .orElseThrow(() -> new InvalidTokenException("Invalid activation code."));
+                .orElseThrow(() -> new InvalidTokenException("The provided activation code is invalid."));
 
         if (LocalDateTime.now().isAfter(savedToken.getExpiresAt())) {
             sendVerificationEmail(savedToken.getUser());
@@ -189,7 +189,7 @@ public class AuthenticationService {
         emailService.sendEmail(
             user.getEmail(),
             user.getFullName(),
-            EmailTemplateName.ACTIVATE_ACCOUNT,
+            EmailTemplate.ACTIVATE_ACCOUNT,
             activationUrl,
             verificationToken,
             "Account Activation"
@@ -201,7 +201,7 @@ public class AuthenticationService {
         var token = ActivationToken.builder()
             .token(generatedToken)
             .createdAt(LocalDateTime.now())
-            .expiresAt(LocalDateTime.now().plusMinutes(15))
+            .expiresAt(LocalDateTime.now().plusSeconds(20))
             .user(user)
             .build();
         activationTokenRepository.save(token);
