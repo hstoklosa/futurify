@@ -3,7 +3,7 @@ import { FieldWrapper, FieldWrapperPassThroughProps } from "./FieldWrapper";
 import { cn } from "@/utils/cn";
 
 type InputProps = {
-  label: string;
+  label?: string;
   register: UseFormRegisterReturn;
 } & React.InputHTMLAttributes<HTMLInputElement> &
   FieldWrapperPassThroughProps;
