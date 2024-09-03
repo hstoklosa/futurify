@@ -1,5 +1,6 @@
 import axios, { AxiosInstance, AxiosError, InternalAxiosRequestConfig } from "axios";
-import { RetryableRequestConfig } from "@types/api";
+
+import { RetryableRequestConfig } from "@/types/api";
 
 export const api: AxiosInstance = axios.create({
   baseURL: "http://localhost:8080/api/v1",

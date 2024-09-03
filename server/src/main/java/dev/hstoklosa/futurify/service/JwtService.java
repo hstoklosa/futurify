@@ -1,46 +1,46 @@
 package dev.hstoklosa.futurify.service;
 
+import dev.hstoklosa.futurify.config.JwtConfig;
+import dev.hstoklosa.futurify.dto.TokenDto;
+import dev.hstoklosa.futurify.model.entity.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
-import org.springframework.beans.factory.annotation.Value;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
 import java.security.Key;
+import java.time.Instant;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
 @Service
+@RequiredArgsConstructor
 public class JwtService {
+    private final JwtConfig jwtConfig;
 
-    @Value("${application.security.jwt.secret-key}")
-    private String secretKey;
+    public TokenDto issueTokens(User user) {
+        String accessTokenValue = generateAccessToken(user);
+        String refreshTokenValue = generateRefreshToken(user);
 
-    @Value("${application.security.jwt.expiration}")
-    private long jwtExpiration;
+        return TokenDto.builder()
+                .accessToken(accessTokenValue)
+                .refreshToken(refreshTokenValue)
+                .build();
+    }
 
-    @Value("${application.security.jwt.refresh-token.expiration}")
-    private long refreshExpiration;
+    public String generateAccessToken(UserDetails userDetails) {
+        return buildToken(new HashMap<>(), userDetails, jwtConfig.getAccessExpiration());
+    }
 
     public String generateRefreshToken(UserDetails userDetails) {
-        return buildToken(new HashMap<>(), userDetails, refreshExpiration);
-    }
-
-    public String generateToken(
-            Map<String, Object> extraClaims,
-            UserDetails userDetails
-    ) {
-        return buildToken(extraClaims, userDetails, jwtExpiration);
-    }
-
-    public String generateToken(UserDetails userDetails) {
-        return generateToken(new HashMap<>(), userDetails);
+        return buildToken(new HashMap<>(), userDetails, jwtConfig.getRefreshExpiration());
     }
 
     private String buildToken(
@@ -51,8 +51,10 @@ public class JwtService {
         return Jwts.builder()
             .claims(extraClaims)
             .subject(userDetails.getUsername())
-            .issuedAt(new Date(System.currentTimeMillis()))
-            .expiration(new Date(System.currentTimeMillis() + expiration))
+//            .issuedAt(new Date(System.currentTimeMillis()))
+//            .expiration(new Date(System.currentTimeMillis() + expiration))
+            .issuedAt(Date.from(Instant.now()))
+            .expiration(Date.from(Instant.now().plusMillis(expiration)))
             .signWith(getSignInKey())
             .compact();
     }
@@ -64,6 +66,14 @@ public class JwtService {
 
     public boolean isTokenExpired(String token) {
         return extractExpiration(token).before(new Date());
+    }
+
+    public String extractUsername(String token) {
+        return extractClaim(token, Claims::getSubject);
+    }
+
+    private Date extractExpiration(String token) {
+        return extractClaim(token, Claims::getExpiration);
     }
 
     public<T> T extractClaim(String token, Function<Claims, T> resolver) {
@@ -80,21 +90,12 @@ public class JwtService {
                     .parseSignedClaims(token)
                     .getPayload();
         } catch (ExpiredJwtException e) {
-            System.out.println(e.getClaims());
             return e.getClaims();
         }
     }
 
-    public String extractUsername(String token) {
-        return extractClaim(token, Claims::getSubject);
-    }
-
-    private Date extractExpiration(String token) {
-        return extractClaim(token, Claims::getExpiration);
-    }
-
     private Key getSignInKey() {
-        return Keys.hmacShaKeyFor(Decoders.BASE64URL.decode(secretKey));
+        return Keys.hmacShaKeyFor(Decoders.BASE64URL.decode(jwtConfig.getSecretKey()));
     }
 
 }

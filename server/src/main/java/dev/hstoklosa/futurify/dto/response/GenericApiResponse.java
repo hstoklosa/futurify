@@ -10,30 +10,23 @@ import lombok.Data;
 @AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class GenericApiResponse<T> {
-    private boolean success;
-    private String message;
     private T data;
     private ApiErrorResponse error;
 
-    public static <T> GenericApiResponse<T> success(String message, T data) {
+    public static <T> GenericApiResponse<T> success(T data) {
         return GenericApiResponse.<T>builder()
-                .success(true)
-                .message(message)
                 .data(data)
                 .build();
     }
 
-    public static <T> GenericApiResponse<T> success(String message) {
+    public static <T> GenericApiResponse<T> success() {
         return GenericApiResponse.<T>builder()
-                .success(true)
-                .message(message)
                 .data(null)
                 .build();
     }
 
     public static <T> GenericApiResponse<T> error(ApiErrorResponse error) {
         return GenericApiResponse.<T>builder()
-                .success(false)
                 .error(error)
                 .build();
     }

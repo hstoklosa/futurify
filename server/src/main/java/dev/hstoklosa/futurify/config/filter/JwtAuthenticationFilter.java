@@ -1,7 +1,7 @@
 package dev.hstoklosa.futurify.config.filter;
 
-import dev.hstoklosa.futurify.repository.AccessTokenRepository;
 import dev.hstoklosa.futurify.service.JwtService;
+import dev.hstoklosa.futurify.util.SecurityUtil;
 import dev.hstoklosa.futurify.util.CookieUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -23,9 +23,7 @@ import java.io.IOException;
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final JwtService jwtService;
-    private final CookieUtil cookieUtil;
     private final UserDetailsService userDetailsService;
-    private final AccessTokenRepository accessTokenRepository;
 
     @Override
     protected void doFilterInternal(
@@ -33,7 +31,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         @NonNull HttpServletResponse response,
         @NonNull FilterChain filterChain
     ) throws ServletException, IOException {
-        final String accessToken = cookieUtil.getAccessTokenFromCookie(request);
+        final String accessToken = CookieUtil.getAccessTokenFromCookie(request);
         final String userEmail;
 
         if (accessToken == null) {
@@ -42,19 +40,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
 
         userEmail = jwtService.extractUsername(accessToken);
-        if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+        if (userEmail != null && !SecurityUtil.isAuthenticated()) {
             UserDetails userDetails = this.userDetailsService.loadUserByUsername(userEmail);
 
-            var isTokenValid = accessTokenRepository.findByToken(accessToken)
-                    .map(t -> !t.isExpired() && !t.isRevoked())
-                    .orElse(false);
-
-            if (jwtService.isTokenValid(accessToken, userDetails) && isTokenValid) {
-                UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-                        userDetails,
-                        null,
-                        userDetails.getAuthorities()
-                ); // required by SecurityContextHolder to update the context
+            if (jwtService.isTokenValid(accessToken, userDetails)) {
+                UsernamePasswordAuthenticationToken authToken
+                        = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
 
                 authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(authToken);

@@ -1,51 +1,55 @@
 package dev.hstoklosa.futurify.util;
 
+import dev.hstoklosa.futurify.config.JwtConfig;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Component;
 
 @Component
 public class CookieUtil {
+    private static JwtConfig jwtConfig;
 
-    @Value("${application.security.jwt.cookie.expiration}")
-    private long cookieExpiry;
-
-    public ResponseCookie generateAccessTokenCookie(String accessToken) {
-        return generateCookie("accessToken", accessToken, "/api/v1");
+    @Autowired
+    public CookieUtil(JwtConfig jwtConfig) {
+        CookieUtil.jwtConfig = jwtConfig;
     }
 
-    public ResponseCookie generateRefreshTokenCookie(String refreshToken) {
-        return generateCookie("refreshToken", refreshToken, "/api/v1/auth/refresh-token");
+    public static ResponseCookie generateAccessTokenCookie(String accessToken) {
+        return generateCookie("accessToken", accessToken, "/api/v1", jwtConfig.getAccessExpiration());
     }
 
-    private ResponseCookie generateCookie(String name, String value, String path) {
+    public static ResponseCookie generateRefreshTokenCookie(String refreshToken) {
+        return generateCookie("refreshToken", refreshToken, "/api/v1/auth/refresh-token", jwtConfig.getRefreshExpiration());
+    }
+
+    private static ResponseCookie generateCookie(String name, String value, String path, long maxAge) {
         return ResponseCookie.from(name, value)
                 .httpOnly(true)
                 .secure(false) // true in production
                 .path(path)
-                .maxAge(cookieExpiry)
+                .maxAge(maxAge)
                 .build();
     }
 
-    public ResponseCookie getCleanAccessTokenCookie() {
+    public static ResponseCookie getCleanAccessTokenCookie() {
         return ResponseCookie.from("accessToken", null).httpOnly(true).path("/api/v1").maxAge(0).build();
     }
 
-    public ResponseCookie getCleanRefreshTokenCookie() {
+    public static ResponseCookie getCleanRefreshTokenCookie() {
         return ResponseCookie.from("refreshToken", null).httpOnly(true).path("/api/v1/auth/refresh-token").maxAge(0).build();
     }
 
-    public String getAccessTokenFromCookie(HttpServletRequest request) {
+    public static String getAccessTokenFromCookie(HttpServletRequest request) {
         return getTokenFromCookie(request, "accessToken");
     }
 
-    public String getRefreshTokenFromCookie(HttpServletRequest request) {
+    public static String getRefreshTokenFromCookie(HttpServletRequest request) {
         return getTokenFromCookie(request, "refreshToken");
     }
 
-    public String getTokenFromCookie(HttpServletRequest request, String tokenName) {
+    public static String getTokenFromCookie(HttpServletRequest request, String tokenName) {
         Cookie[] cookies = request.getCookies();
 
         if (cookies != null) {

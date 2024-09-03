@@ -1,5 +1,6 @@
 package dev.hstoklosa.futurify.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -9,8 +10,11 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class AuthenticationResultDto {
+public class AuthenticationResponseDto {
+
     private String accessToken;
+
     private String refreshToken;
+
     private UserDto userDto;
 }
