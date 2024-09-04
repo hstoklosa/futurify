@@ -1,12 +1,15 @@
 package dev.hstoklosa.futurify.service;
 
-import dev.hstoklosa.futurify.dto.request.CreateBoardRequest;
+import dev.hstoklosa.futurify.dto.BoardDto;
+import dev.hstoklosa.futurify.dto.request.CreateBoardRequestDto;
+import dev.hstoklosa.futurify.mapper.BoardMapper;
 import dev.hstoklosa.futurify.model.entity.ApplicationBoard;
-import dev.hstoklosa.futurify.model.entity.ApplicationStage;
 import dev.hstoklosa.futurify.model.entity.User;
 import dev.hstoklosa.futurify.repository.ApplicationBoardRepository;
+import dev.hstoklosa.futurify.util.SecurityUtil;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -16,30 +19,32 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class ApplicationBoardService {
-    private static final List<String> DEFAULT_BOARD_STAGES = List.of("Wishlist", "Applied", "Interview", "Offer", "Rejected");
-
     private final ApplicationBoardRepository boardRepository;
     private final ApplicationStageService applicationStageService;
+    private final BoardMapper boardMapper;
 
     @Transactional
-    public Integer createBoard(CreateBoardRequest request) {
+    public Integer createBoard(CreateBoardRequestDto request) {
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-
         ApplicationBoard board = ApplicationBoard.builder()
                 .name(request.getName())
                 .user(user)
                 .build();
+
         boardRepository.save(board);
-
-        List<ApplicationStage> stages = DEFAULT_BOARD_STAGES.stream()
-                .map(name -> ApplicationStage.builder()
-                        .name(name)
-                        .board(board)
-                        .build())
-                .collect(Collectors.toList());
-        applicationStageService.saveAll(stages);
-
+        applicationStageService.createDefaultStages(board);
         return board.getId();
+    }
+
+    @Transactional()
+    public List<BoardDto> getBoards(boolean archived, Sort.Direction sortDirection) {
+        User user = SecurityUtil.getCurrentUser();
+        Sort sortBy = Sort.by(sortDirection, "createdAt");
+
+         return boardRepository.findByUserAndArchived(user, archived, sortBy)
+                 .stream()
+                 .map(boardMapper::boardToBoardDto)
+                 .collect(Collectors.toList());
     }
 
 }

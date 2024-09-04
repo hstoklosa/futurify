@@ -1,13 +1,10 @@
 package dev.hstoklosa.futurify.model.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
 
-import java.time.LocalDateTime;
+import java.util.List;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
@@ -22,11 +19,13 @@ public class ApplicationBoard extends BaseEntity {
     private String name;
 
     @Column(nullable = false)
-    private boolean isArchived = false;
+    private boolean archived = false;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", referencedColumnName = "id")
-    @JsonIgnore
+    @JoinColumn(name = "user_id")
     private User user;
+
+//    @OneToMany(mappedBy = "board", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+//    private List<ApplicationStage> stages;
 
 }

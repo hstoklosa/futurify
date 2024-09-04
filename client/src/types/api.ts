@@ -31,3 +31,12 @@ export type User = Entity<{
   avatar?: string;
   role: "admin" | "user";
 }>;
+
+export type Board = Entity<{
+  name: string;
+  archived: boolean;
+}>;
+
+export type BoardList = Board[];
+
+export type BoardListResponse = Response<BoardList>;

@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class CreateBoardRequest {
+public class CreateBoardRequestDto {
 
     @NotBlank(message = "Board name is required.")
     private String name;

@@ -12,6 +12,7 @@ const SignUp = React.lazy(() => import("./app/auth/SignUp"));
 const SignIn = React.lazy(() => import("./app/auth/SignIn"));
 const VerifyAccount = React.lazy(() => import("./app/auth/VerifyAccount"));
 const Home = React.lazy(() => import("./app/dashboard/Home"));
+const ArchivedBoards = React.lazy(() => import("./app/dashboard/ArchivedBoards"));
 
 const routes: RouteObject[] = [
   {
@@ -41,6 +42,10 @@ const routes: RouteObject[] = [
       {
         path: PathConstants.HOME,
         element: <Home />,
+      },
+      {
+        path: PathConstants.ARCHIVED_BOARDS,
+        element: <ArchivedBoards />,
       },
     ],
   },
