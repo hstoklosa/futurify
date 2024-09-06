@@ -1,17 +1,17 @@
 import React from "react";
-import { createBrowserRouter, RouteObject } from "react-router-dom";
+import { createBrowserRouter, RouterProvider, RouteObject } from "react-router-dom";
 
-import ProtectedRoute from "./app/ProtectedRoute";
 import { RootLayout, AppLayout } from "@components/layout";
 import { PathConstants } from "@utils/constants";
+import ProtectedRoute from "./routes/ProtectedRoute";
 
-const NotFound = React.lazy(() => import("./app/NotFound"));
-const Landing = React.lazy(() => import("./app/Landing"));
-const SignUp = React.lazy(() => import("./app/auth/SignUp"));
-const SignIn = React.lazy(() => import("./app/auth/SignIn"));
-const VerifyAccount = React.lazy(() => import("./app/auth/VerifyAccount"));
-const Home = React.lazy(() => import("./app/dashboard/Home"));
-const ArchivedBoards = React.lazy(() => import("./app/dashboard/ArchivedBoards"));
+const NotFound = React.lazy(() => import("./routes/NotFound"));
+const Landing = React.lazy(() => import("./routes/Landing"));
+const SignUp = React.lazy(() => import("./routes/auth/SignUp"));
+const SignIn = React.lazy(() => import("./routes/auth/SignIn"));
+const VerifyAccount = React.lazy(() => import("./routes/auth/VerifyAccount"));
+const Home = React.lazy(() => import("./routes/dashboard/Home"));
+const ArchivedBoards = React.lazy(() => import("./routes/dashboard/ArchivedBoards"));
 
 const routes: RouteObject[] = [
   {
@@ -58,4 +58,8 @@ const router = createBrowserRouter([
   },
 ]);
 
-export default router;
+const AppRouter = () => {
+  return <RouterProvider router={router} />;
+};
+
+export default AppRouter;
