@@ -1,9 +1,8 @@
 import React from "react";
 import { createBrowserRouter, RouteObject } from "react-router-dom";
 
-import Root from "./Root";
 import ProtectedRoute from "./app/ProtectedRoute";
-import AppLayout from "@components/layout/AppLayout";
+import { RootLayout, AppLayout } from "@components/layout";
 import { PathConstants } from "@utils/constants";
 
 const NotFound = React.lazy(() => import("./app/NotFound"));
@@ -53,7 +52,7 @@ const routes: RouteObject[] = [
 
 const router = createBrowserRouter([
   {
-    element: <Root />,
+    element: <RootLayout />,
     errorElement: <NotFound />,
     children: routes,
   },
