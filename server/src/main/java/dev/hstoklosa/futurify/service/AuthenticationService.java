@@ -128,15 +128,7 @@ public class AuthenticationService {
 
     private void sendVerificationEmail(User user) throws MessagingException {
         String verificationToken = generateAndSaveActivationToken(user);
-
-        emailService.sendEmail(
-                user.getEmail(),
-                user.getFullName(),
-                EmailTemplate.ACTIVATE_ACCOUNT,
-                activationUrl,
-                verificationToken,
-                "Account Activation"
-        );
+        emailService.sendActivationEmail(user.getEmail(), user.getFullName(), activationUrl, verificationToken);
     }
 
     private String generateAndSaveActivationToken(User user) {
