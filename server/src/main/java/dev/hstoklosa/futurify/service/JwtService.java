@@ -26,12 +26,9 @@ public class JwtService {
     private final JwtConfig jwtConfig;
 
     public TokenDto issueTokens(User user) {
-        String accessTokenValue = generateAccessToken(user);
-        String refreshTokenValue = generateRefreshToken(user);
-
         return TokenDto.builder()
-                .accessToken(accessTokenValue)
-                .refreshToken(refreshTokenValue)
+                .accessToken(generateAccessToken(user))
+                .refreshToken(generateRefreshToken(user))
                 .build();
     }
 
@@ -51,8 +48,6 @@ public class JwtService {
         return Jwts.builder()
             .claims(extraClaims)
             .subject(userDetails.getUsername())
-//            .issuedAt(new Date(System.currentTimeMillis()))
-//            .expiration(new Date(System.currentTimeMillis() + expiration))
             .issuedAt(Date.from(Instant.now()))
             .expiration(Date.from(Instant.now().plusMillis(expiration)))
             .signWith(getSignInKey())

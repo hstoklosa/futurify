@@ -3,6 +3,7 @@ package dev.hstoklosa.futurify.util;
 import dev.hstoklosa.futurify.config.JwtConfig;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Component;
@@ -42,21 +43,20 @@ public class CookieUtil {
     }
 
     public static String getAccessTokenFromCookie(HttpServletRequest request) {
-        return getTokenFromCookie(request, "accessToken");
+        return getCookie(request, "accessToken");
     }
 
     public static String getRefreshTokenFromCookie(HttpServletRequest request) {
-        return getTokenFromCookie(request, "refreshToken");
+        return getCookie(request, "refreshToken");
     }
 
-    public static String getTokenFromCookie(HttpServletRequest request, String tokenName) {
-        Cookie[] cookies = request.getCookies();
+    public static String getCookie(final HttpServletRequest request, final String tokenName) {
+        final Cookie[] cookies = request.getCookies();
+        if (cookies == null) return null;
 
-        if (cookies != null) {
-            for (Cookie cookie : cookies) {
-                if (tokenName.equals(cookie.getName())) {
-                    return cookie.getValue();
-                }
+        for (Cookie cookie : cookies) {
+            if (tokenName.equals(cookie.getName())) {
+                return cookie.getValue();
             }
         }
 

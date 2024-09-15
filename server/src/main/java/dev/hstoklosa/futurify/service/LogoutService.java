@@ -1,7 +1,8 @@
 package dev.hstoklosa.futurify.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import dev.hstoklosa.futurify.dto.response.GenericApiResponse;
+import dev.hstoklosa.futurify.common.api.ApiResponse;
+import dev.hstoklosa.futurify.common.api.ResponseFactory;
 import dev.hstoklosa.futurify.util.CookieUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -30,6 +31,7 @@ public class LogoutService implements LogoutHandler {
     ) {
         ResponseCookie accessTokenCookie = CookieUtil.getCleanAccessTokenCookie();
         ResponseCookie refreshTokenCookie = CookieUtil.getCleanRefreshTokenCookie();
+
         response.addHeader(HttpHeaders.SET_COOKIE, accessTokenCookie.toString());
         response.addHeader(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString());
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
@@ -37,7 +39,7 @@ public class LogoutService implements LogoutHandler {
         SecurityContextHolder.clearContext();
 
         try {
-            GenericApiResponse<String> apiResponse = GenericApiResponse.success();
+            ApiResponse<Void> apiResponse = ResponseFactory.success();
             objectMapper.writeValue(response.getWriter(), apiResponse);
         } catch (IOException e) {
             throw new RuntimeException(e);

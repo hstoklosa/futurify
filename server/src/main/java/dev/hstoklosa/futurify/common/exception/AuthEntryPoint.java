@@ -1,4 +1,4 @@
-package dev.hstoklosa.futurify.exception;
+package dev.hstoklosa.futurify.common.exception;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

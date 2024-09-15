@@ -1,4 +1,4 @@
-package dev.hstoklosa.futurify.exception;
+package dev.hstoklosa.futurify.common.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;

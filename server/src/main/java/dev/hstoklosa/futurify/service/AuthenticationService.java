@@ -1,16 +1,14 @@
 package dev.hstoklosa.futurify.service;
 
-import dev.hstoklosa.futurify.dto.AuthenticationResponseDto;
-import dev.hstoklosa.futurify.dto.TokenDto;
-import dev.hstoklosa.futurify.exception.InvalidTokenException;
+import dev.hstoklosa.futurify.common.exception.DuplicateResourceException;
+import dev.hstoklosa.futurify.common.exception.InvalidTokenException;
+import dev.hstoklosa.futurify.dto.response.UserResponse;
+import dev.hstoklosa.futurify.mapper.UserMapper;
 import dev.hstoklosa.futurify.model.enums.EmailTemplate;
 import dev.hstoklosa.futurify.model.enums.UserRole;
 import dev.hstoklosa.futurify.model.entity.ActivationToken;
 import dev.hstoklosa.futurify.model.entity.User;
-import dev.hstoklosa.futurify.dto.UserDto;
-import dev.hstoklosa.futurify.exception.DuplicateResourceException;
-import dev.hstoklosa.futurify.exception.ResourceNotFoundException;
-import dev.hstoklosa.futurify.mapper.UserDtoMapper;
+import dev.hstoklosa.futurify.common.exception.ResourceNotFoundException;
 import dev.hstoklosa.futurify.dto.request.LoginRequest;
 import dev.hstoklosa.futurify.dto.request.RegisterRequest;
 import dev.hstoklosa.futurify.repository.ActivationTokenRepository;
@@ -38,51 +36,42 @@ public class AuthenticationService {
     private final EmailService emailService;
     private final UserRepository userRepository;
     private final ActivationTokenRepository activationTokenRepository;
-    private final UserDtoMapper userDtoMapper;
+    private final UserMapper userMapper;
     private final AuthenticationManager authManager;
     private final PasswordEncoder passwordEncoder;
 
     @Value("${application.mailing.frontend.activation-url}")
     private String activationUrl;
 
-    public UserDto getCurrentUser() {
-        if (SecurityUtil.isAuthenticated()) {
+    public UserResponse getCurrentUser() {
+        if (!SecurityUtil.isAuthenticated()) {
             throw new InsufficientAuthenticationException("You need to authenticated before accessing user data.");
         }
 
-        return userDtoMapper.apply(SecurityUtil.getCurrentUser());
+        return userMapper.userToUserResponse(SecurityUtil.getCurrentUser());
     }
 
-    public AuthenticationResponseDto register(RegisterRequest request) throws MessagingException {
+    public UserResponse register(RegisterRequest request) throws MessagingException {
          if (userRepository.existsByEmail(request.getEmail())) {
-             throw new DuplicateResourceException(
-                "The email address is already taken."
-             );
+             throw new DuplicateResourceException("The provided email is already in use.");
          }
 
-        User user = User.builder()
+        User user = userRepository.save(
+                User.builder()
                 .firstName(request.getFirstName())
                 .lastName(request.getLastName())
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
                 .enabled(true)
                 .role(UserRole.USER)
-                .build();
-
-        User savedUser = userRepository.save(user);
-        UserDto userDto = userDtoMapper.apply(savedUser);
-        TokenDto tokens = jwtService.issueTokens(user);
-
+                .build()
+        );
         sendVerificationEmail(user);
 
-        return AuthenticationResponseDto.builder()
-                .accessToken(tokens.getAccessToken())
-                .refreshToken(tokens.getRefreshToken())
-                .userDto(userDto)
-                .build();
+        return userMapper.userToAuthUserResponse(user, jwtService.issueTokens(user));
     }
 
-    public AuthenticationResponseDto login(LoginRequest request) {
+    public UserResponse login(LoginRequest request) {
         authManager.authenticate(
             new UsernamePasswordAuthenticationToken(
                 request.getEmail(),
@@ -91,50 +80,31 @@ public class AuthenticationService {
         );
 
         User user = userRepository.findByEmail(request.getEmail())
-            .orElseThrow(() -> new ResourceNotFoundException(
-                "User with the email [%s] wasn't found.".formatted(request.getEmail())
-            ));
+            .orElseThrow(() -> new ResourceNotFoundException("User with the email [%s] wasn't found.".formatted(request.getEmail())));
 
-        TokenDto tokens = jwtService.issueTokens(user);
-        UserDto userDto = userDtoMapper.apply(user);
-
-        return AuthenticationResponseDto.builder()
-                .accessToken(tokens.getAccessToken())
-                .refreshToken(tokens.getRefreshToken())
-                .userDto(userDto)
-                .build();
+        return userMapper.userToAuthUserResponse(user, jwtService.issueTokens(user));
     }
 
     @Transactional
-    public AuthenticationResponseDto refreshToken(HttpServletRequest request) {
+    public UserResponse refreshToken(HttpServletRequest request) {
         final String refreshToken = CookieUtil.getRefreshTokenFromCookie(request);
         if (refreshToken == null) {
-            throw new InvalidTokenException("Refresh token is missing.");
+            throw new InvalidTokenException("The provided JWT token is invalid.");
         }
 
         final String userEmail = jwtService.extractUsername(refreshToken) ;
         if (userEmail == null) {
-            throw new InvalidTokenException("Unable to extract user email from refresh token");
+            throw new InvalidTokenException("The provided JWT token is invalid.");
         }
 
-        var user = userRepository.findByEmail(userEmail)
-            .orElseThrow(() -> new ResourceNotFoundException(
-                "User with email %s wasn't found.".formatted(userEmail)
-            ));
-
+        User user = userRepository.findByEmail(userEmail)
+                .orElseThrow(() -> new ResourceNotFoundException("User with email %s wasn't found.".formatted(userEmail)));
 
         if (!jwtService.isTokenValid(refreshToken, user)) {
-            throw new InvalidTokenException("Refresh token is invalid or expired");
+            throw new InvalidTokenException("The provided JWT token is invalid.");
         }
 
-        UserDto userDto = userDtoMapper.apply(user);
-        TokenDto tokens = jwtService.issueTokens(user);
-
-        return AuthenticationResponseDto.builder()
-                .accessToken(tokens.getAccessToken())
-                .refreshToken(tokens.getRefreshToken())
-                .userDto(userDto)
-                .build();
+        return userMapper.userToAuthUserResponse(user, jwtService.issueTokens(user));
     }
 
     @Transactional(dontRollbackOn = InvalidTokenException.class)
@@ -144,7 +114,7 @@ public class AuthenticationService {
 
         if (LocalDateTime.now().isAfter(savedToken.getExpiresAt())) {
             sendVerificationEmail(savedToken.getUser());
-            throw new InvalidTokenException("Activation code has expired. A new token has been sent to your email address.");
+            throw new InvalidTokenException("The provided activation code has expired. A new token has been sent to your email address.");
         }
 
         User user = userRepository.findById(savedToken.getUser().getId())

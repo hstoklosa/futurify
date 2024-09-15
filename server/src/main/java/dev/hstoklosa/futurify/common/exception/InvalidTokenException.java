@@ -1,4 +1,4 @@
-package dev.hstoklosa.futurify.exception;
+package dev.hstoklosa.futurify.common.exception;
 
 public class InvalidTokenException extends RuntimeException {
     public InvalidTokenException(String message) {
