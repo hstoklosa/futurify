@@ -1,8 +1,8 @@
 package dev.hstoklosa.futurify.config.filter;
 
 import dev.hstoklosa.futurify.service.JwtService;
-import dev.hstoklosa.futurify.util.SecurityUtil;
-import dev.hstoklosa.futurify.util.CookieUtil;
+import dev.hstoklosa.futurify.common.util.SecurityUtil;
+import dev.hstoklosa.futurify.common.util.CookieUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

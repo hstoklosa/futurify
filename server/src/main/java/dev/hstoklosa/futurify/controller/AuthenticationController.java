@@ -6,7 +6,7 @@ import dev.hstoklosa.futurify.dto.request.LoginRequest;
 import dev.hstoklosa.futurify.dto.request.RegisterRequest;
 import dev.hstoklosa.futurify.common.api.ApiResponse;
 import dev.hstoklosa.futurify.service.AuthenticationService;
-import dev.hstoklosa.futurify.util.CookieUtil;
+import dev.hstoklosa.futurify.common.util.CookieUtil;
 import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;

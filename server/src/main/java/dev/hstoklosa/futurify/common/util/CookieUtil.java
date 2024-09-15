@@ -1,9 +1,8 @@
-package dev.hstoklosa.futurify.util;
+package dev.hstoklosa.futurify.common.util;
 
 import dev.hstoklosa.futurify.config.JwtConfig;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Component;

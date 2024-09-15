@@ -3,7 +3,7 @@ package dev.hstoklosa.futurify.service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import dev.hstoklosa.futurify.common.api.ApiResponse;
 import dev.hstoklosa.futurify.common.api.ResponseFactory;
-import dev.hstoklosa.futurify.util.CookieUtil;
+import dev.hstoklosa.futurify.common.util.CookieUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;

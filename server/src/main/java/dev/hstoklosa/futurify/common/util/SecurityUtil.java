@@ -1,4 +1,4 @@
-package dev.hstoklosa.futurify.util;
+package dev.hstoklosa.futurify.common.util;
 
 import dev.hstoklosa.futurify.model.entity.User;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
