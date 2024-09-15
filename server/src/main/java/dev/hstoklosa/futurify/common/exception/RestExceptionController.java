@@ -29,7 +29,7 @@ public class RestExceptionController {
     }
 
     @ExceptionHandler(DuplicateResourceException.class)
-    public ResponseEntity<ApiResponse<Void>> handleDuplicateResourceException(ResourceNotFoundException ex) {
+    public ResponseEntity<ApiResponse<Void>> handleDuplicateResourceException(DuplicateResourceException ex) {
         return buildErrorResponse(HttpStatus.CONFLICT, ex.getMessage());
     }
 
@@ -44,7 +44,7 @@ public class RestExceptionController {
     }
 
     @ExceptionHandler(BadCredentialsException.class)
-    public ResponseEntity<ApiResponse<Void>> handleException() {
+    public ResponseEntity<ApiResponse<Void>> handleBadCredentialsException() {
         return buildErrorResponse(HttpStatus.UNAUTHORIZED, "The provided email/password is incorrect.");
     }
 
@@ -59,12 +59,12 @@ public class RestExceptionController {
     }
 
     @ExceptionHandler(MessagingException.class)
-    public ResponseEntity<ApiResponse<Void>> handleEmailMessageException(MessagingException ex) {
+    public ResponseEntity<ApiResponse<Void>> handleEmailMessageException() {
         return buildErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, "An error occurred while sending the email, please try again later.");
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ApiResponse<Void>> handleException(Exception ex) {
+    public ResponseEntity<ApiResponse<Void>> handleException() {
         return buildErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Internal error, please try again later or contact the admin.");
     }
 
