@@ -3,8 +3,8 @@ import axios, { AxiosInstance, AxiosError, InternalAxiosRequestConfig } from "ax
 import { RetryableRequestConfig } from "@/types/api";
 
 export const api: AxiosInstance = axios.create({
-  baseURL: "http://localhost:8080/api/v1",
-  withCredentials: true, // allows the browser to send cookies with cross-origin requests
+  baseURL: import.meta.env.VITE_API_URL,
+  withCredentials: true, // send cookies with cross-origin requests
 });
 
 api.interceptors.request.use(
@@ -19,7 +19,6 @@ api.interceptors.request.use(
 
 api.interceptors.response.use(
   (response) => {
-    console.log(response);
     return response.data;
   },
   async (error: AxiosError) => {
@@ -36,6 +35,6 @@ api.interceptors.response.use(
       }
     }
 
-    return Promise.reject(error);
+    return Promise.reject(error.response?.data || error.response);
   }
 );
