@@ -1,7 +1,7 @@
-import { ButtonHTMLAttributes } from "react";
+import React, { ButtonHTMLAttributes } from "react";
 import { cva, type VariantProps } from "class-variance-authority";
 
-import { cn } from "@/utils/cn";
+import { cn } from "@utils/cn";
 
 const buttonVariants = cva(
   "inline-flex items-center justify-center whitespace-nowrap rounded-lg font-bold transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring cursor-pointer disabled:cursor-not-allowed disabled:opacity-80",
@@ -18,7 +18,7 @@ const buttonVariants = cva(
       },
       size: {
         default: "h-9 py-[6px] px-4",
-        // sm: "h-8 rounded-md px-3 text-xs",
+        sm: "h-7 rounded-md px-3 text-xs font-normal",
         // lg: "h-10 rounded-md px-8",
         // icon: "size-9",
       },
@@ -31,19 +31,24 @@ const buttonVariants = cva(
 );
 
 export type ButtonProps = {
+  icon?: React.ReactNode;
   children: React.ReactNode;
 } & ButtonHTMLAttributes<HTMLButtonElement> &
   VariantProps<typeof buttonVariants>;
 
-const Button = ({ className, variant, size, children, ...rest }: ButtonProps) => {
-  return (
-    <button
-      className={cn(buttonVariants({ variant, size, className }))}
-      {...rest}
-    >
-      {children}
-    </button>
-  );
-};
+const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
+  ({ className, variant, size, icon, children, ...props }, ref) => {
+    return (
+      <button
+        className={cn(buttonVariants({ variant, size, className }))}
+        ref={ref}
+        {...props}
+      >
+        {icon && <div className="mr-2">{icon}</div>}
+        {children}
+      </button>
+    );
+  }
+);
 
 export default Button;

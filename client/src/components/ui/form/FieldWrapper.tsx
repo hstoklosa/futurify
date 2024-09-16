@@ -7,7 +7,7 @@ type FieldWrapperProps = {
   label?: string;
   className?: string;
   children: React.ReactNode;
-  error?: FieldError | undefined;
+  error?: FieldError;
 };
 
 export type FieldWrapperPassThroughProps = Omit<
@@ -19,7 +19,6 @@ const labelVariants = cva("text-foreground text-sm font-semibold mb-2");
 
 export const FieldWrapper = ({
   label,
-  error,
   className,
   children,
   ...props
