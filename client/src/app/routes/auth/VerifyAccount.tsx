@@ -7,7 +7,7 @@ import { AuthLayout } from "@components/layout";
 import { PathConstants } from "@utils/constants";
 
 const VerifyAccount = () => {
-  const user = useUser();
+  const { data: currentUser } = useUser();
   const { isAuthenticated, isVerified } = useAuthStatus();
   const navigate = useNavigate();
 
@@ -22,7 +22,7 @@ const VerifyAccount = () => {
   return (
     <AuthLayout
       title={"Verify Email"}
-      subtitle={`Enter the code sent to ${user.data?.email}`}
+      subtitle={`Enter the code sent to ${currentUser!.data.email}`}
     >
       <VerificationForm
         onSuccess={() => {
