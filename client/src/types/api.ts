@@ -1,8 +1,17 @@
 import { InternalAxiosRequestConfig } from "axios";
 
-export type RetryableRequestConfig = {
+export type RetryableRequestConfig = InternalAxiosRequestConfig & {
   _retry?: boolean;
-} & InternalAxiosRequestConfig;
+};
+
+export type Response<TData> = {
+  data?: TData;
+  error?: {
+    message: string;
+    path: string;
+    errors: Record<string, string>;
+  };
+};
 
 export type BaseEntity = {
   id: number;
@@ -29,3 +38,5 @@ export type Board = Entity<{
 }>;
 
 export type BoardList = Board[];
+
+export type BoardListResponse = Response<BoardList>;
