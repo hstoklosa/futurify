@@ -13,7 +13,7 @@ const DialogOverlay = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <DialogPrimitive.Overlay
     ref={ref}
-    className={cn("fixed inset-0 z-50 bg-black bg-opacity-50", className)}
+    className={cn("fixed inset-0 z-50 bg-[rgba(26,0,82,0.8)]", className)}
     {...props}
   />
 ));
@@ -27,7 +27,7 @@ const DialogContent = React.forwardRef<
     <DialogPrimitive.Content
       ref={ref}
       className={cn(
-        "fixed top-[50%] left-[50%] z-50 max-h-[85vh] translate-x-[-50%] translate-y-[-50%] rounded-[6px] bg-background",
+        "fixed top-[50%] left-[50%] z-50 w-[350px] max-h-[85vh] translate-x-[-50%] translate-y-[-50%] rounded-[6px] bg-background",
         className
       )}
       {...props}
@@ -44,7 +44,7 @@ const DialogTitle = React.forwardRef<
   <DialogPrimitive.Title
     ref={ref}
     className={cn(
-      "text-foreground h-auto text-lg text-center font-semibold",
+      "text-foreground/80 h-auto text-lg text-center font-semibold",
       className
     )}
     {...props}
@@ -64,4 +64,24 @@ const DialogHeader = ({
   />
 );
 
-export { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle };
+const DialogFooter = ({
+  className,
+  ...props
+}: React.HTMLAttributes<HTMLDivElement>) => (
+  <div
+    className={cn(
+      "flex justify-center items-center h-[45px] border-[1px] border-t border-border",
+      className
+    )}
+    {...props}
+  />
+);
+
+export {
+  Dialog,
+  DialogTrigger,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+};
