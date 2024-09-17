@@ -1,6 +1,6 @@
 package dev.hstoklosa.futurify.common.util;
 
-import dev.hstoklosa.futurify.model.entity.User;
+import dev.hstoklosa.futurify.user.entity.User;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;

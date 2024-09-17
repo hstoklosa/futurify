@@ -1,6 +1,6 @@
 package dev.hstoklosa.futurify.config.filter;
 
-import dev.hstoklosa.futurify.service.JwtService;
+import dev.hstoklosa.futurify.auth.service.JwtService;
 import dev.hstoklosa.futurify.common.util.SecurityUtil;
 import dev.hstoklosa.futurify.common.util.CookieUtil;
 import jakarta.servlet.FilterChain;

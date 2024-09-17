@@ -1,6 +1,6 @@
 package dev.hstoklosa.futurify.config;
 
-import dev.hstoklosa.futurify.repository.UserRepository;
+import dev.hstoklosa.futurify.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
