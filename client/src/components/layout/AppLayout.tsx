@@ -26,6 +26,7 @@ import { useUser } from "@features/auth/api/getUser";
 import { useLogout } from "@features/auth/api/logout";
 import { useActiveBoards } from "@features/boards/api/getActiveBoards";
 import CreateBoard from "@features/boards/components/CreateBoard";
+import ArchiveBoardDialog from "@features/boards/components/ArchiveBoardDialog";
 
 type SidebarItem = {
   name: string;
@@ -43,7 +44,7 @@ const AppLayout = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const navigate = useNavigate();
 
-  const user = useUser();
+  const { data: currentUser } = useUser();
   const boardsQuery = useActiveBoards({});
   const logoutMutation = useLogout({
     onSuccess: () => {
@@ -113,7 +114,7 @@ const AppLayout = () => {
                 </CreateBoard>
               </div>
 
-              <div className="">
+              <div className="space-y-1">
                 {boards &&
                   boards.map(({ id, name }) => (
                     <NavLink
@@ -133,12 +134,7 @@ const AppLayout = () => {
                       </span>
 
                       <div className="flex grow justify-end">
-                        <Button
-                          variant="outlineMuted"
-                          className="text-foreground items-center justify-center w-5 h-5 p-1 hidden group-hover:flex"
-                        >
-                          <LuTrash className="stroke-foreground/50" />
-                        </Button>
+                        <ArchiveBoardDialog id={id.toString()} />
                       </div>
                     </NavLink>
                   ))}
@@ -158,11 +154,11 @@ const AppLayout = () => {
               <button className="flex items-center text-left h-10 w-auto px-3 py-1 border-border border-[1px] rounded-md focus:outline-none mt-auto">
                 <div className="flex items-center grow">
                   <Avatar
-                    src={user.data?.avatar}
+                    src={currentUser!.data.avatar}
                     className="w-6 h-6 mr-3 fill-primary"
                   />
                   <span className="text-foreground/70 text-sm font-semibold truncate max-w-[80px]">
-                    {user.data?.firstName}
+                    {currentUser!.data.firstName}
                   </span>
                 </div>
 
@@ -183,9 +179,7 @@ const AppLayout = () => {
       </aside>
 
       {/* App Content */}
-      <main className="flex-1 flex flex-col h-full w-full mx-auto bg-background">
-        <Outlet />
-      </main>
+      <Outlet />
 
       {/* Mobile Sidebar Toggle */}
       <button
