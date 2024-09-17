@@ -18,6 +18,11 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class RestExceptionController {
 
+    @ExceptionHandler()
+    public ResponseEntity<ApiResponse<Void>> handleInvalidOperationException(OperationNotPermittedException ex) {
+        return buildErrorResponse(HttpStatus.BAD_REQUEST, ex.getMessage());
+    }
+
     @ExceptionHandler(InvalidTokenException.class)
     public ResponseEntity<ApiResponse<Void>> handleInvalidTokenException(InvalidTokenException ex) {
         return buildErrorResponse(HttpStatus.BAD_REQUEST, ex.getMessage());
