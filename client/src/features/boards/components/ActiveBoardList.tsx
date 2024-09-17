@@ -22,22 +22,21 @@ const ActiveBoardList = () => {
 
   const activeBoards = activeBoardsQuery.data?.data;
 
-  if (!activeBoards) return null;
-
   return (
     <div className="grid auto-fill-[240px] gap-4">
-      {activeBoards.map(({ id, name, createdAt }) => (
-        <Link
-          key={id}
-          to={PathConstants.HOME}
-          className="h-full shadow-4xl p-4 rounded-md border-border border-[1px]"
-        >
-          <h2 className="text-foreground font-semibold mb-2">{name}</h2>
-          <p className="text-foreground/40 text-xs">
-            created {formatRelativeTime(new Date(createdAt))}
-          </p>
-        </Link>
-      ))}
+      {activeBoards &&
+        activeBoards.map(({ id, name, createdAt }) => (
+          <Link
+            key={id}
+            to={PathConstants.HOME}
+            className="h-full shadow-4xl p-4 rounded-md border-border border-[1px]"
+          >
+            <h2 className="text-foreground font-semibold mb-2 truncate">{name}</h2>
+            <p className="text-foreground/40 text-xs">
+              created {formatRelativeTime(new Date(createdAt))}
+            </p>
+          </Link>
+        ))}
       <CreateBoard>
         <Button
           variant="outlineMuted"

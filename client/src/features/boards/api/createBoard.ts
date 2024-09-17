@@ -2,14 +2,12 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 import { MutationConfig } from "@lib/react-query";
 import { api } from "@lib/api-client";
-import { Response } from "@/types/api";
-import { BoardInput } from "@/types/board";
 
+import { BoardInput } from "@/types/board";
 import { getActiveBoardsQueryOptions } from "./getActiveBoards";
 
-export const createBoard = async (data: BoardInput): Promise<Response<number>> => {
-  const response = await api.post("/boards", data);
-  return response.data;
+export const createBoard = async (data: BoardInput): Promise<{ data: number }> => {
+  return api.post("/boards", data);
 };
 
 export const useCreateBoard = ({

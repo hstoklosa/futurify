@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 import {
   Dialog,
@@ -9,18 +10,21 @@ import {
 } from "@components/ui/dialog";
 import { Form, Input } from "@components/ui/form";
 import { Button } from "@components/ui/button";
-import { useCreateBoard } from "@features/boards/api/createBoard";
-import { createBoardInputSchema } from "@types/board";
+import { createBoardInputSchema } from "@/types/board";
+import { PathConstants } from "@utils/constants";
+
+import { useCreateBoard } from "../api/createBoard";
 
 const CreateBoard = ({ children }: { children: React.ReactNode }) => {
   const [open, setOpen] = useState(false);
+  const navigate = useNavigate();
 
-  const createBoard = useCreateBoard({
-    onSuccess: () => {
+  const createBoardMutation = useCreateBoard({
+    onSuccess: (data) => {
       // TODO: Create board page for the navigation.
-      // navigate(PathConstants.BOARD(data), {
-      //  replace: true,
-      // });
+      //   navigate(PathConstants.BOARD_VIEW(data.toString()), {
+      //     replace: true,
+      //   });
       setOpen(false);
     },
   });
@@ -31,14 +35,14 @@ const CreateBoard = ({ children }: { children: React.ReactNode }) => {
       onOpenChange={setOpen}
     >
       <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent className="w-[350px]">
+      <DialogContent>
         <DialogHeader>
           <DialogTitle>Create Board</DialogTitle>
         </DialogHeader>
         <Form
           className="py-5 px-4"
           onSubmit={(data) => {
-            createBoard.mutate(data);
+            createBoardMutation.mutate(data);
           }}
           schema={createBoardInputSchema}
         >
@@ -46,7 +50,6 @@ const CreateBoard = ({ children }: { children: React.ReactNode }) => {
             <>
               <Input
                 type="text"
-                name="boardName"
                 placeholder="Board Name e.g., Job Search Summer 2024"
                 register={register("name")}
               />
@@ -54,6 +57,7 @@ const CreateBoard = ({ children }: { children: React.ReactNode }) => {
                 type="submit"
                 variant="default"
                 className="w-full mt-2"
+                disabled={createBoardMutation.isPending}
               >
                 Create
               </Button>

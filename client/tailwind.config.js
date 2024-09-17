@@ -1,3 +1,5 @@
+import plugin from "tailwindcss/plugin";
+
 /** @type {import('tailwindcss').Config} */
 export default {
     content: [
@@ -26,6 +28,23 @@ export default {
             },
         },
     },
-    plugins: [],
+    plugins: [
+        plugin(function ({ matchUtilities, theme }) {
+            matchUtilities(
+                // REF: https://github.com/tailwindlabs/tailwindcss/discussions/5541#discussioncomment-8819249
+                {
+                    'auto-fill': (value) => ({
+                        gridTemplateColumns: `repeat(auto-fill, minmax(min(${value}, 100%), 1fr))`,
+                    }),
+                    'auto-fit': (value) => ({
+                        gridTemplateColumns: `repeat(auto-fit, minmax(min(${value}, 100%), 1fr))`,
+                    }),
+                },
+                {
+                    values: theme('width', {}),
+                }
+            )
+        })
+    ],
 }
 

@@ -2,15 +2,17 @@ import { queryOptions, useQuery } from "@tanstack/react-query";
 
 import { api } from "@lib/api-client";
 import { QueryConfig } from "@lib/react-query";
-import { BoardListResponse } from "@/types/api";
+import { BoardList } from "@/types/api";
 
-export const getActiveBoards = async (): Promise<BoardListResponse> => {
+import { boardsQueryKeys } from "./boardsQueryKeys";
+
+export const getActiveBoards = async (): Promise<{ data: BoardList }> => {
   return api.get("/boards?archived=false&sort=DESC");
 };
 
 export const getActiveBoardsQueryOptions = () => {
   return queryOptions({
-    queryKey: ["boards", { archived: false }],
+    queryKey: boardsQueryKeys.list("active"),
     queryFn: getActiveBoards,
   });
 };
