@@ -13,7 +13,7 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 @Entity
 @Table(name = "application_board")
-public class ApplicationBoard extends BaseEntity {
+public class Board extends BaseEntity {
 
     @Column(nullable = false)
     private String name;
@@ -26,6 +26,6 @@ public class ApplicationBoard extends BaseEntity {
     private User user;
 
 //    @OneToMany(mappedBy = "board", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-//    private List<ApplicationStage> stages;
+//    private List<Stage> stages;
 
 }

@@ -1,6 +1,6 @@
 package dev.hstoklosa.futurify.board.controller;
 
-import dev.hstoklosa.futurify.board.service.ApplicationBoardService;
+import dev.hstoklosa.futurify.board.service.BoardService;
 import dev.hstoklosa.futurify.common.api.ApiResponse;
 import dev.hstoklosa.futurify.common.api.ResponseFactory;
 import dev.hstoklosa.futurify.board.dto.CreateBoardRequest;
@@ -17,15 +17,15 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/boards")
 @RequiredArgsConstructor
-public class ApplicationBoardController {
-    private final ApplicationBoardService applicationBoardService;
+public class BoardController {
+    private final BoardService boardService;
 
     @GetMapping
     public ResponseEntity<ApiResponse<List<BoardDto>>> getBoards(
             @RequestParam(name = "archived", defaultValue = "false") boolean archived,
             @RequestParam(name = "sort", defaultValue = "DESC") Sort.Direction sortDirection
     ) {
-        List<BoardDto> response = applicationBoardService.getAllBoards(archived, sortDirection);
+        List<BoardDto> response = boardService.getAllBoards(archived, sortDirection);
         return ResponseEntity.ok().body(ResponseFactory.success(response));
     }
 
@@ -33,7 +33,7 @@ public class ApplicationBoardController {
     public ResponseEntity<ApiResponse<Integer>> createBoard(
             @RequestBody @Valid CreateBoardRequest request
     ) {
-        Integer boardId = applicationBoardService.createBoard(request);
+        Integer boardId = boardService.createBoard(request);
         return ResponseEntity.ok().body(ResponseFactory.success(boardId));
     }
 
@@ -42,7 +42,7 @@ public class ApplicationBoardController {
             @PathVariable("id") Integer id,
             @RequestBody @Valid UpdateBoardRequest updateBoardRequest
     ) {
-        BoardDto response = applicationBoardService.updateBoard(id, updateBoardRequest);
+        BoardDto response = boardService.updateBoard(id, updateBoardRequest);
         return ResponseEntity.ok().body(ResponseFactory.success(response));
     }
 
