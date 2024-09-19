@@ -1,15 +1,14 @@
 import { LuUserCircle } from "react-icons/lu";
 
+import { AppContentLayout } from "@components/layout";
 import { LinkButton } from "@components/ui/button";
 import { PathConstants } from "@utils/constants";
 
-import { Head } from "@/components/seo";
 import ActiveBoardList from "@features/boards/components/ActiveBoardList";
 
 const Home = () => {
   return (
-    <>
-      <Head title="Home" />
+    <AppContentLayout title="Home">
       <div className="mx-auto w-[90%] max-w-[760px]">
         <div className="flex items-center justify-between border-b border-border pt-16 pb-4 mb-8">
           <div className="flex items-center">
@@ -28,7 +27,7 @@ const Home = () => {
 
         <ActiveBoardList />
       </div>
-    </>
+    </AppContentLayout>
   );
 };
 

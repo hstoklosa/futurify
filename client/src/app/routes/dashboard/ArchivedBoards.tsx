@@ -1,12 +1,11 @@
 import { LuArchive } from "react-icons/lu";
 
-import { Head } from "@/components/seo";
+import { AppContentLayout } from "@components/layout";
 import ArchivedBoardList from "@features/boards/components/ArchivedBoardList";
 
 const ArchivedBoards = () => {
   return (
-    <>
-      <Head title="Archived Boards" />
+    <AppContentLayout title="Archived Boards">
       <div className="mx-auto w-[90%] max-w-[760px] h-full">
         <div className="flex items-center pt-16 mb-5">
           <LuArchive className="stroke-foreground stroke-width-[0.1px] h-4 w-4 mr-2" />
@@ -17,7 +16,7 @@ const ArchivedBoards = () => {
 
         <ArchivedBoardList />
       </div>
-    </>
+    </AppContentLayout>
   );
 };
 
