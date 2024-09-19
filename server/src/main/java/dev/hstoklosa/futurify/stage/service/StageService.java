@@ -8,23 +8,23 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import java.util.stream.IntStream;
 
 @Service
 @RequiredArgsConstructor
 public class StageService {
+    private static final List<String> DEFAULT_STAGE_NAMES = List.of(
+            "Wishlist", "Applied", "Interview", "Offer", "Rejected"
+    );
+
     private final StageRepository stageRepository;
 
     public List<Stage> createDefaultStages(Board board) {
-        List<Stage> stages = Stream.of("Wishlist", "Applied", "Interview", "Offer", "Rejected")
-                .map(name -> Stage.builder()
-                        .name(name)
-                        .board(board)
-                        .build())
+        List<Stage> stages = IntStream.range(0, DEFAULT_STAGE_NAMES.size())
+                .mapToObj(idx -> new Stage(DEFAULT_STAGE_NAMES.get(idx), idx, board))
                 .collect(Collectors.toList());
 
-        stageRepository.saveAll(stages);
-        return stages;
+        return stageRepository.saveAll(stages);
     }
 
 }

@@ -17,7 +17,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -52,7 +51,7 @@ public class BoardService {
                 .orElseThrow(() -> new ResourceNotFoundException("The specified board couldn't be found."));
         User currentUser = SecurityUtil.getCurrentUser();
 
-        if (!Objects.equals(currentUser.getId(), board.getUser().getId())) {
+        if (!currentUser.getId().equals(board.getUser().getId())) {
             throw new OperationNotPermittedException("You aren't permitted to update this board.");
         }
 
