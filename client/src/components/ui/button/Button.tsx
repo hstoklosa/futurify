@@ -13,7 +13,7 @@ const buttonVariants = cva(
         outlineMuted:
           "bg-background border-border border-[1px] rounded-md shadow-4xl hover:border-foreground/20",
         ghost:
-          "flex items-center text-sm text-foreground/80 font-semibold px-4 min-h-8 rounded-md hover:bg-secondary/5",
+          "flex items-center text-sm text-foreground/80 font-semibold px-4 min-h-8 rounded-md hover:bg-primary/5",
         // link: "text-primary underline-offset-4 hover:underline",
       },
       size: {

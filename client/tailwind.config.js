@@ -1,3 +1,4 @@
+import defaultTheme from 'tailwindcss/defaultTheme.js';
 import plugin from "tailwindcss/plugin";
 
 /** @type {import('tailwindcss').Config} */
@@ -8,6 +9,9 @@ export default {
     ],
     theme: {
         extend: {
+            fontFamily: {
+                sans: ["Lato", ...defaultTheme.fontFamily.sans],
+            },
             boxShadow: {
                 '3xl': '0px 0px 0px 1px rgb(var(--primary))',
                 '4xl': '0px 3px 6px rgba(var(--foreground), 0.05)'

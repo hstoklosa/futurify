@@ -8,7 +8,6 @@ import {
   LuAlignJustify,
   LuMoreHorizontal,
   LuHash,
-  LuTrash,
 } from "react-icons/lu";
 
 import {
@@ -57,15 +56,15 @@ const AppLayout = () => {
   const boards = boardsQuery.data?.data.reverse();
 
   return (
-    <div className="flex h-full w-full bg-background">
+    <div className="flex w-full h-full bg-background overflow-x-auto">
+      {/* Sidebar */}
       <aside
         className={cn(
-          "fixed inset-y-0 left-0 z-30 w-[215px] bg-background shadow-lg transform transition-transform duration-300 ease-in-out md:relative md:translate-x-0 border-border border-r-[1px]",
+          "fixed inset-y-0 left-0 z-30 min-w-[215px] bg-background shadow-lg transform transition-transform duration-300 ease-in-out md:relative md:translate-x-0 border-border border-r-[1px]",
           sidebarOpen ? "translate-x-0" : "-translate-x-full"
         )}
       >
-        {/* Sidebar */}
-        <div className="flex flex-col h-full px-1.5 py-4">
+        <div className="flex flex-col h-full px-1.5 py-3">
           <div className="flex items-center justify-between h-16 px-4 md:hidden">
             <button
               onClick={() => setSidebarOpen(!sidebarOpen)}
@@ -84,8 +83,8 @@ const AppLayout = () => {
                   to={to}
                   className={({ isActive }) =>
                     cn(
-                      "flex items-center px-4 min-h-8 rounded-md hover:bg-secondary/5",
-                      isActive && "bg-secondary/5 border-primary/50 border-[1px] "
+                      "flex items-center px-4 min-h-8 rounded-md hover:bg-primary/5",
+                      isActive && "bg-primary/5 border-primary/50 border-[1px] "
                     )
                   }
                 >
@@ -122,9 +121,8 @@ const AppLayout = () => {
                       to={PathConstants.HOME}
                       className={({ isActive }) =>
                         cn(
-                          "flex shrink-0 items-center w-full pl-4 pr-3 min-h-8 rounded-md hover:bg-secondary/5 group",
-                          isActive &&
-                            "bg-secondary/5 border-primary/50 border-[1px] "
+                          "flex shrink-0 items-center w-full pl-4 pr-3 min-h-8 rounded-md hover:bg-primary/5 group",
+                          isActive && "bg-primary/5 border-primary/50 border-[1px] "
                         )
                       }
                     >

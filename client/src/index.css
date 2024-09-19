@@ -5,14 +5,14 @@
 @layer base {
   @font-face {
     font-family: "Lato";
-    src: url("path/to/Lato-Black.ttf") format("truetype");
+    src: url("assets/fonts/Lato-Black.ttf") format("truetype");
     font-weight: 900;
     font-style: normal;
   }
 
   @font-face {
     font-family: "Lato";
-    src: url("path/to/Lato-BlackItalic.ttf") format("truetype");
+    src: url("assets/fonts/Lato-BlackItalic.ttf") format("truetype");
     font-weight: 900;
     font-style: italic;
   }
@@ -40,8 +40,8 @@
 
   @font-face {
     font-family: "Lato";
-    src: url("assets/fonts/Lato-Light.ttf") format("truetype");
-    font-weight: 300;
+    src: url("assets/fonts/Lato-Regular.ttf") format("truetype");
+    font-weight: 400;
     font-style: normal;
   }
 
@@ -54,8 +54,8 @@
 
   @font-face {
     font-family: "Lato";
-    src: url("assets/fonts/Lato-Regular.ttf") format("truetype");
-    font-weight: 400;
+    src: url("assets/fonts/Lato-Light.ttf") format("truetype");
+    font-weight: 300;
     font-style: normal;
   }
 
@@ -64,43 +64,25 @@
     --foreground: 25, 4, 69;
     --primary: 106, 79, 235;
     --primary-foreground: 255, 255, 255;
-    --secondary: 25, 4, 69;
+    --secondary: 24, 0, 69;
     --border: 25, 4, 69, 0.1;
   }
 
-  html {
-    font-family: "Lato", system-ui, sans-serif;
-  }
-
-  input:-webkit-autofill:focus,
-  textarea:-webkit-autofill:focus,
-  select:-webkit-autofill:focus {
-    box-shadow: 0px 0px 0px 1px rgb(var(--primary));
-  }
-
-  input:-webkit-autofill,
-  input:-webkit-autofill:hover,
-  textarea:-webkit-autofill,
-  textarea:-webkit-autofill:hover,
-  select:-webkit-autofill,
-  select:-webkit-autofill:hover,
-  input:-webkit-autofill:active {
-    -webkit-background-clip: text;
-    border: 1px solid rgb(var(--border));
-    -webkit-box-shadow: 0 0 0px 1000px #e8f0fe inset;
-    box-shadow: 0 0 0px 1000px #e8f0fe inset;
-    -webkit-text-fill-color: rgb(var(--foreground));
+  body {
+    @apply h-full w-full font-normal tracking-normal;
   }
 }
 
-:root {
-  line-height: 1.5;
-  font-weight: 400;
-
-  color-scheme: light dark;
-
+html,
+body {
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+/* https://stackoverflow.com/questions/61083813/how-to-avoid-internal-autofill-selected-style-to-be-applied */
+input:-webkit-autofill,
+input:-webkit-autofill:focus {
+  transition: background-color 0s 600000s, color 0s 600000s !important;
 }
