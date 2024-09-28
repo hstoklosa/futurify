@@ -1,5 +1,6 @@
 import defaultTheme from 'tailwindcss/defaultTheme.js';
 import plugin from "tailwindcss/plugin";
+import animate from "tailwindcss-animate";
 
 /** @type {import('tailwindcss').Config} */
 export default {
@@ -33,9 +34,10 @@ export default {
         },
     },
     plugins: [
+        animate,
         plugin(function ({ matchUtilities, theme }) {
+            // REF: https://github.com/tailwindlabs/tailwindcss/discussions/5541#discussioncomment-8819249
             matchUtilities(
-                // REF: https://github.com/tailwindlabs/tailwindcss/discussions/5541#discussioncomment-8819249
                 {
                     'auto-fill': (value) => ({
                         gridTemplateColumns: `repeat(auto-fill, minmax(min(${value}, 100%), 1fr))`,
@@ -48,7 +50,7 @@ export default {
                     values: theme('width', {}),
                 }
             )
-        })
+        }),
     ],
 }
 
