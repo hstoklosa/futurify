@@ -1,18 +1,22 @@
 package dev.hstoklosa.futurify.board.entity;
 
 import dev.hstoklosa.futurify.common.BaseEntity;
+import dev.hstoklosa.futurify.stage.entity.Stage;
 import dev.hstoklosa.futurify.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
-@EqualsAndHashCode(callSuper = true)
+import java.util.List;
+
 @Data
+@EqualsAndHashCode(callSuper = true)
 @AllArgsConstructor
 @NoArgsConstructor
 @SuperBuilder
 @Entity
-@Table(name = "application_board")
 public class Board extends BaseEntity {
 
     @Column(nullable = false)
@@ -25,7 +29,5 @@ public class Board extends BaseEntity {
     @JoinColumn(name = "user_id")
     private User user;
 
-//    @OneToMany(mappedBy = "board", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-//    private List<Stage> stages;
-
 }
+
