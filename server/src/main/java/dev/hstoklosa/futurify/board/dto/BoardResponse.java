@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class BoardDto {
+public class BoardResponse {
 
     Integer id;
 

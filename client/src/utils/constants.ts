@@ -7,6 +7,7 @@ export const PathConstants = {
   VERIFY_ACCOUNT: "/verify-account",
   HOME: "/home",
   ARCHIVED_BOARDS: "/home/archived-boards",
+  BOARD_VIEW: (id: string | number) => `/board/${id}`,
 };
 
 export const USER_KEY: QueryKey = ["user"];

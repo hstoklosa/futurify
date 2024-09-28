@@ -1,6 +1,10 @@
 package dev.hstoklosa.futurify.stage.service;
 
 import dev.hstoklosa.futurify.board.entity.Board;
+import dev.hstoklosa.futurify.board.repository.BoardRepository;
+import dev.hstoklosa.futurify.common.exception.ResourceNotFoundException;
+import dev.hstoklosa.futurify.stage.StageMapper;
+import dev.hstoklosa.futurify.stage.dto.StageResponse;
 import dev.hstoklosa.futurify.stage.entity.Stage;
 import dev.hstoklosa.futurify.stage.repository.StageRepository;
 import lombok.RequiredArgsConstructor;
@@ -18,13 +22,24 @@ public class StageService {
     );
 
     private final StageRepository stageRepository;
+    private final BoardRepository boardRepository;
+    private final StageMapper stageMapper;
 
-    public List<Stage> createDefaultStages(Board board) {
+    public void createDefaultStages(Board board) {
         List<Stage> stages = IntStream.range(0, DEFAULT_STAGE_NAMES.size())
                 .mapToObj(idx -> new Stage(DEFAULT_STAGE_NAMES.get(idx), idx, board))
                 .collect(Collectors.toList());
 
-        return stageRepository.saveAll(stages);
+        stageRepository.saveAll(stages);
+    }
+
+    public List<StageResponse> getStagesByBoard(Integer boardId) {
+        Board board = boardRepository.findById(boardId)
+                .orElseThrow(() -> new ResourceNotFoundException("The specified board couldn't be found."));
+
+        return stageRepository.findAllByBoard(board).stream()
+                .map(stageMapper::stageToStageResponse)
+                .collect(Collectors.toList());
     }
 
 }

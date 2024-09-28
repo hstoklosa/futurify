@@ -2,7 +2,7 @@
  * Convert a date to a relative time string, such as
  * "a minute ago", "in 2 hours", "yesterday", "3 months ago", etc.
  * using Intl.RelativeTimeFormat
- * 
+ *
  * REF: https://www.builder.io/blog/relative-time
  */
 export function formatRelativeTime(
@@ -26,6 +26,9 @@ export function formatRelativeTime(
   const unitIndex = cutoffs.findIndex((cutoff) => cutoff > Math.abs(deltaSeconds));
   const divisor = unitIndex ? cutoffs[unitIndex - 1] : 1;
   const rtf = new Intl.RelativeTimeFormat(lang, { numeric: "auto" });
-  
+
   return rtf.format(Math.floor(deltaSeconds / divisor), units[unitIndex]);
 }
+
+export const pluralise = (count: number, noun: string, suffix = "s") =>
+  `${count} ${noun}${count !== 1 ? suffix : ""}`;

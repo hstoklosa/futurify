@@ -5,7 +5,7 @@ import dev.hstoklosa.futurify.common.api.ApiResponse;
 import dev.hstoklosa.futurify.common.api.ResponseFactory;
 import dev.hstoklosa.futurify.board.dto.CreateBoardRequest;
 import dev.hstoklosa.futurify.board.dto.UpdateBoardRequest;
-import dev.hstoklosa.futurify.board.dto.BoardDto;
+import dev.hstoklosa.futurify.board.dto.BoardResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
@@ -20,15 +20,6 @@ import java.util.List;
 public class BoardController {
     private final BoardService boardService;
 
-    @GetMapping
-    public ResponseEntity<ApiResponse<List<BoardDto>>> getBoards(
-            @RequestParam(name = "archived", defaultValue = "false") boolean archived,
-            @RequestParam(name = "sort", defaultValue = "DESC") Sort.Direction sortDirection
-    ) {
-        List<BoardDto> response = boardService.getAllBoards(archived, sortDirection);
-        return ResponseEntity.ok().body(ResponseFactory.success(response));
-    }
-
     @PostMapping
     public ResponseEntity<ApiResponse<Integer>> createBoard(
             @RequestBody @Valid CreateBoardRequest request
@@ -37,12 +28,27 @@ public class BoardController {
         return ResponseEntity.ok().body(ResponseFactory.success(boardId));
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<ApiResponse<BoardResponse>> getBoard(@PathVariable Integer id) {
+        BoardResponse response = boardService.getBoard(id);
+        return ResponseEntity.ok().body(ResponseFactory.success(response));
+    }
+
+    @GetMapping
+    public ResponseEntity<ApiResponse<List<BoardResponse>>> getBoards(
+            @RequestParam(name = "archived", defaultValue = "false") boolean archived,
+            @RequestParam(name = "sort", defaultValue = "DESC") Sort.Direction sortDirection
+    ) {
+        List<BoardResponse> response = boardService.getAllBoards(archived, sortDirection);
+        return ResponseEntity.ok().body(ResponseFactory.success(response));
+    }
+
     @PatchMapping("/{id}")
-    public ResponseEntity<ApiResponse<BoardDto>> updateBoard(
-            @PathVariable("id") Integer id,
+    public ResponseEntity<ApiResponse<BoardResponse>> updateBoard(
+            @PathVariable Integer id,
             @RequestBody @Valid UpdateBoardRequest updateBoardRequest
     ) {
-        BoardDto response = boardService.updateBoard(id, updateBoardRequest);
+        BoardResponse response = boardService.updateBoard(id, updateBoardRequest);
         return ResponseEntity.ok().body(ResponseFactory.success(response));
     }
 

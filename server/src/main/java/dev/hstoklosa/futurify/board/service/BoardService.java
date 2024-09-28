@@ -8,7 +8,7 @@ import dev.hstoklosa.futurify.common.exception.ResourceNotFoundException;
 import dev.hstoklosa.futurify.common.util.SecurityUtil;
 import dev.hstoklosa.futurify.board.dto.CreateBoardRequest;
 import dev.hstoklosa.futurify.board.dto.UpdateBoardRequest;
-import dev.hstoklosa.futurify.board.dto.BoardDto;
+import dev.hstoklosa.futurify.board.dto.BoardResponse;
 import dev.hstoklosa.futurify.stage.service.StageService;
 import dev.hstoklosa.futurify.user.entity.User;
 import jakarta.transaction.Transactional;
@@ -23,8 +23,8 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class BoardService {
     private final BoardRepository boardRepository;
-    private final StageService stageService;
     private final BoardMapper boardMapper;
+    private final StageService stageService;
 
     @Transactional
     public Integer createBoard(CreateBoardRequest request) {
@@ -34,20 +34,27 @@ public class BoardService {
         return board.getId();
     }
 
-    @Transactional()
-    public List<BoardDto> getAllBoards(boolean archived, Sort.Direction sortDirection) {
+    public BoardResponse getBoard(Integer id) {
+        Board board = boardRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("The specified board couldn't be found."));
+
+        return boardMapper.boardToBoardResponse(board);
+    }
+
+    @Transactional
+    public List<BoardResponse> getAllBoards(boolean archived, Sort.Direction sortDirection) {
         User user = SecurityUtil.getCurrentUser();
         Sort sortBy = Sort.by(sortDirection, "createdAt");
 
         return boardRepository.findByUserAndArchived(user, archived, sortBy)
                 .stream()
-                .map(boardMapper::boardToBoardDto)
+                .map(boardMapper::boardToBoardResponse)
                 .collect(Collectors.toList());
     }
 
     @Transactional
-    public BoardDto updateBoard(Integer boardId, UpdateBoardRequest updateBoardRequest) {
-        Board board = boardRepository.findById(boardId)
+    public BoardResponse updateBoard(Integer id, UpdateBoardRequest updateBoardRequest) {
+        Board board = boardRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("The specified board couldn't be found."));
         User currentUser = SecurityUtil.getCurrentUser();
 
@@ -57,7 +64,7 @@ public class BoardService {
 
         boardMapper.updateBoard(board, updateBoardRequest);
         boardRepository.save(board);
-        return boardMapper.boardToBoardDto(board);
+        return boardMapper.boardToBoardResponse(board);
     }
 
 }

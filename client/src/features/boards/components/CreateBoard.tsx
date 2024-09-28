@@ -21,10 +21,8 @@ const CreateBoard = ({ children }: { children: React.ReactNode }) => {
 
   const createBoardMutation = useCreateBoard({
     onSuccess: (data) => {
-      // TODO: Create board page for the navigation.
-      //   navigate(PathConstants.BOARD_VIEW(data.toString()), {
-      //     replace: true,
-      //   });
+      const { data: boardId } = data;
+      navigate(PathConstants.BOARD_VIEW(boardId), { replace: true });
       setOpen(false);
     },
   });

@@ -26,6 +26,24 @@ export type User = Entity<{
 export type Board = Entity<{
   name: string;
   archived: boolean;
+  stages: Stage[];
 }>;
 
 export type BoardList = Board[];
+
+export type Stage = Omit<
+  Entity<{
+    name: string;
+    order: number;
+  }>,
+  "createdAt" | "updatedAt"
+>;
+
+export type Application = Omit<
+  Entity<{
+    stageId: number;
+    title: string;
+    company: string;
+  }>,
+  "createdAt" | "updatedAt"
+>;
