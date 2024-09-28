@@ -28,7 +28,7 @@ const ActiveBoardList = () => {
         activeBoards.map(({ id, name, createdAt }) => (
           <Link
             key={id}
-            to={PathConstants.HOME}
+            to={PathConstants.BOARD_VIEW(id)}
             className="h-full shadow-4xl p-4 rounded-md border-border border-[1px]"
           >
             <h2 className="text-foreground font-semibold mb-2 truncate">{name}</h2>
