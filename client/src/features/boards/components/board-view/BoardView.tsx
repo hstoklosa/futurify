@@ -88,11 +88,12 @@ const BoardView = ({ boardId }: BoardViewProps) => {
       <div className="h-full flex">
         {stages.data.map((stage) => (
           <SortableContext
+            key={stage.id}
             items={stages.data.map((stage) => stage.name)}
             strategy={horizontalListSortingStrategy}
           >
             <BoardViewContainer
-              key={stage.id}
+              boardId={boardId}
               id={stage.id}
               name={stage.name}
             >
