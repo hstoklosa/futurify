@@ -71,6 +71,19 @@
   body {
     @apply h-full w-full font-normal tracking-normal;
   }
+
+  .custom-quill .ql-container.ql-snow,
+  .custom-quill .ql-toolbar.ql-snow {
+    @apply border-border border-[1px];
+  }
+
+  .custom-quill .ql-container.ql-snow {
+    @apply rounded-b-md rounded-t-none h-[150px];
+  }
+
+  .custom-quill .ql-toolbar.ql-snow {
+    @apply rounded-t-md rounded-b-none;
+  }
 }
 
 html,
