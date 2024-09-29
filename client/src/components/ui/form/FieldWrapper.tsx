@@ -8,6 +8,7 @@ type FieldWrapperProps = {
   className?: string;
   children: React.ReactNode;
   error?: FieldError;
+  required?: boolean;
 };
 
 export type FieldWrapperPassThroughProps = Omit<
@@ -19,17 +20,18 @@ const labelVariants = cva("text-foreground text-sm font-semibold mb-2");
 
 export const FieldWrapper = ({
   label,
+  required,
   className,
   children,
   ...props
 }: FieldWrapperProps) => {
   return (
-    <div>
+    <div className="w-full">
       <label
         className={cn(labelVariants(), className)}
         {...props}
       >
-        {label}
+        {label} {required && <span className="text-foreground/80">*</span>}
       </label>
       <div className="mt-1">{children}</div>
     </div>
