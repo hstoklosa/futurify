@@ -9,10 +9,20 @@ type InputProps = {
 } & React.InputHTMLAttributes<HTMLInputElement> &
   FieldWrapperPassThroughProps;
 
-const Input = ({ className, label, type, register, ...props }: InputProps) => {
+const Input = ({
+  className,
+  label,
+  required,
+  type,
+  register,
+  ...props
+}: InputProps) => {
   return (
     <div className="flex flex-col">
-      <FieldWrapper label={label}>
+      <FieldWrapper
+        label={label}
+        required={required}
+      >
         <input
           type={type}
           className={cn(
