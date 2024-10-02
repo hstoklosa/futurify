@@ -78,7 +78,7 @@
   }
 
   .custom-quill .ql-container.ql-snow {
-    @apply rounded-b-md rounded-t-none h-[150px];
+    @apply rounded-b-md rounded-t-none h-[150px] text-secondary;
   }
 
   .custom-quill .ql-toolbar.ql-snow {
