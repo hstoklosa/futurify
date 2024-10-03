@@ -27,9 +27,9 @@ const Landing = () => {
           />
         </h1>
 
-        <div className="flex text-center flex-col items-center justify-center max-w-2xl">
-          <h1 className="text-foreground text-6xl my-3 font-extrabold">
-            Manage Your Interviews Like a Pro
+        <div className="flex text-center flex-col items-center justify-center max-w-3xl">
+          <h1 className="text-secondary text-[min(50px,_16vw)] my-3 font-black leading-none">
+            Manage Your Job Applications Like a Pro with Futurify
           </h1>
           <p className="text-foreground/80 text-xl">
             Stay organized throughout your job search journey and never miss an

@@ -6,9 +6,12 @@ import {
   LuContact2,
   LuPlus,
   LuAlignJustify,
-  LuMoreHorizontal,
+  LuSettings,
   LuHash,
+  LuChevronsUpDown,
+  LuHelpCircle,
 } from "react-icons/lu";
+import icon from "../../assets/icon.png";
 
 import {
   DropdownMenu,
@@ -17,7 +20,6 @@ import {
   DropdownMenuItem,
 } from "@components/ui/dropdown";
 import { Button } from "@components/ui/button";
-import { Avatar } from "@components/ui/avatar";
 import { cn } from "@utils/cn";
 import { PathConstants } from "@utils/constants";
 
@@ -46,11 +48,10 @@ const AppLayout = () => {
   const { data: currentUser } = useUser();
   const boardsQuery = useActiveBoards({});
   const logoutMutation = useLogout({
-    onSuccess: () => {
+    onSuccess: () =>
       navigate(PathConstants.LANDING, {
         replace: true,
-      });
-    },
+      }),
   });
 
   const boards = boardsQuery.data?.data.reverse();
@@ -64,18 +65,42 @@ const AppLayout = () => {
         )}
       >
         <div className="flex flex-col h-full">
-          {/* <div className="flex items-center justify-between h-16 px-4 md:hidden">
-            <button
-              onClick={() => setSidebarOpen(!sidebarOpen)}
-              className="md:hidden"
-            >
-              <h1>X</h1>
-            </button>
-          </div> */}
+          <div className="px-2 pt-3 mb-2">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button className="flex items-center w-full text-left h-10 px-3 py-1 border-border border-[1px] rounded-md focus:outline-none mt-auto">
+                  <img
+                    src={icon}
+                    alt="icon"
+                    className="w-5 h-5 mr-2"
+                  />
+                  <span className="text-foreground/80 text-sm font-semibold truncate max-w-[80px]">
+                    {currentUser!.data.firstName}
+                  </span>
+
+                  <LuChevronsUpDown className="w-4 h-4 ml-auto stroke-foreground/80" />
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent
+                className="!min-w-[200px]"
+                sideOffset={6}
+              >
+                <DropdownMenuItem
+                  className="!select-none !cursor-default text-foreground/30"
+                  disabled
+                >
+                  {currentUser!.data.email}
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => logoutMutation.mutate(undefined)}>
+                  Log out
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
 
           {/* App/Board Routes */}
-          <nav className="flex-grow overflow-y-auto">
-            <div className="px-1.5 py-3 [&>*]:border-b [&>*]:border-border">
+          <nav className="flex-grow w-[215px] overflow-y-auto">
+            <div className="px-2 py-3 [&>*]:border-b [&>*]:border-border">
               <div className="overflow-y-auto space-y-2 pb-3">
                 {navigation.map(({ name, to, Icon }) => (
                   <NavLink
@@ -83,15 +108,24 @@ const AppLayout = () => {
                     to={to}
                     className={({ isActive }) =>
                       cn(
-                        "flex items-center px-4 min-h-8 rounded-md hover:bg-primary/5",
-                        isActive && "bg-primary/5 border-primary/50 border-[1px] "
+                        "flex items-center px-4 min-h-8 border-transparent border-[1px] rounded-md hover:bg-primary/5",
+                        isActive && "bg-primary/5 border-primary/50"
                       )
                     }
                   >
-                    <Icon className="w-[17px] h-[17px] mr-2 stroke-foreground/60" />
-                    <span className="text-foreground/80 text-sm font-semibold">
-                      {name}
-                    </span>
+                    {({ isActive }) => (
+                      <>
+                        <Icon
+                          className={cn(
+                            "w-[17px] h-[17px] mr-2 stroke-foreground/60",
+                            isActive && "stroke-primary"
+                          )}
+                        />
+                        <span className="text-foreground/80 text-sm font-semibold">
+                          {name}
+                        </span>
+                      </>
+                    )}
                   </NavLink>
                 ))}
               </div>
@@ -120,9 +154,8 @@ const AppLayout = () => {
                         to={PathConstants.BOARD_VIEW(id)}
                         className={({ isActive }) =>
                           cn(
-                            "flex shrink-0 items-center w-full pl-4 pr-3 min-h-8 rounded-md hover:bg-primary/5 group",
-                            isActive &&
-                              "bg-primary/5 border-primary/50 border-[1px] "
+                            "flex shrink-0 items-center w-full pl-4 pr-3 min-h-8 border-transparent border-[1px] rounded-md hover:bg-primary/5 group",
+                            isActive && "bg-primary/5 border-primary/50 "
                           )
                         }
                       >
@@ -148,33 +181,13 @@ const AppLayout = () => {
           </nav>
 
           {/* User Options */}
-          <div className="px-1.5 pb-3">
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <button className="flex items-center w-full text-left h-10 w-auto px-3 py-1 border-border border-[1px] rounded-md focus:outline-none mt-auto">
-                  <div className="flex items-center grow">
-                    <Avatar
-                      src={currentUser!.data.avatar}
-                      className="w-6 h-6 mr-3 fill-primary"
-                    />
-                    <span className="text-foreground/70 text-sm font-semibold truncate max-w-[80px]">
-                      {currentUser!.data.firstName}
-                    </span>
-                  </div>
-
-                  <LuMoreHorizontal className="w-4 h-4 ml-auto stroke-foreground/80" />
-                </button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent
-                className="!min-w-[200px]"
-                sideOffset={6}
-              >
-                <DropdownMenuItem>Account Settings</DropdownMenuItem>
-                <DropdownMenuItem onClick={() => logoutMutation.mutate(undefined)}>
-                  Log out
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+          <div className="px-2 pb-3 [&>*]:w-full [&>*]:min-h-8">
+            <button className="flex items-center px-4 rounded-md hover:bg-primary/5 text-foreground/80 text-sm font-semibold truncate disabled cursor-not-allowed">
+              <LuHelpCircle className="w-[17px] h-[17px] mr-2" /> Support
+            </button>
+            <button className="flex items-center px-4 rounded-md hover:bg-primary/5 text-foreground/80 text-sm font-semibold truncate disabled cursor-not-allowed">
+              <LuSettings className="w-[17px] h-[17px] mr-2" /> Settings
+            </button>
           </div>
         </div>
       </aside>
