@@ -1,4 +1,5 @@
 import { InternalAxiosRequestConfig } from "axios";
+import { JobType } from "@schemas/job-application";
 
 export type RetryableRequestConfig = {
   _retry?: boolean;
@@ -39,11 +40,14 @@ export type Stage = Omit<
   "createdAt" | "updatedAt"
 >;
 
-export type Application = Omit<
-  Entity<{
-    stageId: number;
-    title: string;
-    company: string;
-  }>,
-  "createdAt" | "updatedAt"
->;
+export type Job = Entity<{
+  title: string;
+  companyName: string;
+  location: string;
+  type: JobType;
+  description: string;
+  postUrl: string;
+  position: number;
+  salary: string;
+  stageId: number;
+}>;

@@ -3,9 +3,14 @@ import { LoaderFunctionArgs, useParams } from "react-router-dom";
 
 import { AppContentLayout } from "@components/layout";
 import { Spinner } from "@components/ui/spinner";
+import { Button } from "@components/ui/button";
 
 import { useBoard, getBoardQueryOptions } from "@features/boards/api/getBoard";
-import { getBoardStagesOptions } from "@features/boards/api/getBoardStages";
+import {
+  getBoardStagesOptions,
+  useBoardStages,
+} from "@features/boards/api/getBoardStages";
+import { useJobs, getJobsOptions } from "@features/job-applications/api/get-jobs";
 import BoardView from "@features/boards/components/board-view/BoardView";
 
 /*
@@ -27,34 +32,43 @@ export const boardLoader =
 
 const Board = () => {
   const { id } = useParams() as { id: string };
-  const {
-    data: board,
-    isPending: boardPending,
-    isSuccess: boardSuccess,
-  } = useBoard({ id });
+  const queryResults = useQueries({
+    queries: [
+      getBoardQueryOptions(id),
+      getBoardStagesOptions(id),
+      getJobsOptions(id),
+    ],
+  });
 
-  // const data = useQueries({
-  //   queries: [getBoardQueryOptions(id), getBoardStagesOptions(id)],
-  // });
+  const [boardQuery, stagesQuery, jobsQuery] = queryResults;
 
-  if (boardPending) {
-    return (
-      <Spinner
-        size="lg"
-        className="h-96"
-      />
-    );
+  if (queryResults.some((result) => result.isPending))
+    <Spinner
+      size="lg"
+      className="h-96"
+    />;
+
+  if (!boardQuery.isSuccess || !stagesQuery.isSuccess || !jobsQuery.isSuccess) {
+    return <h1>This board has been archived</h1>;
   }
 
-  if (!boardSuccess || board.data.archived) {
-    return <h1 className="">This board has been archived</h1>;
+  if (boardQuery.data.data.archived) {
+    return <h1>This board has been archived</h1>;
   }
+
+  // if (queryResults.find((result) => !result.isSuccess)) {
+  //   return <h1 className="">This board has been archived</h1>;
+  // }
+
+  const board = boardQuery.data;
 
   return (
-    <AppContentLayout title={`Board ${id}`}>
+    <AppContentLayout title={`${board.data.name}`}>
       {/* TODO: Create AppContentHeader */}
-      <div className="flex items-center min-h-[45px] px-2 border-border border-b">
+      {/* px-2 */}
+      <div className="flex items-center justify-between md:left-[215px] min-w-0 min-h-[45px] px-2 border-border border-b fixed top-0 left-0 right-0">
         <h1 className="text-secondary text-sm font-bold">{board.data.name}</h1>
+        <Button className="text-white">+ New</Button>
       </div>
 
       <BoardView boardId={id} />

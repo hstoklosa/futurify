@@ -30,5 +30,7 @@ export function formatRelativeTime(
   return rtf.format(Math.floor(deltaSeconds / divisor), units[unitIndex]);
 }
 
+export const formatUTCDate = (date: string) => new Date(date).toDateString();
+
 export const pluralise = (count: number, noun: string, suffix = "s") =>
   `${count} ${noun}${count !== 1 ? suffix : ""}`;

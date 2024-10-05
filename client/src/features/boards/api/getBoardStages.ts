@@ -1,4 +1,4 @@
-import { queryOptions, useSuspenseQuery } from "@tanstack/react-query";
+import { queryOptions, useQuery } from "@tanstack/react-query";
 
 import { api } from "@lib/api-client";
 import { QueryConfig } from "@lib/react-query";
@@ -23,7 +23,7 @@ type UseBoardStagesOptions = {
 };
 
 export const useBoardStages = ({ id, queryConfig }: UseBoardStagesOptions) => {
-  return useSuspenseQuery({
+  return useQuery({
     ...getBoardStagesOptions(id),
     ...queryConfig,
   });

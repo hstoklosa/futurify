@@ -12,18 +12,14 @@ import {
   closestCenter,
   closestCorners,
 } from "@dnd-kit/core";
-import {
-  arrayMove,
-  horizontalListSortingStrategy,
-  SortableContext,
-  verticalListSortingStrategy,
-} from "@dnd-kit/sortable";
+import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
 
+import { Job } from "@/types/api";
 import { useBoardStages } from "@features/boards/api/getBoardStages";
-import { useJobApplications } from "@features/job-applications/api/getApplications";
+import { useJobs, getJobsOptions } from "@features/job-applications/api/get-jobs";
+
 import BoardViewContainer from "./BoardViewContainer";
 import BoardViewItem from "./BoardViewItem";
-import { Application } from "@/types/api";
 
 type BoardViewProps = {
   boardId: string;
@@ -32,20 +28,35 @@ type BoardViewProps = {
 
 const BoardView = ({ boardId }: BoardViewProps) => {
   const [activeId, setActiveId] = useState<UniqueIdentifier | null>(null);
-  const { data: stages } = useBoardStages({ id: boardId });
-  const { data: jobs } = useJobApplications({});
 
-  const stageToJobsMap = useMemo(() => {
-    const map = new Map<number, Application[]>(
-      stages.data.map((stage) => [stage.id, []])
-    );
+  const stagesQuery = useBoardStages({ id: boardId });
+  const jobsQuery = useJobs({ boardId: boardId });
 
-    jobs.data.forEach(
-      (job) => map.has(job.stageId) && map.get(job.stageId)!.push(job)
-    );
+  const stages = stagesQuery.data!;
+  const jobs = jobsQuery.data!;
+
+  const stageJobsMap = useMemo(() => {
+    const map = new Map<number, Job[]>();
+
+    const addToStage = (job: Job) => {
+      let mapValue: ReturnType<typeof map.get>;
+      if ((mapValue = map.get(job.stageId))) {
+        mapValue.push(job);
+      }
+    };
+
+    stages.data.forEach((stage) => map.set(stage.id, []));
+    jobs.data.forEach((job) => addToStage(job));
+    map.forEach((stageJobs) => stageJobs.sort((a, b) => a.position - b.position));
 
     return map;
   }, [jobs, stages]);
+
+  console.log(stageJobsMap);
+
+  const findBoardItem = (id: number) => {
+    return jobs.data.find((job) => job.id === id);
+  };
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -54,8 +65,8 @@ const BoardView = ({ boardId }: BoardViewProps) => {
   );
 
   const onDragStart = (event: DragStartEvent) => {
-    logEvent("DragStart", event);
     setActiveId(event.active.id);
+    logEvent("DragStart", event);
   };
 
   const onDragOver = (event: DragOverEvent) => {
@@ -64,52 +75,46 @@ const BoardView = ({ boardId }: BoardViewProps) => {
 
   const onDragEnd = (event: DragEndEvent) => {
     logEvent("DragEnd", event);
-    setActiveId(null);
   };
 
   const renderOverlay = () => {
-    const selectedJob = activeId && jobs.data.find((job) => job.id === activeId);
+    const selectedJob = activeId && findBoardItem(activeId as number);
 
-    if (!selectedJob) {
-      return <div />;
-    }
-
-    return <BoardViewItem {...selectedJob} />;
+    if (selectedJob) return <BoardViewItem {...selectedJob} />;
   };
 
   return (
     <DndContext
       sensors={sensors}
-      collisionDetection={closestCorners}
+      collisionDetection={closestCenter}
       onDragStart={onDragStart}
       onDragOver={onDragOver}
       onDragEnd={onDragEnd}
     >
-      <div className="h-full flex">
+      <div className="h-full w-max flex px-8 pt-[1rem] mt-[55px] overflow-y-auto">
         {stages.data.map((stage) => (
           <SortableContext
             key={stage.id}
-            items={stages.data.map((stage) => stage.name)}
-            strategy={horizontalListSortingStrategy}
+            items={stageJobsMap.get(stage.id)!.map((job) => job.id)}
+            strategy={verticalListSortingStrategy}
           >
             <BoardViewContainer
               boardId={boardId}
               id={stage.id}
+              items={stageJobsMap.get(stage.id)!.map((job) => job.id)}
               name={stage.name}
             >
-              <SortableContext
-                items={stageToJobsMap.get(stage.id)!.map((job) => job.id)}
-                strategy={verticalListSortingStrategy}
-              >
-                {stageToJobsMap.get(stage.id)!.map((job) => (
-                  <BoardViewItem
-                    key={job.id}
-                    id={job.id}
-                    title={job.title}
-                    company={job.company}
-                  />
-                ))}
-              </SortableContext>
+              {stageJobsMap.get(stage.id)!.map((job) => (
+                <BoardViewItem
+                  key={job.id}
+                  id={job.id}
+                  title={job.title}
+                  companyName={job.companyName}
+                  location={job.location}
+                  type={job.type}
+                  createdAt={job.createdAt}
+                />
+              ))}
             </BoardViewContainer>
           </SortableContext>
         ))}

@@ -6,7 +6,6 @@ import dev.hstoklosa.futurify.board.dto.CreateBoardRequest;
 import dev.hstoklosa.futurify.board.dto.UpdateBoardRequest;
 import dev.hstoklosa.futurify.board.entity.Board;
 import dev.hstoklosa.futurify.stage.dto.StageResponse;
-import dev.hstoklosa.futurify.stage.entity.Stage;
 import dev.hstoklosa.futurify.user.entity.User;
 import org.mapstruct.*;
 

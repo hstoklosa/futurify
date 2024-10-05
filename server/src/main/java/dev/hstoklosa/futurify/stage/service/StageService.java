@@ -18,7 +18,7 @@ import java.util.stream.IntStream;
 @RequiredArgsConstructor
 public class StageService {
     private static final List<String> DEFAULT_STAGE_NAMES = List.of(
-            "Wishlist", "Applied", "Interview", "Offer", "Rejected"
+            "Interested", "Applied", "Interview", "Offer", "Rejected"
     );
 
     private final StageRepository stageRepository;
