@@ -18,22 +18,21 @@ const Input = ({
   ...props
 }: InputProps) => {
   return (
-    <div className="flex flex-col">
-      <FieldWrapper
-        label={label}
-        required={required}
-      >
-        <input
-          type={type}
-          className={cn(
-            "bg-background px-3 py-2 w-full text-[1rem] text-foreground/80 placeholder-foreground/50  border-border border-[1px] rounded-md autofill:bg-background focus:border-primary focus:shadow-3xl focus:outline-none focus:ring-0 transition ease-out duration-150",
-            className
-          )}
-          {...register}
-          {...props}
-        />
-      </FieldWrapper>
-    </div>
+    <FieldWrapper
+      label={label}
+      required={required}
+    >
+      <input
+        type={type}
+        className={cn(
+          "bg-background w-full text-[1rem] text-foreground/80 placeholder-foreground/50 px-3 py-2 border-border border-[1px] rounded-md autofill:bg-background",
+          "hover:border-primary focus:border-primary focus:shadow-3xl focus:outline-none focus:ring-0 transition ease-out duration-150",
+          className
+        )}
+        {...register}
+        {...props}
+      />
+    </FieldWrapper>
   );
 };
 

@@ -23,12 +23,16 @@ const Select = ({
   options,
   defaultValue,
   register,
+  required,
   ...props
 }: SelectProps) => (
-  <FieldWrapper label={label}>
+  <FieldWrapper
+    label={label}
+    required={required}
+  >
     <select
       className={cn(
-        "w-full text-secondary text-base border-border border-[1px] hover:border-primary rounded-md cursor-pointer focus:border-foreground focus:outline-none focus:ring-foreground truncate",
+        "w-full text-base text-secondary px-3 py-2 border-border border-[1px] placeholder-foreground/50 hover:border-primary rounded-md cursor-pointer focus:outline-none focus:ring-primary focus:ring-1 truncate",
         className
       )}
       defaultValue={defaultValue}
