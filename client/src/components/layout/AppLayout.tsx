@@ -20,6 +20,7 @@ import {
   DropdownMenuItem,
 } from "@components/ui/dropdown";
 import { Button } from "@components/ui/button";
+import { Tooltip, TooltipTrigger, TooltipContent } from "@components/ui/tooltip";
 import { cn } from "@utils/cn";
 import { PathConstants } from "@utils/constants";
 
@@ -33,13 +34,83 @@ type SidebarItem = {
   name: string;
   to: string;
   Icon: React.ElementType;
+  disabled: boolean;
 };
 
 const navigation: SidebarItem[] = [
-  { name: "Home", to: PathConstants.HOME, Icon: LuHome },
-  { name: "Contacts", to: "/contacts", Icon: LuContact2 },
-  { name: "Documents", to: "/documents", Icon: LuFile },
+  { name: "Home", to: PathConstants.HOME, Icon: LuHome, disabled: false },
+  { name: "Contacts", to: "/contacts", Icon: LuContact2, disabled: true },
+  { name: "Documents", to: "/documents", Icon: LuFile, disabled: true },
 ];
+
+const SidebarLink = ({ to, Icon, name, disabled }: SidebarItem) => {
+  const link = (
+    <NavLink
+      key={name}
+      to={to}
+      onClick={(e) => disabled && e.preventDefault()}
+      className={({ isActive }) =>
+        cn(
+          "flex items-center px-4 min-h-8 border-transparent border-[1px] rounded-md hover:bg-primary/5",
+          isActive && "bg-primary/5 border-primary/50",
+          disabled && "cursor-not-allowed"
+        )
+      }
+    >
+      {({ isActive }) => (
+        <>
+          <Icon
+            className={cn(
+              "w-[17px] h-[17px] mr-2 stroke-foreground/60",
+              isActive && "stroke-primary"
+            )}
+          />
+          <span className="text-foreground/80 text-sm font-semibold">{name}</span>
+        </>
+      )}
+    </NavLink>
+  );
+
+  return (
+    <div>
+      {disabled ? (
+        <Tooltip>
+          <TooltipTrigger className="">{link}</TooltipTrigger>
+          <TooltipContent
+            side="right"
+            sideOffset={15}
+          >
+            {disabled && <span>Coming Soon</span>}
+          </TooltipContent>
+        </Tooltip>
+      ) : (
+        link
+      )}
+    </div>
+  );
+};
+
+const SidebarBoardLink = ({ id, name }: { id: number; name: string }) => (
+  <NavLink
+    key={id}
+    to={PathConstants.BOARD_VIEW(id)}
+    className={({ isActive }) =>
+      cn(
+        "flex shrink-0 items-center w-full pl-4 pr-3 min-h-8 border-transparent border-[1px] rounded-md hover:bg-primary/5 group",
+        isActive && "bg-primary/5 border-primary/50"
+      )
+    }
+  >
+    <LuHash className="stroke-foreground/80 min-h-4 min-w-4 mr-2" />
+    <span className="text-sm text-foreground/80 font-semibold truncate tracking-[-0.2px]">
+      {name}
+    </span>
+
+    <div className="flex grow justify-end">
+      <ArchiveBoardDialog id={id.toString()} />
+    </div>
+  </NavLink>
+);
 
 const AppLayout = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -102,31 +173,11 @@ const AppLayout = () => {
           <nav className="flex-grow w-[215px] overflow-y-auto">
             <div className="px-2 py-3 [&>*]:border-b [&>*]:border-border">
               <div className="overflow-y-auto space-y-2 pb-3">
-                {navigation.map(({ name, to, Icon }) => (
-                  <NavLink
-                    key={name}
-                    to={to}
-                    className={({ isActive }) =>
-                      cn(
-                        "flex items-center px-4 min-h-8 border-transparent border-[1px] rounded-md hover:bg-primary/5",
-                        isActive && "bg-primary/5 border-primary/50"
-                      )
-                    }
-                  >
-                    {({ isActive }) => (
-                      <>
-                        <Icon
-                          className={cn(
-                            "w-[17px] h-[17px] mr-2 stroke-foreground/60",
-                            isActive && "stroke-primary"
-                          )}
-                        />
-                        <span className="text-foreground/80 text-sm font-semibold">
-                          {name}
-                        </span>
-                      </>
-                    )}
-                  </NavLink>
+                {navigation.map((item) => (
+                  <SidebarLink
+                    key={item.name}
+                    {...item}
+                  />
                 ))}
               </div>
 
@@ -148,26 +199,11 @@ const AppLayout = () => {
 
                 <div className="space-y-1">
                   {boards &&
-                    boards.map(({ id, name }) => (
-                      <NavLink
-                        key={id}
-                        to={PathConstants.BOARD_VIEW(id)}
-                        className={({ isActive }) =>
-                          cn(
-                            "flex shrink-0 items-center w-full pl-4 pr-3 min-h-8 border-transparent border-[1px] rounded-md hover:bg-primary/5 group",
-                            isActive && "bg-primary/5 border-primary/50 "
-                          )
-                        }
-                      >
-                        <LuHash className="stroke-foreground/80 min-h-4 min-w-4 mr-2" />
-                        <span className="text-sm text-foreground/80 font-semibold truncate tracking-[-0.2px]">
-                          {name}
-                        </span>
-
-                        <div className="flex grow justify-end">
-                          <ArchiveBoardDialog id={id.toString()} />
-                        </div>
-                      </NavLink>
+                    boards.map((board) => (
+                      <SidebarBoardLink
+                        key={board.id}
+                        {...board}
+                      />
                     ))}
 
                   {!boards?.length && !boardsQuery.isLoading && (
