@@ -1,8 +1,6 @@
 /**
- * Convert a date to a relative time string, such as
- * "a minute ago", "in 2 hours", "yesterday", "3 months ago", etc.
- * using Intl.RelativeTimeFormat
- *
+ * Convert a date to a relative time string, such as "a minute ago", "in 2 hours",
+ * "yesterday", "3 months ago", etc. using Intl.RelativeTimeFormat.
  * REF: https://www.builder.io/blog/relative-time
  */
 export function formatRelativeTime(
@@ -34,3 +32,6 @@ export const formatUTCDate = (date: string) => new Date(date).toDateString();
 
 export const pluralise = (count: number, noun: string, suffix = "s") =>
   `${count} ${noun}${count !== 1 ? suffix : ""}`;
+
+export const enumToArray = (enumObj: Record<string, string>) =>
+  Object.keys(enumObj).map((key) => ({ key, value: enumObj[key] }));

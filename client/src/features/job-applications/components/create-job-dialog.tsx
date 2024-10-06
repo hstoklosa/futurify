@@ -11,8 +11,9 @@ import {
 import { Form, Input, Select, TextEditor } from "@components/ui/form";
 import { Button } from "@components/ui/button";
 import { renderOptions } from "@utils/select";
-import { JobType, createJobSchema } from "@schemas/job-application";
+import { enumToArray } from "@utils/format";
 
+import { JobType, createJobSchema } from "@schemas/job-application";
 import { useActiveBoards } from "@features/boards/api/getActiveBoards";
 import { useBoardStages } from "@features/boards/api/getBoardStages";
 import { useCreateJob } from "../api/create-job";
@@ -35,12 +36,11 @@ const CreateJobDialog = ({ boardId, stageId, children }: CreateJobDialogProps) =
     },
   });
 
-  // console.log(boardId, stageId);
-  // console.log(boards, stages);
-
   if (!boards || !stages) {
     return <div />;
   }
+
+  const jobTypes = enumToArray(JobType);
 
   return (
     <Dialog
@@ -48,7 +48,7 @@ const CreateJobDialog = ({ boardId, stageId, children }: CreateJobDialogProps) =
       onOpenChange={setOpen}
     >
       <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent className="w-[420px]">
+      <DialogContent className="h-[70vh] w-[420px]">
         <DialogHeader>
           <DialogTitle>Add Application</DialogTitle>
         </DialogHeader>
@@ -96,20 +96,7 @@ const CreateJobDialog = ({ boardId, stageId, children }: CreateJobDialogProps) =
                     label="Type"
                     className="text-[14px] h-[38.33px]"
                     defaultValue={undefined}
-                    options={renderOptions([
-                      {
-                        label: "On Site",
-                        value: JobType.ON_SITE,
-                      },
-                      {
-                        label: "Hybrid",
-                        value: JobType.HYBRID,
-                      },
-                      {
-                        label: "Remote",
-                        value: JobType.REMOTE,
-                      },
-                    ])}
+                    options={renderOptions(jobTypes, "value", "key")}
                     register={register("type")}
                     required
                   />
