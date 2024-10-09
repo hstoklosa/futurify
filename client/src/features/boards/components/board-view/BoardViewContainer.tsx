@@ -2,6 +2,7 @@ import React from "react";
 import { UniqueIdentifier, useDroppable } from "@dnd-kit/core";
 
 import { Button } from "@components/ui/button";
+import { ScrollArea } from "@components/ui/scroll-area";
 import { pluralise } from "@utils/format";
 import { cn } from "@utils/cn";
 
@@ -34,12 +35,12 @@ const BoardViewContainer = ({
     <div
       ref={setNodeRef}
       className={cn(
-        "h-[97%] flex flex-col flex-1 min-w-72 mr-4 px-4 pt-4 relative bg-background shadow-4xl border-[rgba(25,4,69,0.05)] border-[1px] rounded-md",
+        "relative flex-1 flex flex-col h-[97%] py-5 bg-background shadow-4xl border-[rgba(25,4,69,0.05)] border-[1px] rounded-xl",
         isOverContainer &&
-          "after:absolute after:z-50 after:inset-0 after:bg-primary/15 after:ring-2 after:ring-primary after:rounded-md after:pointer-events-none"
+          "after:absolute after:z-50 after:inset-0 after:bg-primary/15 after:ring-2 after:ring-primary after:rounded-xl after:pointer-events-none"
       )}
     >
-      <div className="flex flex-col justify-center items-center mb-2">
+      <div className="flex flex-col justify-center items-center mb-2 px-4">
         <div className="w-full flex items-center">
           <h2 className="font-semibold text-lg text-secondary mr-2 tracking-wider">
             {name.toUpperCase()}
@@ -56,15 +57,16 @@ const BoardViewContainer = ({
           <Button
             variant="outlineMuted"
             className="text-sm text-foreground/70 h-9 w-full rounded-md shadow-4xl p-3 mt-2"
-            onClick={() => console.log("Create job")}
           >
             + NEW
           </Button>
         </CreateJobDialog>
       </div>
 
-      <div className={cn("flex-1 overflow-y-auto w-[272px] h-[97%]")}>
-        {children}
+      <div className={cn("flex-1 overflow-y-auto w-[300px] h-[97%]")}>
+        <ScrollArea className="px-4">
+          <div className="px-[5px]">{children}</div>
+        </ScrollArea>
       </div>
     </div>
   );
