@@ -22,6 +22,7 @@ import {
 } from "../ui/dropdown";
 import { Button } from "../ui/button";
 import { Tooltip, TooltipTrigger, TooltipContent } from "../ui/tooltip";
+import { ScrollArea } from "../ui/scroll-area";
 import { PathConstants } from "@utils/constants";
 import { cn } from "@utils/cn";
 
@@ -135,7 +136,7 @@ const AppLayout = () => {
     <div className="flex w-full h-full bg-background overflow-x-auto">
       <aside
         className={cn(
-          "fixed inset-y-0 left-0 z-30 max-w-[215px] w-full bg-background border-border border-r-[1px]",
+          "fixed inset-y-0 left-0 z-30 max-w-[215px] w-full bg-background border-border border-r-[1px] shadow-4xl",
           "transform transition-transform duration-300 ease-in-out",
           "md:relative md:translate-x-0",
           sidebarOpen ? "translate-x-0" : "-translate-x-full"
@@ -177,51 +178,53 @@ const AppLayout = () => {
           </div>
 
           {/* App/Board Routes */}
-          <nav className="flex-grow w-[215px] overflow-y-auto">
-            <div className="px-2 py-3 [&>*]:border-b [&>*]:border-border">
-              <div className="overflow-y-auto space-y-2 pb-3">
-                {navigation.map((item) => (
-                  <SidebarLink
-                    key={item.name}
-                    {...item}
-                  />
-                ))}
-              </div>
-
-              <div className="py-4">
-                <div className="flex items-center justify-between pl-4 pr-2 pb-3">
-                  <p className="font-semibold text-sm text-foreground/50">
-                    Job Boards
-                  </p>
-
-                  <CreateBoard>
-                    <Button
-                      variant="outlineMuted"
-                      className="flex items-center justify-center w-5 h-5 p-1"
-                    >
-                      <LuPlus className="stroke-foreground/50" />
-                    </Button>
-                  </CreateBoard>
+          <ScrollArea className="px-0 overflow-hidden">
+            <nav className="flex-grow w-[215px] overflow-y-auto">
+              <div className="px-2 py-3 [&>*]:border-b [&>*]:border-border">
+                <div className="overflow-y-auto space-y-2 pb-3">
+                  {navigation.map((item) => (
+                    <SidebarLink
+                      key={item.name}
+                      {...item}
+                    />
+                  ))}
                 </div>
 
-                <div className="space-y-1">
-                  {boards &&
-                    boards.map((board) => (
-                      <SidebarBoardLink
-                        key={board.id}
-                        {...board}
-                      />
-                    ))}
-
-                  {!boardsQuery.isLoading && !boards?.length && (
-                    <p className="text-foreground/30 text-sm px-4 py-1">
-                      No Boards Created
+                <div className="py-4">
+                  <div className="flex items-center justify-between pl-4 pr-2 pb-3">
+                    <p className="font-semibold text-sm text-foreground/50">
+                      Job Boards
                     </p>
-                  )}
+
+                    <CreateBoard>
+                      <Button
+                        variant="outlineMuted"
+                        className="flex items-center justify-center w-5 h-5 p-1"
+                      >
+                        <LuPlus className="stroke-foreground/50" />
+                      </Button>
+                    </CreateBoard>
+                  </div>
+
+                  <div className="space-y-1">
+                    {boards &&
+                      boards.map((board) => (
+                        <SidebarBoardLink
+                          key={board.id}
+                          {...board}
+                        />
+                      ))}
+
+                    {!boardsQuery.isLoading && !boards?.length && (
+                      <p className="text-foreground/30 text-sm px-4 py-1">
+                        No Boards Created
+                      </p>
+                    )}
+                  </div>
                 </div>
               </div>
-            </div>
-          </nav>
+            </nav>
+          </ScrollArea>
 
           {/* User Buttons */}
           <div className="px-2 pb-1.5">
