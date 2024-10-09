@@ -68,7 +68,12 @@ const Board = () => {
       {/* px-2 */}
       <div className="flex items-center justify-between md:left-[215px] min-w-0 min-h-[45px] px-2 border-border border-b fixed top-0 left-0 right-0">
         <h1 className="text-secondary text-sm font-bold">{board.data.name}</h1>
-        <Button className="text-white">+ New</Button>
+        <Button
+          className="text-white"
+          size="md"
+        >
+          + New
+        </Button>
       </div>
 
       <BoardView boardId={id} />
