@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import {
   DndContext,
   DragStartEvent,
@@ -9,7 +10,6 @@ import {
   useSensors,
   useSensor,
   PointerSensor,
-  closestCenter,
   closestCorners,
 } from "@dnd-kit/core";
 import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
@@ -20,15 +20,19 @@ import { useJobs, getJobsOptions } from "@features/job-applications/api/get-jobs
 
 import BoardViewContainer from "./BoardViewContainer";
 import BoardViewItem from "./BoardViewItem";
+import JobViewDialog from "@/features/job-applications/components/job-view-dialog";
 
 type BoardViewProps = {
   boardId: string;
   children?: React.ReactNode;
 };
 
+// IDEA: The componenets used in this code can be nicely
+//       implemented as reusable components within lib/dnd-kit.tsx.
 const BoardView = ({ boardId }: BoardViewProps) => {
   const [activeId, setActiveId] = useState<UniqueIdentifier | null>(null);
 
+  const queryClient = useQueryClient();
   const stagesQuery = useBoardStages({ id: boardId });
   const jobsQuery = useJobs({ boardId: boardId });
 
@@ -86,12 +90,12 @@ const BoardView = ({ boardId }: BoardViewProps) => {
   return (
     <DndContext
       sensors={sensors}
-      collisionDetection={closestCenter}
+      collisionDetection={closestCorners}
       onDragStart={onDragStart}
       onDragOver={onDragOver}
       onDragEnd={onDragEnd}
     >
-      <div className="h-full w-max flex px-8 pt-[1rem] mt-[55px] overflow-y-auto">
+      <div className="h-full w-max flex px-1 pt-[1rem] mt-[55px] mx-4 space-x-5 overflow-y-auto">
         {stages.data.map((stage) => (
           <SortableContext
             key={stage.id}
@@ -105,15 +109,20 @@ const BoardView = ({ boardId }: BoardViewProps) => {
               name={stage.name}
             >
               {stageJobsMap.get(stage.id)!.map((job) => (
-                <BoardViewItem
+                <JobViewDialog
                   key={job.id}
-                  id={job.id}
-                  title={job.title}
-                  companyName={job.companyName}
-                  location={job.location}
-                  type={job.type}
-                  createdAt={job.createdAt}
-                />
+                  job={job}
+                >
+                  <BoardViewItem
+                    key={job.id}
+                    id={job.id}
+                    title={job.title}
+                    companyName={job.companyName}
+                    location={job.location}
+                    type={job.type}
+                    createdAt={job.createdAt}
+                  />
+                </JobViewDialog>
               ))}
             </BoardViewContainer>
           </SortableContext>
