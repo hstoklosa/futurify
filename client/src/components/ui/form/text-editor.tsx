@@ -10,7 +10,7 @@ type TextEditorProps<TFieldValues extends FieldValues> =
 const QuillModules = {
   toolbar: [
     ["bold", "italic", "underline"],
-    [{ list: "ordered" }, { list: "bullet" }], // { indent: "+/-1" }
+    [{ list: "ordered" }, { list: "bullet" }],
     ["link"],
   ],
 };
@@ -34,8 +34,6 @@ const TextEditor = <TFieldValues extends FieldValues>({
     defaultValue,
     // rules={{}}
   });
-
-  console.log(value);
 
   return (
     <FieldWrapper label={label}>
