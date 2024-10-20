@@ -35,7 +35,7 @@ const BoardViewContainer = ({
     <div
       ref={setNodeRef}
       className={cn(
-        "relative flex-1 flex flex-col h-[97%] py-5 bg-background shadow-4xl border-[rgba(25,4,69,0.05)] border-[1px] rounded-xl",
+        "relative flex-1 flex flex-col h-[97%] py-4 bg-[rgba(25,4,69,0.01)] shadow-4xl border-border border-[1px] rounded-xl",
         isOverContainer &&
           "after:absolute after:z-50 after:inset-0 after:bg-primary/15 after:ring-2 after:ring-primary after:rounded-xl after:pointer-events-none"
       )}
@@ -64,9 +64,7 @@ const BoardViewContainer = ({
       </div>
 
       <div className={cn("flex-1 overflow-y-auto w-[300px] h-[97%]")}>
-        <ScrollArea className="px-4">
-          <div className="px-[5px]">{children}</div>
-        </ScrollArea>
+        <ScrollArea className="px-4">{children}</ScrollArea>
       </div>
     </div>
   );
