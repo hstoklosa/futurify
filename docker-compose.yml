@@ -1,0 +1,40 @@
+services:
+  db:
+    image: postgres:15
+    ports:
+      - "5432:5432"
+    restart: always
+    env_file:
+      - ./server/.env
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+
+  server:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+    env_file:
+      - ./server/.env
+    volumes:
+      - ~/.m2:/root/.m2
+      - ./server:/app
+    command: ./mvnw spring-boot:run
+
+  client:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./client:/app
+      - /app/node_modules
+    depends_on:
+      - server
+
+volumes:
+  postgres-data:
