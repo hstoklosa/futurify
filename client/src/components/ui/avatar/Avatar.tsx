@@ -9,10 +9,11 @@ const AvatarFallback = AvatarPrimitive.Fallback;
 
 type AvatarProps = {
   src?: string;
+  alt?: string;
   className?: string;
 };
 
-const Avatar = ({ src, className }: AvatarProps) => {
+const Avatar = ({ src, alt, className }: AvatarProps) => {
   return (
     <AvatarRoot
       data-testid="avatar-root"
@@ -25,8 +26,10 @@ const Avatar = ({ src, className }: AvatarProps) => {
         data-testid="avatar-image"
         className="w-full h-full rounded-full object-cover"
         src={src}
+        alt={alt}
       />
       <AvatarFallback
+        data-testid="avatar-fallback"
         className="w-3/4 h-3/4"
         asChild
       >

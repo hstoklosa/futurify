@@ -11,27 +11,32 @@ const ScrollArea = ({
   children: React.ReactNode;
 }) => {
   return (
-    <ScrollAreaPrimitive.Root
-      type="always"
-      className={cn("relative size-full px-2.5", className)}
-    >
-      <ScrollAreaPrimitive.Viewport className="size-full w-[calc(100%)]">
-        {children}
-      </ScrollAreaPrimitive.Viewport>
-      <ScrollAreaPrimitive.Scrollbar
-        orientation="vertical"
-        className={cn(
-          "flex touch-none select-none rounded-md m-1",
-          "data-[orientation=horizontal]:h-2.5 data-[orientation=horizontal]:flex-col data-[orientation=vertical]:w-1"
-        )}
+    <ScrollAreaPrimitive.Root type="always">
+      <div
+        data-testid="scroll-area-root"
+        data-radix-scroll-area-root
+        data-type="always"
+        className={cn("relative size-full px-2.5", className)}
       >
-        <ScrollAreaPrimitive.Thumb
+        <ScrollAreaPrimitive.Viewport className="size-full w-[calc(100%)]">
+          {children}
+        </ScrollAreaPrimitive.Viewport>
+        <ScrollAreaPrimitive.Scrollbar
+          orientation="vertical"
           className={cn(
-            "flex-1 rounded-[10px] bg-[#CFCBDA]",
-            "before:absolute before:left-1/2 before:top-1/2 before:-translate-x-1/2 before:-translate-y-1/2 before:size-full before:min-w-[11px] before:min-h-[11px]"
+            "flex touch-none select-none rounded-md m-1",
+            "data-[orientation=horizontal]:h-2.5 data-[orientation=horizontal]:flex-col data-[orientation=vertical]:w-1"
           )}
-        />
-      </ScrollAreaPrimitive.Scrollbar>
+        >
+          <ScrollAreaPrimitive.Thumb
+            data-testid="scroll-area-thumb"
+            className={cn(
+              "flex-1 rounded-[10px] bg-[#CFCBDA]",
+              "before:absolute before:left-1/2 before:top-1/2 before:-translate-x-1/2 before:-translate-y-1/2 before:size-full before:min-w-[11px] before:min-h-[11px]"
+            )}
+          />
+        </ScrollAreaPrimitive.Scrollbar>
+      </div>
     </ScrollAreaPrimitive.Root>
   );
 };
