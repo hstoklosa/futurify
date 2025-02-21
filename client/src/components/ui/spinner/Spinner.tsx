@@ -25,6 +25,9 @@ const Spinner = ({
   return (
     <div className={cn("flex justify-center items-center w-full", className)}>
       <svg
+        role="status"
+        aria-label="loading"
+        data-testid="spinner"
         xmlns="http://www.w3.org/2000/svg"
         width="24"
         height="24"

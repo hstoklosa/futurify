@@ -30,6 +30,7 @@ const TooltipContent = React.forwardRef<
     <TooltipPortal>
       <TooltipPrimitive.Content
         ref={ref}
+        data-testid="tooltip-content"
         className={cn(
           "z-50 bg-background border-border border-[1px] shadow-4xl text-foreground/50 text-sm px-4 py-1 rounded-md",
           className

@@ -26,7 +26,10 @@ export const FieldWrapper = ({
   ...props
 }: FieldWrapperProps) => {
   return (
-    <div className="w-full">
+    <div
+      data-testid="field-wrapper"
+      className="w-full"
+    >
       <label
         className={cn(labelVariants(), className)}
         {...props}

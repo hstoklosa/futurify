@@ -15,12 +15,14 @@ type AvatarProps = {
 const Avatar = ({ src, className }: AvatarProps) => {
   return (
     <AvatarRoot
+      data-testid="avatar-root"
       className={cn(
         "inline-flex items-center justify-center w-5 h-5 border-border border-[1px] rounded-full select-none overflow-hidden align-middle",
         className
       )}
     >
       <AvatarImage
+        data-testid="avatar-image"
         className="w-full h-full rounded-full object-cover"
         src={src}
       />

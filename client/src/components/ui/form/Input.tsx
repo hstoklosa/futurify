@@ -20,6 +20,8 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
       >
         <div className="relative">
           <input
+            role="textbox"
+            data-testid="input"
             type={type}
             className={cn(
               "bg-background w-full text-[1rem] text-foreground/80 placeholder-foreground/50 px-3 py-2 border-border border-[1px] rounded-md autofill:bg-background",
