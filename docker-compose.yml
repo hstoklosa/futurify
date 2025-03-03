@@ -22,7 +22,7 @@ services:
     volumes:
       - ~/.m2:/root/.m2
       - ./server:/app
-    command: ./mvnw spring-boot:run
+    command: mvn spring-boot:run
 
   client:
     build:
