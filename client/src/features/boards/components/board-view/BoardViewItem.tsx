@@ -1,10 +1,9 @@
 import React from "react";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { LuMapPin, LuBuilding, LuCalendarPlus } from "react-icons/lu";
+import { LuMapPin, LuBuilding } from "react-icons/lu";
 
 import { cn } from "@utils/cn";
-import { formatUTCDate } from "@utils/format";
 
 import { JobType } from "@schemas/job-application";
 
@@ -15,33 +14,59 @@ type BoardViewItemProps = {
   type: JobType;
   location: string;
   createdAt: string;
+  isDragOverlay?: boolean;
 };
 
 const BoardViewItem = React.forwardRef<HTMLButtonElement, BoardViewItemProps>(
-  ({ id, title, companyName, type, location, createdAt }, ref) => {
+  (
+    { id, title, companyName, type, location, createdAt: _, isDragOverlay = false },
+    _ref
+  ) => {
     const { attributes, listeners, setNodeRef, transform, transition, isDragging } =
       useSortable({
         id: id,
         data: { type: "item" },
       });
 
-    const formattedDate = formatUTCDate(createdAt);
-    const jobType = JobType[type];
+    // Convert numeric enum to string safely
+    let jobType = "";
+    if (typeof type === "number") {
+      switch (type) {
+        case JobType.ON_SITE:
+          jobType = "On-Site";
+          break;
+        case JobType.REMOTE:
+          jobType = "Remote";
+          break;
+        case JobType.HYBRID:
+          jobType = "Hybrid";
+          break;
+        default:
+          jobType = "";
+      }
+    }
 
     const style = {
-      transition,
-      transform: CSS.Translate.toString(transform),
+      transition: isDragOverlay ? undefined : transition,
+      transform: isDragOverlay ? undefined : CSS.Transform.toString(transform),
+      cursor: "grab",
+      zIndex: isDragOverlay ? 1000 : 1,
+      width: isDragOverlay ? "300px" : undefined,
     } as React.CSSProperties;
 
     return (
       <div
-        {...attributes}
-        {...listeners}
-        ref={setNodeRef}
+        {...(isDragOverlay ? {} : attributes)}
+        {...(isDragOverlay ? {} : listeners)}
+        ref={isDragOverlay ? undefined : setNodeRef}
         style={style}
         className={cn(
-          "bg-background w-full border-border border-[1px] rounded-md px-4 py-3 my-2 hover:shadow-[inset_0_0_0_2px_rgb(var(--primary))] hover:border-transparent",
-          isDragging && "opacity-0"
+          "bg-background w-full border-border border-[1px] rounded-md px-4 py-3 my-2",
+          "hover:shadow-[inset_0_0_0_2px_rgb(var(--primary))] hover:border-transparent",
+          "transition-all duration-200 ease-in-out",
+          isDragging && "opacity-0",
+          isDragOverlay &&
+            "shadow-lg shadow-primary/10 transform-none rounded-md border-[2px] border-primary"
         )}
       >
         <h3 className="flex items-center text-[15px] font-semibold !text-foreground mb-1">
@@ -58,10 +83,6 @@ const BoardViewItem = React.forwardRef<HTMLButtonElement, BoardViewItemProps>(
               {location} ({jobType})
             </span>
           </div>
-          {/* <div>
-            <LuCalendarPlus className="stroke-foreground/40 mr-2" />
-            <span>{formattedDate}</span>
-          </div> */}
         </div>
       </div>
     );
