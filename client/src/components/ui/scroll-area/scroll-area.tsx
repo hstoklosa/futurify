@@ -11,32 +11,30 @@ const ScrollArea = ({
   children: React.ReactNode;
 }) => {
   return (
-    <ScrollAreaPrimitive.Root type="always">
-      <div
-        data-testid="scroll-area-root"
-        data-radix-scroll-area-root
-        data-type="always"
-        className={cn("relative size-full px-2.5", className)}
+    <ScrollAreaPrimitive.Root
+      type="always"
+      className={cn("relative h-full", className)}
+    >
+      <ScrollAreaPrimitive.Viewport className="h-full w-full">
+        {children}
+      </ScrollAreaPrimitive.Viewport>
+      <ScrollAreaPrimitive.Scrollbar
+        orientation="vertical"
+        className={cn(
+          "flex select-none touch-none transition-colors duration-150",
+          "absolute right-0 top-0 z-50 h-full w-0.5",
+          "hover:w-1 hover:bg-black/10"
+        )}
       >
-        <ScrollAreaPrimitive.Viewport className="size-full w-[calc(100%)]">
-          {children}
-        </ScrollAreaPrimitive.Viewport>
-        <ScrollAreaPrimitive.Scrollbar
-          orientation="vertical"
+        <ScrollAreaPrimitive.Thumb
           className={cn(
-            "flex touch-none select-none rounded-md m-1",
-            "data-[orientation=horizontal]:h-2.5 data-[orientation=horizontal]:flex-col data-[orientation=vertical]:w-1"
+            "relative flex-1 rounded-full bg-black/20",
+            "before:absolute before:top-1/2 before:left-1/2",
+            "before:-translate-x-1/2 before:-translate-y-1/2",
+            "before:w-full before:h-full before:min-w-[44px] before:min-h-[44px]"
           )}
-        >
-          <ScrollAreaPrimitive.Thumb
-            data-testid="scroll-area-thumb"
-            className={cn(
-              "flex-1 rounded-[10px] bg-[#CFCBDA]",
-              "before:absolute before:left-1/2 before:top-1/2 before:-translate-x-1/2 before:-translate-y-1/2 before:size-full before:min-w-[11px] before:min-h-[11px]"
-            )}
-          />
-        </ScrollAreaPrimitive.Scrollbar>
-      </div>
+        />
+      </ScrollAreaPrimitive.Scrollbar>
     </ScrollAreaPrimitive.Root>
   );
 };

@@ -133,30 +133,29 @@ const AppLayout = () => {
   const boards = boardsQuery.data?.data.reverse();
 
   return (
-    <div className="flex w-full h-full bg-background overflow-x-auto">
+    <div className="flex w-full h-full">
       <aside
         className={cn(
-          "fixed inset-y-0 left-0 z-30 max-w-[215px] w-full bg-background border-border border-r-[1px] shadow-4xl",
+          "fixed inset-y-0 left-0 z-30 w-[215px] bg-background border-border border-r-[1px] shadow-4xl",
           "transform transition-transform duration-300 ease-in-out",
-          "md:relative md:translate-x-0",
-          sidebarOpen ? "translate-x-0" : "-translate-x-full"
+          "md:sticky md:top-0 md:h-screen",
+          !sidebarOpen && "translate-x-[-100%] md:translate-x-0"
         )}
       >
         <div className="flex flex-col h-full">
-          <div className="px-2 pt-3 mb-1">
+          {/* User Profile Dropdown */}
+          <div className="flex-shrink-0 px-2 pt-3 mb-1">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <button className="flex items-center w-full text-left h-10 px-3 py-1 border-border shadow-4xl border-[1px] rounded-md focus:outline-none mt-auto">
+                <button className="flex items-center w-full text-left h-10 px-3 py-1 border-border shadow-4xl border-[1px] rounded-md focus:outline-none">
                   <img
                     src={icon}
                     alt="icon"
                     className="w-5 h-5 mr-2"
                   />
-
                   <span className="text-foreground/80 text-sm font-semibold truncate max-w-[120px]">
                     {currentUser!.data.firstName}
                   </span>
-
                   <LuChevronsUpDown className="w-4 h-4 ml-auto stroke-foreground/80" />
                 </button>
               </DropdownMenuTrigger>
@@ -177,57 +176,60 @@ const AppLayout = () => {
             </DropdownMenu>
           </div>
 
-          {/* App/Board Routes */}
-          <ScrollArea className="px-0 overflow-hidden">
-            <nav className="flex-grow w-[215px] overflow-y-auto">
-              <div className="px-2 py-3 [&>*]:border-b [&>*]:border-border">
-                <div className="overflow-y-auto space-y-2 pb-3">
-                  {navigation.map((item) => (
-                    <SidebarLink
-                      key={item.name}
-                      {...item}
-                    />
-                  ))}
-                </div>
-
-                <div className="py-4">
-                  <div className="flex items-center justify-between pl-4 pr-2 pb-3">
-                    <p className="font-semibold text-sm text-foreground/50">
-                      Job Boards
-                    </p>
-
-                    <CreateBoard>
-                      <Button
-                        variant="outlineMuted"
-                        className="flex items-center justify-center w-5 h-5 p-1"
-                      >
-                        <LuPlus className="stroke-foreground/50" />
-                      </Button>
-                    </CreateBoard>
+          {/* Scrollable Content Area */}
+          <div className="flex-1 min-h-0">
+            <ScrollArea>
+              <div className="px-2">
+                <div className="py-3 [&>*]:border-b [&>*]:border-border">
+                  {/* Navigation Links */}
+                  <div className="space-y-2 pb-3">
+                    {navigation.map((item) => (
+                      <SidebarLink
+                        key={item.name}
+                        {...item}
+                      />
+                    ))}
                   </div>
 
-                  <div className="space-y-1">
-                    {boards &&
-                      boards.map((board) => (
-                        <SidebarBoardLink
-                          key={board.id}
-                          {...board}
-                        />
-                      ))}
-
-                    {!boardsQuery.isLoading && !boards?.length && (
-                      <p className="text-foreground/30 text-sm px-4 py-1">
-                        No Boards Created
+                  {/* Job Boards Section */}
+                  <div className="py-4">
+                    <div className="flex items-center justify-between pl-4 pr-2 pb-3">
+                      <p className="font-semibold text-sm text-foreground/50">
+                        Job Boards
                       </p>
-                    )}
+                      <CreateBoard>
+                        <Button
+                          variant="outlineMuted"
+                          className="flex items-center justify-center w-5 h-5 p-1"
+                        >
+                          <LuPlus className="stroke-foreground/50" />
+                        </Button>
+                      </CreateBoard>
+                    </div>
+
+                    <div className="space-y-1">
+                      {boards &&
+                        boards.map((board) => (
+                          <SidebarBoardLink
+                            key={board.id}
+                            {...board}
+                          />
+                        ))}
+
+                      {!boardsQuery.isLoading && !boards?.length && (
+                        <p className="text-foreground/30 text-sm px-4 py-1">
+                          No Boards Created
+                        </p>
+                      )}
+                    </div>
                   </div>
                 </div>
               </div>
-            </nav>
-          </ScrollArea>
+            </ScrollArea>
+          </div>
 
-          {/* User Buttons */}
-          <div className="px-2 pb-1.5">
+          {/* Bottom Action Buttons */}
+          <div className="flex-shrink-0 px-2 pb-1.5">
             {buttons.map(({ name, Icon, disabled }) => (
               <button
                 key={name}
@@ -242,10 +244,10 @@ const AppLayout = () => {
         </div>
       </aside>
 
-      {/* App Content */}
-      <Outlet />
+      <main className="flex-1 h-full min-w-0">
+        <Outlet />
+      </main>
 
-      {/* Mobile Sidebar Toggle */}
       <button
         onClick={() => setSidebarOpen(!sidebarOpen)}
         className="fixed left-5 bottom-5 flex justify-center items-center bg-background p-1 h-[40px] w-[40px] border-border border-[1px] text-white rounded-lg shadow-lg md:hidden"
