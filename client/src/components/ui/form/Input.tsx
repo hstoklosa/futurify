@@ -28,11 +28,22 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
               "hover:border-primary focus:border-primary focus:shadow-3xl focus:outline-none focus:ring-0 transition ease-out duration-150",
               className
             )}
-            {...register}
             {...props}
-            ref={ref}
+            {...register}
+            ref={(e) => {
+              // Handle both react-hook-form and forwardRef refs
+              if (typeof register.ref === "function") {
+                register.ref(e);
+              }
+              if (ref) {
+                if (typeof ref === "function") {
+                  ref(e);
+                } else {
+                  ref.current = e;
+                }
+              }
+            }}
           />
-
           {children}
         </div>
       </FieldWrapper>
