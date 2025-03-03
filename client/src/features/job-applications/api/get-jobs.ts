@@ -6,8 +6,8 @@ import { api } from "@lib/api-client";
 import { Job } from "@/types/api";
 import { jobQueryKeys } from "./job-query-keys";
 
-const getJobs = async (boardsId: string): Promise<{ data: Job[] }> => {
-  return api.get(`/boards/${boardsId}/jobs`);
+const getJobs = async (boardId: string): Promise<{ data: Job[] }> => {
+  return api.get(`/jobs/board/${boardId}`);
 };
 
 export const getJobsOptions = (boardId: string) => {

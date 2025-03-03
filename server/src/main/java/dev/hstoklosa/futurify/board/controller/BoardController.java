@@ -1,11 +1,10 @@
 package dev.hstoklosa.futurify.board.controller;
 
+import dev.hstoklosa.futurify.board.dto.*;
 import dev.hstoklosa.futurify.board.service.BoardService;
+import dev.hstoklosa.futurify.board.service.JobService;
 import dev.hstoklosa.futurify.common.api.ApiResponse;
 import dev.hstoklosa.futurify.common.api.ResponseFactory;
-import dev.hstoklosa.futurify.board.dto.CreateBoardRequest;
-import dev.hstoklosa.futurify.board.dto.UpdateBoardRequest;
-import dev.hstoklosa.futurify.board.dto.BoardResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
@@ -19,6 +18,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class BoardController {
     private final BoardService boardService;
+    private final JobService jobService;
 
     @PostMapping
     public ResponseEntity<ApiResponse<Integer>> createBoard(
@@ -49,6 +49,23 @@ public class BoardController {
             @RequestBody @Valid UpdateBoardRequest updateBoardRequest
     ) {
         BoardResponse response = boardService.updateBoard(id, updateBoardRequest);
+        return ResponseEntity.ok().body(ResponseFactory.success(response));
+    }
+
+    @GetMapping("/{id}/jobs")
+    public ResponseEntity<ApiResponse<List<JobResponse>>> getJobs(
+            @PathVariable Integer id
+    ) {
+        List<JobResponse> response = jobService.getJobs(id);
+        return ResponseEntity.ok().body(ResponseFactory.success(response));
+    }
+
+    @PostMapping("/{id}/jobs")
+    public ResponseEntity<ApiResponse<JobResponse>> createJob(
+            @PathVariable Integer id,
+            @RequestBody @Valid CreateJobRequest request
+    ) {
+        JobResponse response = jobService.createJob(id, request);
         return ResponseEntity.ok().body(ResponseFactory.success(response));
     }
 

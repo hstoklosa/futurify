@@ -1,12 +1,10 @@
 import React, { useMemo, useState } from "react";
-import { useQueryClient } from "@tanstack/react-query";
 import {
   DndContext,
   DragStartEvent,
   DragEndEvent,
   DragOverEvent,
   DragOverlay,
-  UniqueIdentifier,
   useSensors,
   useSensor,
   PointerSensor,
@@ -16,7 +14,8 @@ import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable"
 
 import { Job } from "@/types/api";
 import { useBoardStages } from "@features/boards/api/getBoardStages";
-import { useJobs, getJobsOptions } from "@features/job-applications/api/get-jobs";
+import { useJobs } from "@features/job-applications/api/get-jobs";
+import { useUpdateJobPosition } from "@features/job-applications/api/update-job-position";
 
 import BoardViewContainer from "./BoardViewContainer";
 import BoardViewItem from "./BoardViewItem";
@@ -30,11 +29,11 @@ type BoardViewProps = {
 // IDEA: The componenets used in this code can be nicely
 //       implemented as reusable components within lib/dnd-kit.tsx.
 const BoardView = ({ boardId }: BoardViewProps) => {
-  const [activeId, setActiveId] = useState<UniqueIdentifier | null>(null);
+  const [activeJob, setActiveJob] = useState<Job | null>(null);
 
-  const queryClient = useQueryClient();
   const stagesQuery = useBoardStages({ id: boardId });
   const jobsQuery = useJobs({ boardId: boardId });
+  const updateJobPosition = useUpdateJobPosition();
 
   const stages = stagesQuery.data!;
   const jobs = jobsQuery.data!;
@@ -56,10 +55,13 @@ const BoardView = ({ boardId }: BoardViewProps) => {
     return map;
   }, [jobs, stages]);
 
-  console.log(stageJobsMap);
-
-  const findBoardItem = (id: number) => {
+  const findBoardItem = (id: number): Job | undefined => {
     return jobs.data.find((job) => job.id === id);
+  };
+
+  const findPositionInStage = (stageId: number, jobId: number): number => {
+    const stageJobs = stageJobsMap.get(stageId) || [];
+    return stageJobs.findIndex((job) => job.id === jobId);
   };
 
   const sensors = useSensors(
@@ -69,7 +71,13 @@ const BoardView = ({ boardId }: BoardViewProps) => {
   );
 
   const onDragStart = (event: DragStartEvent) => {
-    setActiveId(event.active.id);
+    const { active } = event;
+
+    const job = findBoardItem(active.id as number);
+    if (job) {
+      setActiveJob(job);
+    }
+
     logEvent("DragStart", event);
   };
 
@@ -78,13 +86,71 @@ const BoardView = ({ boardId }: BoardViewProps) => {
   };
 
   const onDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+
+    setActiveJob(null);
+
+    if (!over) return;
+
+    const activeJobId = active.id as number;
+    const activeJob = findBoardItem(activeJobId);
+
+    if (!activeJob) return;
+
+    // Get the stage ID from the over container
+    let targetStageId: number;
+    let newPosition: number;
+
+    // If dropping over a container (stage)
+    if (over.data.current?.type === "container") {
+      // Find the stage ID by name
+      const targetStage = stages.data.find((stage) => stage.name === over.id);
+      if (!targetStage) return;
+
+      targetStageId = targetStage.id;
+      // Place at the end of the stage
+      newPosition = stageJobsMap.get(targetStageId)?.length || 0;
+    }
+    // If dropping over another item
+    else {
+      const overJobId = over.id as number;
+      const overJob = findBoardItem(overJobId);
+
+      if (!overJob) return;
+
+      targetStageId = overJob.stageId;
+      // Get position of the job being dropped on
+      newPosition = findPositionInStage(targetStageId, overJobId);
+    }
+
+    // Only update if the job is moved to a different stage or position
+    if (activeJob.stageId !== targetStageId || activeJob.position !== newPosition) {
+      updateJobPosition.mutate({
+        jobId: activeJobId,
+        data: {
+          stageId: targetStageId,
+          position: newPosition,
+        },
+        boardId: boardId,
+      });
+    }
+
     logEvent("DragEnd", event);
   };
 
   const renderOverlay = () => {
-    const selectedJob = activeId && findBoardItem(activeId as number);
-
-    if (selectedJob) return <BoardViewItem {...selectedJob} />;
+    const selectedJob = activeJob;
+    if (selectedJob)
+      return (
+        <BoardViewItem
+          id={selectedJob.id}
+          title={selectedJob.title}
+          companyName={selectedJob.companyName}
+          location={selectedJob.location}
+          type={selectedJob.type}
+          createdAt={selectedJob.createdAt}
+        />
+      );
   };
 
   return (
@@ -111,7 +177,11 @@ const BoardView = ({ boardId }: BoardViewProps) => {
               {stageJobsMap.get(stage.id)!.map((job) => (
                 <JobViewDialog
                   key={job.id}
-                  job={job}
+                  jobId={job.id}
+                  boardId={Number(boardId)}
+                  title={job.title}
+                  companyName={job.companyName}
+                  createdAt={job.createdAt}
                 >
                   <BoardViewItem
                     key={job.id}

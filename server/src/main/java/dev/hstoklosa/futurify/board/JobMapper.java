@@ -15,8 +15,8 @@ public abstract class JobMapper {
 
     @Mapping(target = "board", source = "board")
     @Mapping(target = "stage", source = "stage")
-    @Mapping(target = "position", constant = "0")
     @Mapping(target = "id", ignore = true)
+    @Mapping(target = "position", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt",  ignore = true)
     public abstract Job createJobRequestToJob(CreateJobRequest requestDto, Board board, Stage stage);

@@ -25,13 +25,13 @@ const BoardViewItem = React.forwardRef<HTMLButtonElement, BoardViewItemProps>(
         data: { type: "item" },
       });
 
+    const formattedDate = formatUTCDate(createdAt);
+    const jobType = JobType[type];
+
     const style = {
       transition,
       transform: CSS.Translate.toString(transform),
     } as React.CSSProperties;
-
-    const jobType = JobType[type];
-    const formattedDate = formatUTCDate(createdAt);
 
     return (
       <div
@@ -40,7 +40,7 @@ const BoardViewItem = React.forwardRef<HTMLButtonElement, BoardViewItemProps>(
         ref={setNodeRef}
         style={style}
         className={cn(
-          "bg-background w-full border-border border-[1px] rounded-md px-4 py-3 my-2 hover:shadow-[0_0_0_2px_rgb(var(--primary))] hover:border-transparent",
+          "bg-background w-full border-border border-[1px] rounded-md px-4 py-3 my-2 hover:shadow-[inset_0_0_0_2px_rgb(var(--primary))] hover:border-transparent",
           isDragging && "opacity-0"
         )}
       >
