@@ -17,7 +17,7 @@ RUN chmod +x ./mvnw
 EXPOSE 8080
 
 # Create a shell script to run the application
-RUN echo '#!/bin/sh\nmvn spring-boot:run' > /app/run.sh && \
+RUN echo '#!/bin/sh\nmvn spring-boot:run -DskipTests' > /app/run.sh && \
     chmod +x /app/run.sh
 
 # Run the application in development mode with hot reload
