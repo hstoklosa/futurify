@@ -12,6 +12,7 @@ import { Form, Input, Select, TextEditor } from "@components/ui/form";
 import { Button } from "@components/ui/button";
 import { renderOptions } from "@utils/select";
 import { enumToArray } from "@utils/format";
+import { ScrollArea } from "@components/ui/scroll-area";
 
 import { JobType, createJobSchema } from "@schemas/job-application";
 import { useActiveBoards } from "@features/boards/api/getActiveBoards";
@@ -48,108 +49,109 @@ const CreateJobDialog = ({ boardId, stageId, children }: CreateJobDialogProps) =
       onOpenChange={setOpen}
     >
       <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent className="h-[70vh] w-[420px]">
+      <DialogContent className="w-[420px] h-[600px] max-h-[85vh]">
         <DialogHeader>
           <DialogTitle>Add Application</DialogTitle>
         </DialogHeader>
-        <Form
-          onSubmit={(data) =>
-            createJob.mutate({
-              boardId: Number(data.boardId),
-              data,
-            })
-          }
-          schema={createJobSchema}
-        >
-          {({ register, control }) => (
-            <>
-              <div className="space-y-4 py-5 px-4">
-                <Input
-                  type="text"
-                  className="text-[14px]"
-                  label="Job Title"
-                  placeholder="Job Title"
-                  register={register("title")}
-                  required
-                />
+        <div className="flex flex-col flex-1 min-h-0">
+          <ScrollArea>
+            <Form
+              onSubmit={(data) =>
+                createJob.mutate({
+                  boardId: Number(data.boardId),
+                  data,
+                })
+              }
+              schema={createJobSchema}
+            >
+              {({ register, control }) => (
+                <>
+                  <div className="space-y-4 py-5 px-4">
+                    <Input
+                      type="text"
+                      className="text-[14px]"
+                      label="Job Title"
+                      placeholder="Job Title"
+                      register={register("title")}
+                      required
+                    />
 
-                <Input
-                  type="text"
-                  className="text-[14px]"
-                  label="Company Name"
-                  placeholder="Company Name"
-                  register={register("companyName")}
-                  required
-                />
+                    <Input
+                      type="text"
+                      className="text-[14px]"
+                      label="Company Name"
+                      placeholder="Company Name"
+                      register={register("companyName")}
+                      required
+                    />
 
-                <div className="inline-flex w-full gap-2">
-                  <Input
-                    type="text"
-                    className="text-[14px] flex-grow"
-                    label="Location"
-                    placeholder="Location"
-                    register={register("location")}
-                    required
-                  />
+                    <div className="inline-flex w-full gap-2">
+                      <Input
+                        type="text"
+                        className="text-[14px] flex-grow"
+                        label="Location"
+                        placeholder="Location"
+                        register={register("location")}
+                        required
+                      />
 
-                  <Select
-                    label="Type"
-                    className="text-[14px] h-[38.33px]"
-                    defaultValue={undefined}
-                    options={renderOptions(jobTypes, "value", "key")}
-                    register={register("type")}
-                    required
-                  />
-                </div>
+                      <Select
+                        label="Type"
+                        className="text-[14px] h-[38.33px]"
+                        defaultValue={undefined}
+                        options={renderOptions(jobTypes, "value", "key")}
+                        register={register("type")}
+                        required
+                      />
+                    </div>
 
-                <TextEditor
-                  control={control}
-                  name="description"
-                  label="Job Description"
-                  defaultValue=""
-                />
+                    <TextEditor
+                      control={control}
+                      name="description"
+                      label="Job Description"
+                      defaultValue=""
+                    />
 
-                <div className="inline-flex w-full gap-2">
-                  <Select
-                    label="Board"
-                    className="p-1.5 text-[14px]"
-                    defaultValue={Number(boardId)}
-                    options={renderOptions(boards.data, "name", "id")}
-                    register={register("boardId")}
-                    required
-                  />
-                  <Select
-                    label="Stage"
-                    className="p-1.5 text-[14px]"
-                    defaultValue={Number(stageId)}
-                    options={renderOptions(stages.data, "name", "id")}
-                    register={register("stageId")}
-                    required
-                  />
-                </div>
-              </div>
-
-              <DialogFooter className="justify-end px-3 space-x-2 border-none ">
-                <Button
-                  variant="outlineMuted"
-                  size="sm"
-                  className=""
-                  onClick={() => setOpen(false)}
-                >
-                  Discard
-                </Button>
-                <Button
-                  type="submit"
-                  variant="default"
-                  size="sm"
-                  className=""
-                >
-                  Add
-                </Button>
-              </DialogFooter>
-            </>
-          )}
-        </Form>
+                    <div className="inline-flex w-full gap-2">
+                      <Select
+                        label="Board"
+                        className="p-1.5 text-[14px]"
+                        defaultValue={Number(boardId)}
+                        options={renderOptions(boards.data, "name", "id")}
+                        register={register("boardId")}
+                        required
+                      />
+                      <Select
+                        label="Stage"
+                        className="p-1.5 text-[14px]"
+                        defaultValue={Number(stageId)}
+                        options={renderOptions(stages.data, "name", "id")}
+                        register={register("stageId")}
+                        required
+                      />
+                    </div>
+                  </div>
+                </>
+              )}
+            </Form>
+          </ScrollArea>
+        </div>
+        <DialogFooter className="justify-end px-3 space-x-2 border-none">
+          <Button
+            variant="outlineMuted"
+            size="sm"
+            onClick={() => setOpen(false)}
+          >
+            Discard
+          </Button>
+          <Button
+            type="submit"
+            variant="default"
+            size="sm"
+          >
+            Add
+          </Button>
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   );

@@ -16,7 +16,7 @@ const createJob = async ({
   boardId,
   data,
 }: CreateJobFnData): Promise<{ data: Job }> => {
-  return api.post(`/boards/${boardId}/jobs`, data);
+  return api.post(`/jobs/board/${boardId}`, data);
 };
 
 export const useCreateJob = ({
@@ -26,13 +26,27 @@ export const useCreateJob = ({
   const queryClient = useQueryClient();
 
   return useMutation({
-    onSuccess: (data, ...args) => {
+    onSuccess: (data, variables, ...args) => {
       const responseJob = data.data;
+
+      // Update the job detail cache
       queryClient.setQueryData(jobQueryKeys.detail(responseJob.id), responseJob);
-      console.log(responseJob);
-      onSuccess && onSuccess(data, ...args);
+
+      // Invalidate the jobs list for the board
+      queryClient.invalidateQueries({
+        queryKey: jobQueryKeys.list(variables.boardId.toString()),
+      });
+
+      // Invalidate the jobs list for the stage
+      if (responseJob.stageId) {
+        queryClient.invalidateQueries({
+          queryKey: jobQueryKeys.listByStage(responseJob.stageId.toString()),
+        });
+      }
+
+      onSuccess && onSuccess(data, variables, ...args);
     },
-    ...rest,
     mutationFn: createJob,
+    ...rest,
   });
 };
