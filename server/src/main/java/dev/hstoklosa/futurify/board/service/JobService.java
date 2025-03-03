@@ -29,6 +29,13 @@ public class JobService {
     private final StageRepository stageRepository;
     private final JobMapper jobMapper;
 
+    public JobResponse getJobById(Integer jobId) {
+        Job job = jobRepository.findById(jobId)
+                .orElseThrow(() -> new ResourceNotFoundException("The requested job application doesn't exist."));
+
+        return jobMapper.jobToJobResponse(job);
+    }
+
     @Transactional
     public List<JobResponse> getJobs(Integer boardId) {
         return jobRepository.findAllByBoardId(boardId).stream()
@@ -36,8 +43,7 @@ public class JobService {
                 .collect(Collectors.toList());
     }
 
-
-    @Transactional // shiftPosition
+    @Transactional // multiple UPDATEs in shiftPosition
     public JobResponse createJob(Integer boardId, CreateJobRequest request) {
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(() -> new ResourceNotFoundException("The board has not been provided for this job."));

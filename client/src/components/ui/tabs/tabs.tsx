@@ -23,8 +23,8 @@ const TabsTrigger = forwardRef<
 >(({ className, children, ...props }, ref) => (
   <TabsPrimitive.Trigger
     className={cn(
-      "inline-flex items-center text-sm pb-[5px] cursor-pointer",
-      "data-[state=active]:text-secondary data-[state=active]:border-secondary data-[state=active]:border-b-[2px] data-[state=active]:font-semibold data-[state=inactive]:text-foreground/70",
+      "inline-flex items-center font-semibold text-sm pb-[5px] cursor-pointer border-b-[2px] border-transparent",
+      "data-[state=active]:text-secondary data-[state=active]:border-secondary data-[state=inactive]:text-foreground/70",
       className
     )}
     ref={ref}
@@ -40,7 +40,7 @@ const TabsContent = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <TabsPrimitive.Content
     ref={ref}
-    className={cn("mt-4", className)}
+    className={cn("", className)}
     {...props}
   />
 ));

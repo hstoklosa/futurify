@@ -6,18 +6,36 @@ export enum JobType {
   REMOTE = "Remote",
 }
 
-// as [string, ...string[]] -> an array that definitely has
-// one string element, potentially followed by
+const JobTypeKeys = Object.keys(JobType) as [string, ...string[]];
+
+// as [string, ...string[]] -> an array that has at least one string,
+// and then followed by 0 or more other strings (solution for zod).
 export const createJobSchema = z.object({
+  boardId: z.string().min(1, { message: "Target board is required." }),
+  stageId: z.string().min(1, { message: "Target stage is required." }),
   title: z.string().min(1, { message: "Job title is required." }),
   companyName: z.string().min(1, { message: "Company name is required." }),
   location: z.string().min(1, { message: "Location is required." }),
-  type: z.enum(Object.keys(JobType) as [string, ...string[]], {
-    message: "A correct job type is required.",
-  }),
+  type: z.enum(JobTypeKeys, { message: "A correct job type is required." }),
+
   description: z.string().optional(),
-  boardId: z.string().min(1, { message: "Target board is required." }),
-  stageId: z.string().min(1, { message: "Target stage is required." }),
 });
 
 export type createJobInput = z.infer<typeof createJobSchema>;
+
+export const updateJobSchema = z.object({
+  stageId: z.string().min(1, { message: "Target stage is required." }),
+  title: z.string().min(1, { message: "Job title is required." }),
+  companyName: z.string().min(1, { message: "Company name is required." }),
+  location: z.string().min(1, { message: "Location is required." }),
+  type: z.enum(JobTypeKeys, { message: "An incorrect job type was provided." }),
+  description: z.string().optional(),
+  postUrl: z
+    .string()
+    .url("An invalid listing URL provided.")
+    .optional()
+    .or(z.literal("")),
+  salary: z.string().optional(),
+});
+
+export type updateJobInput = z.infer<typeof updateJobSchema>;

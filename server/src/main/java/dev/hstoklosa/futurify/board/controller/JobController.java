@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/boards/{id}")
+@RequestMapping("/api/v1/jobs")
 public class JobController {
 
     private final JobService jobService;
@@ -23,20 +23,13 @@ public class JobController {
         this.jobService = jobService;
     }
 
-    @GetMapping("/jobs")
-    public ResponseEntity<ApiResponse<List<JobResponse>>> getJobs(
+    @GetMapping("/{id}")
+    public ResponseEntity<ApiResponse<JobResponse>> getJob(
             @PathVariable Integer id
     ) {
-        List<JobResponse> response = jobService.getJobs(id);
+        JobResponse response = jobService.getJobById(id);
         return ResponseEntity.ok().body(ResponseFactory.success(response));
     }
 
-    @PostMapping("/jobs")
-    public ResponseEntity<ApiResponse<JobResponse>> createJob(
-            @PathVariable Integer id,
-            @RequestBody @Valid CreateJobRequest request
-    ) {
-        JobResponse response = jobService.createJob(id, request);
-        return ResponseEntity.ok().body(ResponseFactory.success(response));
-    }
+
 }
