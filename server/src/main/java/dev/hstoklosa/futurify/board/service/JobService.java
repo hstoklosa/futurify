@@ -5,6 +5,7 @@ import dev.hstoklosa.futurify.board.JobMapper;
 import dev.hstoklosa.futurify.board.dto.CreateJobRequest;
 import dev.hstoklosa.futurify.board.dto.JobResponse;
 import dev.hstoklosa.futurify.board.dto.UpdateJobPositionRequest;
+import dev.hstoklosa.futurify.board.dto.UpdateJobRequest;
 import dev.hstoklosa.futurify.board.entity.Board;
 import dev.hstoklosa.futurify.board.entity.Job;
 import dev.hstoklosa.futurify.board.repository.BoardRepository;
@@ -164,5 +165,56 @@ public class JobService {
         job.setStage(stageRepository.getReferenceById(targetStageId));
         job.setPosition(targetPosition);
         jobRepository.save(job);
+    }
+
+    @Transactional
+    public JobResponse updateJob(Integer jobId, UpdateJobRequest request) {
+        Job job = jobRepository.findById(jobId)
+                .orElseThrow(() -> new ResourceNotFoundException("The requested job application doesn't exist."));
+        
+        User currentUser = SecurityUtil.getCurrentUser();
+        if (!currentUser.getId().equals(job.getBoard().getUser().getId())) {
+            throw new OperationNotPermittedException("You aren't permitted to update this job.");
+        }
+        
+        Stage targetStage = stageRepository.findById(request.getStageId())
+                .orElseThrow(() -> new ResourceNotFoundException("The specified stage couldn't be found."));
+        
+        // Ensure the stage belongs to the same board as the job
+        if (!targetStage.getBoard().getId().equals(job.getBoard().getId())) {
+            throw new OperationNotPermittedException("Cannot move job to a stage from a different board.");
+        }
+        
+        // Sanitize HTML in description if present
+        if (StringUtils.hasText(request.getDescription())) {
+            request.setDescription(SecurityUtil.sanitiseHtml(request.getDescription()));
+        }
+        
+        // Handle stage change if needed
+        Integer currentStageId = job.getStage().getId();
+        Integer targetStageId = targetStage.getId();
+        
+        if (!Objects.equals(currentStageId, targetStageId)) {
+            // If stage is changing, handle position changes
+            Integer currentPosition = job.getPosition();
+            Integer maxPositionInTargetStage = jobRepository.findMaxPositionByStageId(targetStageId);
+            Integer newPosition = maxPositionInTargetStage != null ? maxPositionInTargetStage + 1 : 0;
+            
+            // Close the gap in the current stage
+            Integer maxPositionInCurrentStage = jobRepository.findMaxPositionByStageId(currentStageId);
+            if (maxPositionInCurrentStage != null && currentPosition < maxPositionInCurrentStage) {
+                jobRepository.shiftPositionsDown(currentStageId, currentPosition + 1, maxPositionInCurrentStage);
+            }
+            
+            // Update stage and position
+            job.setStage(targetStage);
+            job.setPosition(newPosition);
+        }
+        
+        // Update other job properties
+        jobMapper.updateJobFromRequest(request, job.getStage(), job);
+        
+        job = jobRepository.save(job);
+        return jobMapper.jobToJobResponse(job);
     }
 }

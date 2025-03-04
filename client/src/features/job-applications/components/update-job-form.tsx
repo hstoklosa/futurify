@@ -5,6 +5,7 @@ import { renderOptions } from "@utils/select";
 
 import { JobType, updateJobSchema } from "@schemas/job-application";
 import { Job, Stage } from "@/types/api";
+import { useUpdateJob } from "../api/update-job";
 
 type UpdateJobFormProps = {
   currentJob: Job;
@@ -21,14 +22,28 @@ const UpdateJobForm = ({
 }: UpdateJobFormProps) => {
   const jobTypes = enumToArray(JobType);
 
+  const updateJobMutation = useUpdateJob({
+    onSuccess: () => {
+      onSuccess && onSuccess();
+    },
+  });
+
+  // Convert numeric values to strings for the form
+  const defaultValues = {
+    ...currentJob,
+    stageId: String(currentJob.stageId),
+  };
+
   return (
     <Form
       schema={updateJobSchema}
       onSubmit={(data) => {
-        console.log(data);
-        onSuccess && onSuccess();
+        updateJobMutation.mutate({
+          jobId: currentJob.id,
+          data: data,
+        });
       }}
-      options={{ defaultValues: currentJob }}
+      options={{ defaultValues }}
       className="px-7 py-6 space-y-6"
     >
       {({ register, control }) => (
@@ -84,9 +99,8 @@ const UpdateJobForm = ({
               label="Listing URL"
               placeholder="+ add listing url"
               register={register("postUrl")}
-              onDisabledClick={() => console.log("xd")}
             >
-              <span>xd</span>
+              <span>Add URL</span>
             </ToggleInput>
             <Input
               type="text"
@@ -115,9 +129,9 @@ const UpdateJobForm = ({
               type="submit"
               variant="default"
               size="sm"
-              disabled={false}
+              disabled={updateJobMutation.isPending}
             >
-              Save
+              {updateJobMutation.isPending ? "Saving..." : "Save"}
             </Button>
           </div>
         </>

@@ -3,6 +3,7 @@ package dev.hstoklosa.futurify.board.controller;
 import dev.hstoklosa.futurify.board.dto.CreateJobRequest;
 import dev.hstoklosa.futurify.board.dto.JobResponse;
 import dev.hstoklosa.futurify.board.dto.UpdateJobPositionRequest;
+import dev.hstoklosa.futurify.board.dto.UpdateJobRequest;
 import dev.hstoklosa.futurify.board.service.JobService;
 import dev.hstoklosa.futurify.common.api.ApiResponse;
 import dev.hstoklosa.futurify.common.api.ResponseFactory;
@@ -63,6 +64,15 @@ public class JobController {
             @Valid @RequestBody UpdateJobPositionRequest request
     ) {
         JobResponse response = jobService.updateJobPosition(jobId, request);
+        return ResponseEntity.ok().body(ResponseFactory.success(response));
+    }
+    
+    @PutMapping("/{jobId}")
+    public ResponseEntity<ApiResponse<JobResponse>> updateJob(
+            @PathVariable Integer jobId,
+            @Valid @RequestBody UpdateJobRequest request
+    ) {
+        JobResponse response = jobService.updateJob(jobId, request);
         return ResponseEntity.ok().body(ResponseFactory.success(response));
     }
 }

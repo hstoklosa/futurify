@@ -29,13 +29,17 @@ export const updateJobSchema = z.object({
   companyName: z.string().min(1, { message: "Company name is required." }),
   location: z.string().min(1, { message: "Location is required." }),
   type: z.enum(JobTypeKeys, { message: "An incorrect job type was provided." }),
-  description: z.string().optional(),
+  description: z.union([z.string(), z.null()]).optional(),
   postUrl: z
-    .string()
-    .url("An invalid listing URL provided.")
-    .optional()
-    .or(z.literal("")),
-  salary: z.string().optional(),
+    .union([
+      z.string().url("An invalid listing URL provided."),
+      z.string().max(0), // Empty string
+      z.literal(""),
+      z.null(),
+      z.undefined(),
+    ])
+    .optional(),
+  salary: z.union([z.string(), z.null()]).optional(),
 });
 
 export type updateJobInput = z.infer<typeof updateJobSchema>;

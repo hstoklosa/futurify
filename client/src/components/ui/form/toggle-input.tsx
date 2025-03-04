@@ -6,7 +6,7 @@ import { Input, type InputProps } from ".";
 
 type ToggleInputProps = {
   icon?: IconType;
-  onDisabledClick?: (event: React.MouseEvent<HTMLDivElement>) => void;
+  onDisabledClick?: (_event: React.MouseEvent<HTMLDivElement>) => void;
 } & InputProps;
 
 const ToggleInput = ({
@@ -30,8 +30,6 @@ const ToggleInput = ({
     inputRef.current?.blur();
   };
 
-  console.log(enabled);
-
   return (
     <Input
       ref={inputRef}
@@ -42,7 +40,7 @@ const ToggleInput = ({
         <>
           <div
             className="absolute inset-y-0 right-0 pr-3 flex items-center w-full h-full"
-            onClick={(e) => onDisabledClick && onDisabledClick(e)}
+            onClick={(_e) => onDisabledClick && onDisabledClick(_e)}
           />
 
           <div

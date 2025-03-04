@@ -1,13 +1,12 @@
 import { api } from "@lib/api-client";
 import { MutationConfig } from "@lib/react-query";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { updateJobInput } from "@schemas/job-application";
+import { jobQueryKeys } from "./job-query-keys";
 
 type UpdateJobData = {
-  data: {
-    name?: string;
-    archived?: boolean;
-  };
-  jobId: string;
+  data: updateJobInput;
+  jobId: number;
 };
 
 const updateJob = ({ jobId, data }: UpdateJobData) => {
@@ -18,10 +17,28 @@ export const useUpdateJob = ({
   onSuccess,
   ...rest
 }: MutationConfig<typeof updateJob>) => {
+  const queryClient = useQueryClient();
+
   return useMutation({
-    onSuccess: (data, ...args) => {
-      // ... data transformation/invalidation
-      onSuccess && onSuccess(data, ...args);
+    onSuccess: (data, variables, context) => {
+      // Invalidate relevant queries
+      queryClient.invalidateQueries({
+        queryKey: jobQueryKeys.detail(variables.jobId),
+      });
+
+      // Invalidate the stage list that contains this job
+      if (data?.data?.data?.stageId) {
+        queryClient.invalidateQueries({
+          queryKey: jobQueryKeys.listByStage(String(data.data.data.stageId)),
+        });
+      }
+
+      // Invalidate the board list that contains this job
+      queryClient.invalidateQueries({
+        queryKey: jobQueryKeys.lists(),
+      });
+
+      onSuccess && onSuccess(data, variables, context);
     },
     mutationFn: updateJob,
     ...rest,
