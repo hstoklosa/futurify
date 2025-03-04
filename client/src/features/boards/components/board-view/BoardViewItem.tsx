@@ -59,6 +59,7 @@ const BoardViewItem = React.forwardRef<HTMLButtonElement, BoardViewItemProps>(
         {...(isDragOverlay ? {} : listeners)}
         ref={isDragOverlay ? undefined : setNodeRef}
         style={style}
+        data-id={id}
         className={cn(
           "bg-background w-full max-w-[300px] rounded-md px-4 py-3 my-2",
           "hover:shadow-[inset_0_0_0_2px_rgb(var(--primary))] hover:border-transparent",
@@ -94,5 +95,7 @@ const BoardViewItem = React.forwardRef<HTMLButtonElement, BoardViewItemProps>(
     );
   }
 );
+
+BoardViewItem.displayName = "BoardViewItem";
 
 export default BoardViewItem;

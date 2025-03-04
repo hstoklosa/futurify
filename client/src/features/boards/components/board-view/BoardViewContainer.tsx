@@ -14,6 +14,7 @@ type BoardViewContainerProps = {
   id: number;
   name: string;
   disabled?: boolean;
+  isActiveStage?: boolean;
   children?: React.ReactNode;
 };
 
@@ -22,21 +23,20 @@ const BoardViewContainer = ({
   items,
   id,
   name,
+  isActiveStage = false,
   children,
 }: BoardViewContainerProps) => {
-  const { setNodeRef, isOver, over } = useDroppable({
+  const { setNodeRef, isOver } = useDroppable({
     id: name,
-    data: { type: "container" },
+    data: { type: "container", id },
   });
-
-  const isOverContainer = isOver || (over?.id && items.includes(over.id));
 
   return (
     <div
       ref={setNodeRef}
       className={cn(
         "relative flex-1 flex flex-col h-[97%] py-4 bg-[rgba(25,4,69,0.01)] shadow-4xl border-border border-[1px] rounded-xl",
-        isOverContainer &&
+        (isOver || isActiveStage) &&
           "after:absolute after:z-50 after:inset-0 after:bg-primary/15 after:ring-2 after:ring-primary after:rounded-xl after:pointer-events-none"
       )}
     >
