@@ -63,8 +63,8 @@ const BoardViewContainer = ({
         </CreateJobDialog>
       </div>
 
-      <div className={cn("flex-1 overflow-y-auto w-[300px] h-[97%]")}>
-        <ScrollArea className="px-4">{children}</ScrollArea>
+      <div className="flex-1 overflow-hidden w-[300px]">
+        <ScrollArea className="h-full px-4">{children}</ScrollArea>
       </div>
     </div>
   );

@@ -51,7 +51,6 @@ const BoardViewItem = React.forwardRef<HTMLButtonElement, BoardViewItemProps>(
       transform: isDragOverlay ? undefined : CSS.Transform.toString(transform),
       cursor: "grab",
       zIndex: isDragOverlay ? 1000 : 1,
-      width: isDragOverlay ? "300px" : undefined,
     } as React.CSSProperties;
 
     return (
@@ -61,25 +60,32 @@ const BoardViewItem = React.forwardRef<HTMLButtonElement, BoardViewItemProps>(
         ref={isDragOverlay ? undefined : setNodeRef}
         style={style}
         className={cn(
-          "bg-background w-full border-border border-[1px] rounded-md px-4 py-3 my-2",
+          "bg-background w-full max-w-[300px] rounded-md px-4 py-3 my-2",
           "hover:shadow-[inset_0_0_0_2px_rgb(var(--primary))] hover:border-transparent",
           "transition-all duration-200 ease-in-out",
+          !isDragOverlay && "border-border border-[1px]",
           isDragging && "opacity-0",
-          isDragOverlay &&
-            "shadow-lg shadow-primary/10 transform-none rounded-md border-[2px] border-primary"
+          isDragOverlay && [
+            "shadow-lg",
+            "shadow-primary/10",
+            "transform-none",
+            "!border-primary",
+            "!border-solid",
+            "!bg-background",
+          ]
         )}
       >
-        <h3 className="flex items-center text-[15px] font-semibold !text-foreground mb-1">
+        <h3 className="flex items-center text-[15px] font-semibold !text-foreground mb-1 truncate">
           {title}
         </h3>
         <div className="text-sm ml-0.5 text-foreground/70 space-y-[1px] [&>*]:flex [&>*]:items-center">
-          <div>
-            <LuBuilding className="stroke-foreground/40 mr-2" />
-            <span>{companyName}</span>
+          <div className="truncate">
+            <LuBuilding className="stroke-foreground/40 mr-2 flex-shrink-0" />
+            <span className="truncate">{companyName}</span>
           </div>
-          <div>
-            <LuMapPin className="stroke-foreground/40 mr-2" />
-            <span>
+          <div className="truncate">
+            <LuMapPin className="stroke-foreground/40 mr-2 flex-shrink-0" />
+            <span className="truncate">
               {location} ({jobType})
             </span>
           </div>
