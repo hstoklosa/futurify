@@ -51,3 +51,18 @@ export type Job = Entity<{
   salary: string;
   stageId: number;
 }>;
+
+export type JobEventType =
+  | "CREATED"
+  | "UPDATED"
+  | "STAGE_CHANGED"
+  | "POSITION_CHANGED"
+  | "DELETED";
+
+export type JobTimelineEvent = Entity<{
+  jobId: number;
+  eventType: JobEventType;
+  description: string;
+  details: string;
+  timestamp: string;
+}>;
