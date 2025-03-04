@@ -16,11 +16,13 @@ import dev.hstoklosa.futurify.common.util.SecurityUtil;
 import dev.hstoklosa.futurify.stage.entity.Stage;
 import dev.hstoklosa.futurify.stage.repository.StageRepository;
 import dev.hstoklosa.futurify.user.entity.User;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -308,5 +310,13 @@ public class JobService {
         }
         
         return jobMapper.jobToJobResponse(job);
+    }
+
+    @Transactional(readOnly = true)
+    public Integer getTodayApplicationsCount(Integer userId) {
+        LocalDateTime startOfDay = LocalDateTime.now().with(LocalTime.MIN);
+        LocalDateTime endOfDay = LocalDateTime.now().with(LocalTime.MAX);
+        
+        return jobRepository.countByUserIdAndCreatedAtBetween(userId, startOfDay, endOfDay);
     }
 }

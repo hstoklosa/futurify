@@ -7,23 +7,20 @@ import dev.hstoklosa.futurify.board.dto.UpdateJobRequest;
 import dev.hstoklosa.futurify.board.service.JobService;
 import dev.hstoklosa.futurify.common.api.ApiResponse;
 import dev.hstoklosa.futurify.common.api.ResponseFactory;
+import dev.hstoklosa.futurify.user.entity.User;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/jobs")
+@RequiredArgsConstructor
 public class JobController {
-
     private final JobService jobService;
-
-    @Autowired
-    public JobController(JobService jobService) {
-        this.jobService = jobService;
-    }
 
     @GetMapping("/{id}")
     public ResponseEntity<ApiResponse<JobResponse>> getJob(
@@ -74,5 +71,12 @@ public class JobController {
     ) {
         JobResponse response = jobService.updateJob(jobId, request);
         return ResponseEntity.ok().body(ResponseFactory.success(response));
+    }
+
+    @GetMapping("/today/count")
+    public ResponseEntity<ApiResponse<Integer>> getTodayApplicationsCount(
+            @AuthenticationPrincipal User user) {
+        Integer count = jobService.getTodayApplicationsCount(user.getId());
+        return ResponseEntity.ok(new ApiResponse<>(200, count, null));
     }
 }

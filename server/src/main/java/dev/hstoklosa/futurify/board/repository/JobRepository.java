@@ -5,9 +5,12 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
+@Repository
 public interface JobRepository extends JpaRepository<Job, Integer> {
 
     List<Job> findAllByBoardId(Integer boardId);
@@ -53,5 +56,12 @@ public interface JobRepository extends JpaRepository<Job, Integer> {
             @Param("jobId") Integer jobId,
             @Param("newStageId") Integer newStageId,
             @Param("newPosition") Integer newPosition
+    );
+
+    @Query("SELECT COUNT(j) FROM Job j WHERE j.board.user.id = :userId AND j.createdAt BETWEEN :startDate AND :endDate")
+    Integer countByUserIdAndCreatedAtBetween(
+            @Param("userId") Integer userId,
+            @Param("startDate") LocalDateTime startDate,
+            @Param("endDate") LocalDateTime endDate
     );
 }
