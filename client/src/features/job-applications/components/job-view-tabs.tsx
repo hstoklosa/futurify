@@ -1,16 +1,19 @@
 import React, { useState } from "react";
 import { LuPencil } from "react-icons/lu";
 
-import { Spinner } from "@components/ui/spinner";
-import { Button } from "@components/ui/button";
-import { cn } from "@utils/cn";
-import { ScrollArea } from "@components/ui/scroll-area";
+import { Spinner } from "@/components/ui/spinner";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/utils/cn";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
-import { useBoardStages } from "@features/boards/api/getBoardStages";
+import { useBoardStages } from "@/features/boards/api/getBoardStages";
 import { useGetJob } from "../api/get-job";
 import UpdateJobForm from "./update-job-form";
 import { JobTimeline } from "./job-timeline";
 import { JobInsights } from "./job-insights";
+import { CreateNote } from "./notes/create-note";
+import { NoteList } from "./notes/note-list";
+import { useGetJobNotes } from "../api/notes";
 
 type TabContentProps = {
   jobId: number;
@@ -182,16 +185,26 @@ export const InterviewsTab = () => {
   );
 };
 
-export const NotesTab = () => {
+export const NotesTab = ({ jobId }: { jobId: number }) => {
+  const { data: notes, isPending } = useGetJobNotes({ jobId });
+
   return (
     <div className="flex h-full">
       <div className="w-full flex flex-col">
-        <div className="flex items-start justify-between px-5">
+        <div className="flex items-start justify-between px-5 py-2">
           <JobViewTabHeader>Notes</JobViewTabHeader>
         </div>
         <ScrollArea className="flex-1">
-          <div className="flex flex-col space-y-4 px-5 pb-6">
-            {/* Notes content will go here */}
+          <div className="flex flex-col space-y-6 px-5 py-4">
+            <CreateNote jobId={jobId} />
+            {isPending ? (
+              <Spinner size="lg" />
+            ) : (
+              <NoteList
+                notes={notes || []}
+                jobId={jobId}
+              />
+            )}
           </div>
         </ScrollArea>
       </div>
