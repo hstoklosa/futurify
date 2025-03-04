@@ -44,7 +44,7 @@ const UpdateJobForm = ({
         });
       }}
       options={{ defaultValues }}
-      className="px-7 py-6 space-y-6"
+      className="px-7 py-6 space-y-6 w-full"
     >
       {({ register, control }) => (
         <>
