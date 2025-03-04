@@ -30,30 +30,36 @@ export const useUpdateBoard = ({
 
   return useMutation({
     onSuccess: (data, variables, ...args) => {
-      // Change board state to archived
-      // Active list -> Archived list
       if ("archived" in variables.data && variables.data.archived) {
         queryClient.setQueryData(
           getArchivedBoardsQueryOptions().queryKey,
-          (prev) => ({ data: [...prev!.data, data.data] })
+          (prev) => ({ data: [...(prev?.data || []), data.data] })
         );
 
-        queryClient.setQueryData(getActiveBoardsQueryOptions().queryKey, (prev) => ({
-          data: prev!.data.filter((board) => board.id !== data.data.id),
-        }));
+        queryClient.setQueryData(
+          getActiveBoardsQueryOptions().queryKey,
+          (prev) => ({
+            data: prev
+              ? prev.data.filter((board) => board.id !== data.data.id)
+              : [],
+          })
+        );
       }
 
-      // Restore board to active state
-      // Archived list -> Active list
       if ("archived" in variables.data && !variables.data.archived) {
-        queryClient.setQueryData(getActiveBoardsQueryOptions().queryKey, (prev) => ({
-          data: [data.data, ...prev!.data],
-        }));
+        queryClient.setQueryData(
+          getActiveBoardsQueryOptions().queryKey,
+          (prev) => ({
+            data: [data.data, ...(prev?.data || [])],
+          })
+        );
 
         queryClient.setQueryData(
           getArchivedBoardsQueryOptions().queryKey,
           (prev) => ({
-            data: prev!.data.filter((board) => board.id !== data.data.id),
+            data: prev
+              ? prev.data.filter((board) => board.id !== data.data.id)
+              : [],
           })
         );
       }

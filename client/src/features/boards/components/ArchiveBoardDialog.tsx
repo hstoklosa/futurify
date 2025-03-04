@@ -1,17 +1,17 @@
-import { useQueryClient } from "@tanstack/react-query";
+import { useNavigate } from "react-router-dom";
 import { LuTrash } from "react-icons/lu";
 
 import { Button } from "@components/ui/button";
 import { ConfirmationDialog } from "@components/ui/dialog/confirmation-dialog";
+import { PathConstants } from "@utils/constants";
 
 import { useUpdateBoard } from "../api/updateBoard";
 
 const ArchiveBoardDialog = ({ id }: { id: string }) => {
-  const queryClient = useQueryClient();
+  const navigate = useNavigate();
   const updateBoardMutation = useUpdateBoard({
-    onSuccess: (data) => {
-      console.log(data);
-      console.log("Board archived");
+    onSuccess: () => {
+      navigate(PathConstants.HOME);
     },
   });
 
