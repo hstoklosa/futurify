@@ -41,32 +41,29 @@ export const ApplicationTab = ({ jobId, boardId }: TabContentProps) => {
         <UpdateJobForm
           currentJob={job!.data}
           currentStages={stages.data}
-          onSuccess={() => {
-            console.log("success");
-            disableEditing();
-          }}
+          onSuccess={() => disableEditing()}
           onCancel={disableEditing}
         />
       )}
 
       {!editingMode && (
         <>
-          <div className="w-[60%] border-r-[1px] border-border">
-            <ScrollArea className="h-[calc(85vh-180px)]">
-              <div className="flex flex-col space-y-4 px-5 py-6">
-                <div className="flex items-start justify-between">
-                  <JobViewTabHeader>Application Details</JobViewTabHeader>
-                  <Button
-                    variant="outlineMuted"
-                    size="sm"
-                    className="flex items-center justify-center justify-self-end h-6 px-2 py-1"
-                    onClick={enableEditing}
-                  >
-                    <span>Edit</span>
-                    <LuPencil className="stroke-foreground/50 ml-1 size-[11px]" />
-                  </Button>
-                </div>
+          <div className="w-[60%] border-r-[1px] border-border flex flex-col">
+            <div className="flex items-start justify-between px-5">
+              <JobViewTabHeader>Application Details</JobViewTabHeader>
+              <Button
+                variant="outlineMuted"
+                size="sm"
+                className="flex items-center justify-center justify-self-end h-6 px-2 py-1"
+                onClick={enableEditing}
+              >
+                <span>Edit</span>
+                <LuPencil className="stroke-foreground/50 ml-1 size-[11px]" />
+              </Button>
+            </div>
 
+            <ScrollArea className="flex-1">
+              <div className="flex flex-col space-y-4 px-5 pb-6">
                 <div className="flex flex-col">
                   <span className="text-sm text-muted-foreground">Job Title</span>
                   <span className="text-base">{job.data.title}</span>
@@ -139,8 +136,8 @@ export const ApplicationTab = ({ jobId, boardId }: TabContentProps) => {
               </div>
             </ScrollArea>
           </div>
-          <div className="w-[40%] px-5 py-6">
-            <JobViewTabHeader className="text-[15px] mb-4">
+          <div className="w-[40%] px-5">
+            <JobViewTabHeader className="text-[16px] mb-4">
               Timeline
             </JobViewTabHeader>
             <JobTimeline jobId={jobId} />
@@ -151,21 +148,55 @@ export const ApplicationTab = ({ jobId, boardId }: TabContentProps) => {
   );
 };
 
-// Placeholder components for other tabs
 export const AiTab = ({ jobId }: { jobId: number }) => {
   return (
-    <div className="p-4 h-full">
-      <JobInsights jobId={jobId} />
+    <div className="flex h-full">
+      <div className="w-full flex flex-col">
+        {/* <div className="flex items-start justify-between px-5 pt-2">
+          <JobViewTabHeader>AI Insights</JobViewTabHeader>
+        </div> */}
+        <ScrollArea className="flex-1">
+          <div className="flex flex-col space-y-4 px-5 pb-6">
+            <JobInsights jobId={jobId} />
+          </div>
+        </ScrollArea>
+      </div>
     </div>
   );
 };
 
 export const InterviewsTab = () => {
-  return <div className="p-4">Interviews</div>;
+  return (
+    <div className="flex h-full">
+      <div className="w-full flex flex-col">
+        <div className="flex items-start justify-between px-5">
+          <JobViewTabHeader>Interviews</JobViewTabHeader>
+        </div>
+        <ScrollArea className="flex-1">
+          <div className="flex flex-col space-y-4 px-5 pb-6">
+            {/* Interview content will go here */}
+          </div>
+        </ScrollArea>
+      </div>
+    </div>
+  );
 };
 
 export const NotesTab = () => {
-  return <span className="p-4">Notes</span>;
+  return (
+    <div className="flex h-full">
+      <div className="w-full flex flex-col">
+        <div className="flex items-start justify-between px-5">
+          <JobViewTabHeader>Notes</JobViewTabHeader>
+        </div>
+        <ScrollArea className="flex-1">
+          <div className="flex flex-col space-y-4 px-5 pb-6">
+            {/* Notes content will go here */}
+          </div>
+        </ScrollArea>
+      </div>
+    </div>
+  );
 };
 
 const JobViewTabHeader = ({

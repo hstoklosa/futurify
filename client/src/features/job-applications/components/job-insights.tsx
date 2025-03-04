@@ -22,7 +22,7 @@ export const JobInsights: React.FC<JobInsightsProps> = ({ jobId }) => {
 
   if (isError) {
     return (
-      <div className="p-4 text-destructive">
+      <div className="text-destructive">
         <p>
           Error loading insights: {(error as Error)?.message || "Unknown error"}
         </p>
@@ -43,25 +43,22 @@ export const JobInsights: React.FC<JobInsightsProps> = ({ jobId }) => {
       keywords.length === 0)
   ) {
     return (
-      <div className="p-6 h-full">
-        <h2 className="text-2xl font-semibold mb-8">AI Powered Summary</h2>
+      <div>
         <p className="text-muted-foreground">No insights available for this job.</p>
       </div>
     );
   }
 
   return (
-    <div className="p-6 h-full">
+    <div className="h-full">
       <div className="flex justify-between">
         <div className="w-[70%] pr-6">
-          <h2 className="text-2xl font-semibold mb-8">AI Powered Summary</h2>
-
           <div className="grid grid-cols-2 gap-8">
             <div>
-              <h3 className="text-lg font-semibold mb-1">Responsibilities</h3>
-              <p className="text-muted-foreground text-sm mb-4">
-                What you'll be doing
-              </p>
+              <h3 className="text-base font-semibold text-secondary mb-1">
+                Responsibilities
+              </h3>
+              <p className="text-secondary text-sm mb-4">What you'll be doing</p>
               <ul className="space-y-2 list-disc pl-4">
                 {responsibilities.map((item, index) => (
                   <li
@@ -75,15 +72,17 @@ export const JobInsights: React.FC<JobInsightsProps> = ({ jobId }) => {
             </div>
 
             <div>
-              <h3 className="text-lg font-semibold mb-1">Qualifications</h3>
-              <p className="text-muted-foreground text-sm mb-4">
+              <h3 className="text-base font-semibold text-secondary mb-1">
+                Qualifications
+              </h3>
+              <p className="text-secondary text-sm mb-4">
                 What they're looking for
               </p>
-              <ul className="space-y-2 list-disc pl-4">
+              <ul className="text-secondary space-y-2 list-disc pl-4">
                 {qualifications.map((item, index) => (
                   <li
                     key={index}
-                    className="text-sm pl-1"
+                    className="text-secondary text-sm pl-1"
                   >
                     <span className="relative -left-1">{item}</span>
                   </li>
@@ -94,7 +93,7 @@ export const JobInsights: React.FC<JobInsightsProps> = ({ jobId }) => {
         </div>
 
         <div className="w-[30%] pl-6 border-l">
-          <h3 className="text-lg font-semibold mb-6">Keywords</h3>
+          <h3 className="text-base font-semibold text-secondary mb-3">Keywords</h3>
           <div className="flex flex-wrap gap-2">
             {keywords.map((keyword, index) => (
               <div

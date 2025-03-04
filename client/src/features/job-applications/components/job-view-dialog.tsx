@@ -93,7 +93,7 @@ const JobViewDialog = ({
                 <TabsContent
                   key={name}
                   value={name}
-                  className="h-full px-5 py-4"
+                  className="h-full px-5 py-5"
                 >
                   <Content
                     jobId={jobId}
