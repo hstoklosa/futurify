@@ -12,7 +12,9 @@ const AppContentLayout = ({
   return (
     <>
       <Head title={title} />
-      <main className="flex-1 flex flex-col h-full w-full mx-auto">{children}</main>
+      <main className="flex-1 flex flex-col h-full w-full max-w-full overflow-hidden">
+        {children}
+      </main>
     </>
   );
 };

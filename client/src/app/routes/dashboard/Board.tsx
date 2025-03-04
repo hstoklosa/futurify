@@ -5,12 +5,9 @@ import { AppContentLayout } from "@components/layout";
 import { Spinner } from "@components/ui/spinner";
 import { Button } from "@components/ui/button";
 
-import { useBoard, getBoardQueryOptions } from "@features/boards/api/getBoard";
-import {
-  getBoardStagesOptions,
-  useBoardStages,
-} from "@features/boards/api/getBoardStages";
-import { useJobs, getJobsOptions } from "@features/job-applications/api/get-jobs";
+import { getBoardQueryOptions } from "@features/boards/api/getBoard";
+import { getBoardStagesOptions } from "@features/boards/api/getBoardStages";
+import { getJobsOptions } from "@features/job-applications/api/get-jobs";
 import BoardView from "@features/boards/components/board-view/BoardView";
 
 /*
@@ -43,13 +40,15 @@ const Board = () => {
   const [boardQuery, stagesQuery, jobsQuery] = queryResults;
 
   if (queryResults.some((result) => result.isPending))
-    <Spinner
-      size="lg"
-      className="h-96"
-    />;
+    return (
+      <Spinner
+        size="md"
+        className="h-full"
+      />
+    );
 
   if (!boardQuery.isSuccess || !stagesQuery.isSuccess || !jobsQuery.isSuccess) {
-    return <h1>This board has been archived</h1>;
+    return <h1>Error loading board data</h1>;
   }
 
   if (boardQuery.data.data.archived) {
@@ -65,8 +64,7 @@ const Board = () => {
   return (
     <AppContentLayout title={`${board.data.name}`}>
       {/* TODO: Create AppContentHeader */}
-      {/* px-2 */}
-      <div className="flex items-center justify-between md:left-[215px] min-w-0 min-h-[45px] px-2 border-border border-b fixed top-0 left-0 right-0 bg-background">
+      <div className="flex items-center justify-between md:left-[215px] h-[45px] px-2 border-border border-b sticky top-0 left-0 right-0 bg-background z-10">
         <h1 className="text-secondary text-sm font-bold">{board.data.name}</h1>
         <Button
           className="text-white"
@@ -76,7 +74,9 @@ const Board = () => {
         </Button>
       </div>
 
-      <BoardView boardId={id} />
+      <div className="flex-1 h-[calc(100vh-45px)] overflow-hidden">
+        <BoardView boardId={id} />
+      </div>
     </AppContentLayout>
   );
 };
