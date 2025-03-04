@@ -31,9 +31,7 @@ export const DailyGoalProgress = () => {
       <div>
         <div className="flex items-center border-b border-border pt-4 pb-4 mb-7">
           <LuTarget className="stroke-foreground stroke-width-[0.1px] h-6 w-6 mr-3" />
-          <h1 className="text-foreground text-lg font-semibold">
-            Daily Application Goal
-          </h1>
+          <h1 className="text-foreground text-lg font-semibold">Daily Goal</h1>
         </div>
         <div className="text-sm text-destructive">
           Failed to load daily goal progress
@@ -46,9 +44,7 @@ export const DailyGoalProgress = () => {
     <div>
       <div className="flex items-center border-b border-border pt-4 pb-4 mb-7">
         <LuTarget className="stroke-foreground stroke-width-[0.1px] h-6 w-6 mr-3" />
-        <h1 className="text-foreground text-lg font-semibold">
-          Daily Application Goal
-        </h1>
+        <h1 className="text-foreground text-lg font-semibold">Daily Goal</h1>
       </div>
 
       <div className="flex flex-col space-y-4">
