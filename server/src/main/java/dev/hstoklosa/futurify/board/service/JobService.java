@@ -21,7 +21,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -33,6 +35,7 @@ public class JobService {
     private final BoardRepository boardRepository;
     private final StageRepository stageRepository;
     private final JobMapper jobMapper;
+    private final JobTimelineService timelineService;
 
     public JobResponse getJobById(Integer jobId) {
         Job job = jobRepository.findById(jobId)
@@ -55,28 +58,42 @@ public class JobService {
                 .collect(Collectors.toList());
     }
 
-    @Transactional // multiple UPDATEs in shiftPosition
+    @Transactional
     public JobResponse createJob(Integer boardId, CreateJobRequest request) {
         Board board = boardRepository.findById(boardId)
-                .orElseThrow(() -> new ResourceNotFoundException("The board has not been provided for this job."));
-
-        Stage stage = stageRepository.findById(request.getStageId())
-                .orElseThrow(() -> new ResourceNotFoundException("The stage has not been provided for this job."));
-
-        String jobDescription = request.getDescription();
-        if (StringUtils.hasText(jobDescription)) {
-            request.setDescription(SecurityUtil.sanitiseHtml(jobDescription));
+                .orElseThrow(() -> new ResourceNotFoundException("The requested board doesn't exist."));
+        
+        User currentUser = SecurityUtil.getCurrentUser();
+        if (!currentUser.getId().equals(board.getUser().getId())) {
+            throw new OperationNotPermittedException("You aren't permitted to create jobs for this board.");
         }
-
-        Integer stageId = stage.getId();
-        Integer endPos = jobRepository.findMaxPositionByStageId(stageId);
-        Integer newPosition = endPos != null ? endPos + 1 : 0;
         
-        Job job = jobMapper.createJobRequestToJob(request, board, stage);
-        job.setPosition(newPosition);
+        Stage stage = stageRepository.findById(request.getStageId())
+            .orElseThrow(() -> new ResourceNotFoundException("The specified stage couldn't be found."));
         
-        job = jobRepository.save(job);
-        return jobMapper.jobToJobResponse(job);
+        // Ensure the stage belongs to the same board
+        if (!stage.getBoard().getId().equals(boardId)) {
+            throw new OperationNotPermittedException("Cannot add job to a stage from a different board.");
+        }
+        
+        // Sanitize HTML in description if present
+        if (StringUtils.hasText(request.getDescription())) {
+            request.setDescription(SecurityUtil.sanitiseHtml(request.getDescription()));
+        }
+        
+        // Get the highest position in the stage and add 1
+        Integer maxPosition = jobRepository.findMaxPositionByStageId(stage.getId());
+        Integer position = maxPosition != null ? maxPosition + 1 : 0;
+        
+        Job newJob = jobMapper.createJobRequestToJob(request, board, stage);
+        newJob.setPosition(position);
+        
+        Job savedJob = jobRepository.save(newJob);
+        
+        // Record timeline event for job creation
+        timelineService.recordJobCreation(savedJob);
+        
+        return jobMapper.jobToJobResponse(savedJob);
     }
     
     @Transactional
@@ -97,19 +114,30 @@ public class JobService {
             throw new OperationNotPermittedException("Cannot move job to a stage from a different board.");
         }
         
-        Integer targetPosition = request.getPosition();
         Integer currentStageId = job.getStage().getId();
-        Integer targetStageId = targetStage.getId();
         Integer currentPosition = job.getPosition();
+        Integer targetStageId = targetStage.getId();
+        Integer targetPosition = request.getPosition();
         
-        // Handle position changes within the same stage
+        // Save stage names for timeline
+        String previousStageName = job.getStage().getName();
+        String newStageName = targetStage.getName();
+        
         if (Objects.equals(currentStageId, targetStageId)) {
+            // Same stage, just moving positions
             handlePositionChangeWithinStage(job, currentPosition, targetPosition);
+            
+            // Record position change in timeline
+            timelineService.recordPositionChange(job, currentPosition, targetPosition);
         } else {
-            // Handle moving job to a different stage
+            // Moving to a different stage
             handlePositionChangeBetweenStages(job, currentStageId, currentPosition, targetStageId, targetPosition);
+            
+            // Record stage change in timeline
+            timelineService.recordStageChange(job, previousStageName, newStageName);
         }
         
+        job = jobRepository.save(job);
         return jobMapper.jobToJobResponse(job);
     }
     
@@ -190,9 +218,21 @@ public class JobService {
             request.setDescription(SecurityUtil.sanitiseHtml(request.getDescription()));
         }
         
+        // Capture job before changes for comparison
+        String oldTitle = job.getTitle();
+        String oldCompanyName = job.getCompanyName();
+        String oldLocation = job.getLocation();
+        String oldType = job.getType().toString();
+        String oldPostUrl = job.getPostUrl();
+        String oldDescription = job.getDescription();
+        String oldSalary = job.getSalary();
+        String oldStageName = job.getStage().getName();
+        
         // Handle stage change if needed
         Integer currentStageId = job.getStage().getId();
         Integer targetStageId = targetStage.getId();
+        
+        boolean stageChanged = false;
         
         if (!Objects.equals(currentStageId, targetStageId)) {
             // If stage is changing, handle position changes
@@ -209,12 +249,64 @@ public class JobService {
             // Update stage and position
             job.setStage(targetStage);
             job.setPosition(newPosition);
+            
+            stageChanged = true;
         }
         
         // Update other job properties
         jobMapper.updateJobFromRequest(request, job.getStage(), job);
         
+        // Save the job
         job = jobRepository.save(job);
+        
+        // Track changes for timeline
+        Map<String, String> changes = new HashMap<>();
+        
+        if (!oldTitle.equals(job.getTitle())) {
+            changes.put("title", "Changed from '" + oldTitle + "' to '" + job.getTitle() + "'");
+        }
+        
+        if (!oldCompanyName.equals(job.getCompanyName())) {
+            changes.put("companyName", "Changed from '" + oldCompanyName + "' to '" + job.getCompanyName() + "'");
+        }
+        
+        if ((oldLocation == null && job.getLocation() != null) || 
+            (oldLocation != null && !oldLocation.equals(job.getLocation()))) {
+            changes.put("location", "Changed from '" + (oldLocation != null ? oldLocation : "none") + 
+                    "' to '" + (job.getLocation() != null ? job.getLocation() : "none") + "'");
+        }
+        
+        if (!oldType.equals(job.getType().toString())) {
+            changes.put("type", "Changed from '" + oldType + "' to '" + job.getType() + "'");
+        }
+        
+        if ((oldPostUrl == null && job.getPostUrl() != null) || 
+            (oldPostUrl != null && !oldPostUrl.equals(job.getPostUrl()))) {
+            changes.put("postUrl", "Changed from '" + (oldPostUrl != null ? oldPostUrl : "none") + 
+                    "' to '" + (job.getPostUrl() != null ? job.getPostUrl() : "none") + "'");
+        }
+        
+        if ((oldDescription == null && job.getDescription() != null) || 
+            (oldDescription != null && !oldDescription.equals(job.getDescription()))) {
+            changes.put("description", "Description was updated");
+        }
+        
+        if ((oldSalary == null && job.getSalary() != null) || 
+            (oldSalary != null && !oldSalary.equals(job.getSalary()))) {
+            changes.put("salary", "Changed from '" + (oldSalary != null ? oldSalary : "none") + 
+                    "' to '" + (job.getSalary() != null ? job.getSalary() : "none") + "'");
+        }
+        
+        // Record updates in timeline
+        if (!changes.isEmpty()) {
+            timelineService.recordJobUpdate(job, changes);
+        }
+        
+        // Record stage change separately
+        if (stageChanged) {
+            timelineService.recordStageChange(job, oldStageName, targetStage.getName());
+        }
+        
         return jobMapper.jobToJobResponse(job);
     }
 }

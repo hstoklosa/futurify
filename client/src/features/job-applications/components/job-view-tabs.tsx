@@ -8,6 +8,7 @@ import { cn } from "@utils/cn";
 import { useBoardStages } from "@features/boards/api/getBoardStages";
 import { useGetJob } from "../api/get-job";
 import UpdateJobForm from "./update-job-form";
+import { JobTimeline } from "./job-timeline";
 
 type TabContentProps = {
   jobId: number;
@@ -132,6 +133,7 @@ export const ApplicationTab = ({ jobId, boardId }: TabContentProps) => {
           </div>
           <div className="px-4 py-2 mt-3 w-[50%]">
             <JobViewTabHeader className="text-[15px]">Timeline</JobViewTabHeader>
+            <JobTimeline jobId={jobId} />
           </div>
         </>
       )}
@@ -139,20 +141,21 @@ export const ApplicationTab = ({ jobId, boardId }: TabContentProps) => {
   );
 };
 
-export const AiTab = ({ jobId, boardId }: TabContentProps) => {
+// Placeholder components for other tabs
+export const AiTab = () => {
   return (
-    <div className="text-base font-semibold text-secondary ">
+    <div className="text-base font-semibold text-secondary p-4">
       AI Powered Insights
     </div>
   );
 };
 
-export const InterviewsTab = ({ jobId, boardId }: TabContentProps) => {
-  return <div>Interviews</div>;
+export const InterviewsTab = () => {
+  return <div className="p-4">Interviews</div>;
 };
 
-export const NotesTab = ({ jobId, boardId }: TabContentProps) => {
-  return <span>Notes</span>;
+export const NotesTab = () => {
+  return <span className="p-4">Notes</span>;
 };
 
 const JobViewTabHeader = ({
