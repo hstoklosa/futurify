@@ -40,6 +40,10 @@ export const useUpdateJob = ({
 
       onSuccess && onSuccess(data, variables, context);
     },
+    meta: {
+      showToast: true,
+      toastMessage: "Failed to update job application. Please try again.",
+    },
     mutationFn: updateJob,
     ...rest,
   });

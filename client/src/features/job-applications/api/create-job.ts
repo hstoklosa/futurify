@@ -46,6 +46,10 @@ export const useCreateJob = ({
 
       onSuccess && onSuccess(data, variables, ...args);
     },
+    meta: {
+      showToast: true,
+      toastMessage: "Failed to create job application. Please try again.",
+    },
     mutationFn: createJob,
     ...rest,
   });

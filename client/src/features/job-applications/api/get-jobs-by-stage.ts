@@ -16,6 +16,10 @@ export const getJobsByStageOptions = (stageId: string) => {
   return queryOptions({
     queryKey: jobQueryKeys.listByStage(stageId),
     queryFn: () => getJobsByStage(stageId),
+    meta: {
+      showToast: true,
+      toastMessage: "Failed to load jobs for this stage. Please try again.",
+    },
   });
 };
 

@@ -14,6 +14,10 @@ export const getBoardStagesOptions = (id: string) => {
   return queryOptions({
     queryKey: stageQueryKeys.list(id),
     queryFn: () => getBoardStages(id),
+    meta: {
+      showToast: true,
+      toastMessage: "Failed to load board stages. Please try again.",
+    },
   });
 };
 

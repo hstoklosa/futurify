@@ -14,6 +14,10 @@ export const getJobOptions = (jobId: number) => {
   return queryOptions({
     queryKey: jobQueryKeys.detail(jobId),
     queryFn: () => getJob(jobId),
+    meta: {
+      showToast: true,
+      toastMessage: "Failed to load job application details. Please try again.",
+    },
   });
 };
 

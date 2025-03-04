@@ -66,6 +66,10 @@ export const useUpdateBoard = ({
 
       onSuccess && onSuccess(data, variables, ...args);
     },
+    meta: {
+      showToast: true,
+      toastMessage: "Failed to update board. Please try again.",
+    },
     ...rest,
     mutationFn: archiveBoard,
   });

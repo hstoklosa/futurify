@@ -31,12 +31,7 @@ const CreateJobDialog = ({ boardId, stageId, children }: CreateJobDialogProps) =
   const { data: stages } = useBoardStages({ id: boardId });
 
   const createJob = useCreateJob({
-    onSuccess: () => {
-      setOpen(false); // Close dialog on success
-    },
-    onError: (error) => {
-      console.log(error);
-    },
+    onSuccess: () => setOpen(false),
   });
 
   if (!boards || !stages) {

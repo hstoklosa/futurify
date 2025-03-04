@@ -17,5 +17,9 @@ export const analyzeJobDescription = async (
 export const useAnalyzeJobDescription = () => {
   return useMutation({
     mutationFn: analyzeJobDescription,
+    meta: {
+      showToast: true,
+      toastMessage: "Failed to analyze job description. Please try again.",
+    },
   });
 };

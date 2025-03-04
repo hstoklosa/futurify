@@ -21,6 +21,10 @@ export const useLogout = ({
       queryClient.setQueryData(USER_KEY, () => ({ data: null }));
       onSuccess && onSuccess(...args);
     },
+    meta: {
+      showToast: true,
+      toastMessage: "Failed to logout. Please try again.",
+    },
     ...rest,
   });
 };

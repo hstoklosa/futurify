@@ -25,6 +25,11 @@ export const useVerifyEmail = ({
 
       onSuccess && onSuccess(data, ...args);
     },
+    meta: {
+      showToast: true,
+      toastMessage:
+        "Email verification failed. The link may be expired or invalid.",
+    },
     ...rest,
   });
 };

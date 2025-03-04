@@ -23,6 +23,10 @@ export const useLogin = ({
       queryClient.setQueryData(USER_KEY, () => ({ data: data.data }));
       onSuccess && onSuccess(data, ...args);
     },
+    meta: {
+      showToast: true,
+      toastMessage: "Invalid email or password",
+    },
     ...rest,
   });
 };

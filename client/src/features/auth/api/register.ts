@@ -20,9 +20,12 @@ export const useRegister = ({
   return useMutation({
     mutationFn: register,
     onSuccess: (data, ...args) => {
-      console.log(data);
       queryClient.setQueryData(USER_KEY, () => ({ data: data.data }));
       onSuccess && onSuccess(data, ...args);
+    },
+    meta: {
+      showToast: true,
+      toastMessage: "Registration failed. Please try again.",
     },
     ...rest,
   });

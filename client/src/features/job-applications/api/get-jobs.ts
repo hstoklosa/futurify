@@ -14,6 +14,10 @@ export const getJobsOptions = (boardId: string) => {
   return queryOptions({
     queryKey: jobQueryKeys.list(boardId),
     queryFn: () => getJobs(boardId),
+    meta: {
+      showToast: true,
+      toastMessage: "Failed to load job applications. Please try again.",
+    },
   });
 };
 

@@ -2,7 +2,7 @@ import { queryOptions, useQuery } from "@tanstack/react-query";
 
 import { api } from "@lib/api-client";
 import { QueryConfig } from "@lib/react-query";
-import { BoardList, Board } from "@/types/api";
+import { BoardList } from "@/types/api";
 
 import { boardsQueryKeys } from "./boardsQueryKeys";
 
@@ -14,6 +14,10 @@ export const getActiveBoardsQueryOptions = () => {
   return queryOptions({
     queryKey: boardsQueryKeys.list("active"),
     queryFn: getActiveBoards,
+    meta: {
+      showToast: true,
+      toastMessage: "Failed to load active boards. Please try again.",
+    },
   });
 };
 

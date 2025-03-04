@@ -14,6 +14,10 @@ export const getBoardQueryOptions = (id: string) => {
   return queryOptions({
     queryKey: boardsQueryKeys.detail(id),
     queryFn: () => getBoard(id),
+    meta: {
+      showToast: true,
+      toastMessage: "Failed to load board details. Please try again.",
+    },
   });
 };
 

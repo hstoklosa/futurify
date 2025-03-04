@@ -12,6 +12,10 @@ export const useGetTodayApplicationsCount = (
   return useQuery({
     queryKey: ["jobs", "today-count"],
     queryFn: getTodayApplicationsCount,
+    meta: {
+      showToast: true,
+      toastMessage: "Failed to load today's application count. Please try again.",
+    },
     ...config,
   });
 };

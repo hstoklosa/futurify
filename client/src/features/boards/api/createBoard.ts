@@ -23,6 +23,10 @@ export const useCreateBoard = ({
       });
       onSuccess && onSuccess(...args);
     },
+    meta: {
+      showToast: true,
+      toastMessage: "Failed to create board. Please try again.",
+    },
     ...rest,
     mutationFn: createBoard,
   });
