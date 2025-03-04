@@ -13,9 +13,9 @@ const ScrollArea = ({
   return (
     <ScrollAreaPrimitive.Root
       type="always"
-      className={cn("relative h-full", className)}
+      className={cn("relative h-full w-full", className)}
     >
-      <ScrollAreaPrimitive.Viewport className="h-full w-full">
+      <ScrollAreaPrimitive.Viewport className="h-full w-full rounded-[inherit]">
         {children}
       </ScrollAreaPrimitive.Viewport>
       <ScrollAreaPrimitive.Scrollbar

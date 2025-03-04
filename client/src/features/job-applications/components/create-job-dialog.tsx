@@ -31,7 +31,9 @@ const CreateJobDialog = ({ boardId, stageId, children }: CreateJobDialogProps) =
   const { data: stages } = useBoardStages({ id: boardId });
 
   const createJob = useCreateJob({
-    onSuccess: () => {},
+    onSuccess: () => {
+      setOpen(false); // Close dialog on success
+    },
     onError: (error) => {
       console.log(error);
     },
@@ -49,23 +51,24 @@ const CreateJobDialog = ({ boardId, stageId, children }: CreateJobDialogProps) =
       onOpenChange={setOpen}
     >
       <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent className="w-[420px] h-[600px] max-h-[85vh]">
+      <DialogContent className="w-[420px] max-h-[85vh] flex flex-col">
         <DialogHeader>
           <DialogTitle>Add Application</DialogTitle>
         </DialogHeader>
-        <div className="flex flex-col flex-1 min-h-0">
-          <ScrollArea>
-            <Form
-              onSubmit={(data) =>
-                createJob.mutate({
-                  boardId: Number(data.boardId),
-                  data,
-                })
-              }
-              schema={createJobSchema}
-            >
-              {({ register, control }) => (
-                <>
+        <Form
+          onSubmit={(data) =>
+            createJob.mutate({
+              boardId: Number(data.boardId),
+              data,
+            })
+          }
+          schema={createJobSchema}
+          className="flex flex-col flex-1 overflow-hidden"
+        >
+          {({ register, control }) => (
+            <>
+              <div className="flex-1 overflow-hidden">
+                <ScrollArea className="h-[calc(85vh-130px)]">
                   <div className="space-y-4 py-5 px-4">
                     <Input
                       type="text"
@@ -116,7 +119,7 @@ const CreateJobDialog = ({ boardId, stageId, children }: CreateJobDialogProps) =
                       <Select
                         label="Board"
                         className="p-1.5 text-[14px]"
-                        defaultValue={Number(boardId)}
+                        defaultValue={boardId}
                         options={renderOptions(boards.data, "name", "id")}
                         register={register("boardId")}
                         required
@@ -124,34 +127,36 @@ const CreateJobDialog = ({ boardId, stageId, children }: CreateJobDialogProps) =
                       <Select
                         label="Stage"
                         className="p-1.5 text-[14px]"
-                        defaultValue={Number(stageId)}
+                        defaultValue={stageId.toString()}
                         options={renderOptions(stages.data, "name", "id")}
                         register={register("stageId")}
                         required
                       />
                     </div>
                   </div>
-                </>
-              )}
-            </Form>
-          </ScrollArea>
-        </div>
-        <DialogFooter className="justify-end px-3 space-x-2 border-none">
-          <Button
-            variant="outlineMuted"
-            size="sm"
-            onClick={() => setOpen(false)}
-          >
-            Discard
-          </Button>
-          <Button
-            type="submit"
-            variant="default"
-            size="sm"
-          >
-            Add
-          </Button>
-        </DialogFooter>
+                </ScrollArea>
+              </div>
+              <DialogFooter className="justify-end px-3 space-x-2 border-none mt-4">
+                <Button
+                  variant="outlineMuted"
+                  size="sm"
+                  onClick={() => setOpen(false)}
+                  type="button"
+                >
+                  Discard
+                </Button>
+                <Button
+                  type="submit"
+                  variant="default"
+                  size="sm"
+                  disabled={createJob.isPending}
+                >
+                  {createJob.isPending ? "Adding..." : "Add"}
+                </Button>
+              </DialogFooter>
+            </>
+          )}
+        </Form>
       </DialogContent>
     </Dialog>
   );
