@@ -33,7 +33,7 @@ const CreateBoard = ({ children }: { children: React.ReactNode }) => {
       onOpenChange={setOpen}
     >
       <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent className="h-fit">
+      <DialogContent className="h-fit w-[400px]">
         <DialogHeader>
           <DialogTitle>Create Board</DialogTitle>
         </DialogHeader>
