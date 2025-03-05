@@ -1,5 +1,6 @@
 import { QueryClient, useQueries } from "@tanstack/react-query";
 import { LoaderFunctionArgs, useParams } from "react-router-dom";
+import { LuAlertCircle, LuInfo } from "react-icons/lu";
 
 import { AppContentLayout } from "@components/layout";
 import { Spinner } from "@components/ui/spinner";
@@ -48,11 +49,25 @@ const Board = () => {
     );
 
   if (!boardQuery.isSuccess || !stagesQuery.isSuccess || !jobsQuery.isSuccess) {
-    return <h1>Error loading board data</h1>;
+    return (
+      <div className="h-full w-full flex items-center justify-center">
+        <div className="flex items-center gap-2">
+          <LuAlertCircle className="h-6 w-6 text-destructive" />
+          <h1 className="text-xl font-medium">Error loading board data</h1>
+        </div>
+      </div>
+    );
   }
 
   if (boardQuery.data.data.archived) {
-    return <h1>This board has been archived</h1>;
+    return (
+      <div className="h-full w-full flex items-center justify-center">
+        <div className="flex items-center gap-2">
+          <LuInfo className="h-6 w-6 text-muted-foreground" />
+          <h1 className="text-xl font-medium">This board has been archived</h1>
+        </div>
+      </div>
+    );
   }
 
   // if (queryResults.find((result) => !result.isSuccess)) {
