@@ -29,6 +29,7 @@ import { cn } from "@utils/cn";
 import { useUser } from "@features/auth/api/getUser";
 import { useLogout } from "@features/auth/api/logout";
 import { useActiveBoards } from "@features/boards/api/getActiveBoards";
+import SettingsDialog from "@features/user/components/settings-dialog";
 import CreateBoard from "@features/boards/components/CreateBoard";
 import ArchiveBoardDialog from "@features/boards/components/ArchiveBoardDialog";
 import useOutsideClick from "@hooks/useOutsideClick";
@@ -48,7 +49,7 @@ const navigation: SidebarItem[] = [
 
 const buttons: Omit<SidebarItem, "to">[] = [
   { name: "Help", Icon: LuHelpCircle, disabled: true },
-  { name: "Settings", Icon: LuSettings, disabled: true },
+  { name: "Settings", Icon: LuSettings, disabled: false },
 ];
 
 const SidebarLink = ({ to, Icon, name, disabled }: SidebarItem) => {
@@ -246,16 +247,32 @@ const AppLayout = () => {
 
           {/* Bottom Action Buttons */}
           <div className="flex-shrink-0 px-2 pb-1.5">
-            {buttons.map(({ name, Icon, disabled }) => (
-              <button
-                key={name}
-                disabled={disabled}
-                className="flex items-center w-full min-h-8 px-4 rounded-md hover:bg-primary/5 text-foreground/80 text-sm font-semibold truncate disabled cursor-not-allowed"
-              >
-                <Icon className="w-[17px] h-[17px] mr-2" />
-                {name}
-              </button>
-            ))}
+            {buttons.map(({ name, Icon, disabled }) => {
+              if (name === "Settings") {
+                return (
+                  <SettingsDialog
+                    key={name}
+                    triggerButton={
+                      <button className="flex items-center w-full min-h-8 px-4 rounded-md hover:bg-primary/5 text-foreground/80 text-sm font-semibold truncate">
+                        <Icon className="w-[17px] h-[17px] mr-2" />
+                        {name}
+                      </button>
+                    }
+                  />
+                );
+              }
+
+              return (
+                <button
+                  key={name}
+                  disabled={disabled}
+                  className="flex items-center w-full min-h-8 px-4 rounded-md hover:bg-primary/5 text-foreground/80 text-sm font-semibold truncate disabled cursor-not-allowed"
+                >
+                  <Icon className="w-[17px] h-[17px] mr-2" />
+                  {name}
+                </button>
+              );
+            })}
           </div>
         </div>
       </aside>

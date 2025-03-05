@@ -2,6 +2,7 @@ package dev.hstoklosa.futurify.user.controller;
 
 import dev.hstoklosa.futurify.common.api.ApiResponse;
 import dev.hstoklosa.futurify.user.dto.UpdateDailyGoalRequest;
+import dev.hstoklosa.futurify.user.dto.UpdateUserRequest;
 import dev.hstoklosa.futurify.user.entity.User;
 import dev.hstoklosa.futurify.user.service.UserService;
 import jakarta.validation.Valid;
@@ -29,5 +30,13 @@ public class UserController {
             @AuthenticationPrincipal User user) {
         Integer goal = userService.getDailyApplicationGoal(user.getId());
         return ResponseEntity.ok(new ApiResponse<>(200, goal, null));
+    }
+    
+    @PatchMapping("/profile")
+    public ResponseEntity<ApiResponse<User>> updateUserDetails(
+            @AuthenticationPrincipal User user,
+            @Valid @RequestBody UpdateUserRequest request) {
+        User updatedUser = userService.updateUserDetails(user.getId(), request);
+        return ResponseEntity.ok(new ApiResponse<>(200, updatedUser, null));
     }
 } 
