@@ -70,21 +70,23 @@ const JobViewDialog = ({
               createdAt={createdAt}
             />
 
-            <TabsList
-              aria-label="Explore your application."
-              className="flex gap-6 px-0"
-            >
-              {tabs.map(({ name, Icon }) => (
-                <TabsTrigger
-                  key={name}
-                  value={name}
-                  className="px-2 transition duration-200 ease-in-out"
-                >
-                  <Icon className="size-4" />
-                  <span className="inline-block pb-[1px] ml-2">{name}</span>
-                </TabsTrigger>
-              ))}
-            </TabsList>
+            <div className="w-full overflow-x-auto [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]{display:none}">
+              <TabsList
+                aria-label="Explore your application."
+                className="flex w-max gap-6 px-0"
+              >
+                {tabs.map(({ name, Icon }) => (
+                  <TabsTrigger
+                    key={name}
+                    value={name}
+                    className="px-2 transition duration-200 ease-in-out whitespace-nowrap"
+                  >
+                    <Icon className="size-4" />
+                    <span className="inline-block pb-[1px] ml-2">{name}</span>
+                  </TabsTrigger>
+                ))}
+              </TabsList>
+            </div>
           </DialogHeader>
 
           <div className="flex-1 min-h-0">
