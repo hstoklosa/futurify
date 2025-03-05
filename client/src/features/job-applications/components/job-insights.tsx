@@ -51,54 +51,50 @@ export const JobInsights: React.FC<JobInsightsProps> = ({ jobId }) => {
 
   return (
     <div className="h-full">
-      <div className="flex justify-between">
-        <div className="w-[70%] pr-6">
-          <div className="grid grid-cols-2 gap-8">
-            <div>
-              <h3 className="text-base font-semibold text-secondary mb-1">
-                Responsibilities
-              </h3>
-              <p className="text-secondary text-sm mb-4">What you'll be doing</p>
-              <ul className="space-y-2 list-disc pl-4">
-                {responsibilities.map((item, index) => (
-                  <li
-                    key={index}
-                    className="text-sm pl-1"
-                  >
-                    <span className="relative -left-1">{item}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
+      <div className="flex flex-col space-y-8">
+        <div className="flex flex-col md:flex-row md:space-x-8 space-y-8 md:space-y-0">
+          <div className="w-full md:w-1/2">
+            <h3 className="text-base font-semibold text-secondary mb-1">
+              Responsibilities
+            </h3>
+            <p className="text-secondary text-sm mb-4">What you'll be doing</p>
+            <ul className="space-y-2 list-disc pl-4">
+              {responsibilities.map((item, index) => (
+                <li
+                  key={index}
+                  className="text-sm pl-1"
+                >
+                  <span className="relative -left-1">{item}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
 
-            <div>
-              <h3 className="text-base font-semibold text-secondary mb-1">
-                Qualifications
-              </h3>
-              <p className="text-secondary text-sm mb-4">
-                What they're looking for
-              </p>
-              <ul className="text-secondary space-y-2 list-disc pl-4">
-                {qualifications.map((item, index) => (
-                  <li
-                    key={index}
-                    className="text-secondary text-sm pl-1"
-                  >
-                    <span className="relative -left-1">{item}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
+          <div className="w-full md:w-1/2">
+            <h3 className="text-base font-semibold text-secondary mb-1">
+              Qualifications
+            </h3>
+            <p className="text-secondary text-sm mb-4">What they're looking for</p>
+            <ul className="text-secondary space-y-2 list-disc pl-4">
+              {qualifications.map((item, index) => (
+                <li
+                  key={index}
+                  className="text-secondary text-sm pl-1"
+                >
+                  <span className="relative -left-1">{item}</span>
+                </li>
+              ))}
+            </ul>
           </div>
         </div>
 
-        <div className="w-[30%] pl-6 border-l">
+        <div className="w-full pt-6 md:pt-0 border-t md:border-t-0">
           <h3 className="text-base font-semibold text-secondary mb-3">Keywords</h3>
           <div className="flex flex-wrap gap-2">
             {keywords.map((keyword, index) => (
               <div
                 key={index}
-                className="inline-flex items-center bg-primary/10 rounded-md px-3 py-1"
+                className="inline-flex items-center bg-[rgb(214,203,255)] rounded-md px-3 py-1"
               >
                 <span className="text-xs font-medium mr-2">{index + 1}</span>
                 <span className="text-sm">{keyword}</span>

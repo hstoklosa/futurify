@@ -39,7 +39,7 @@ export const ApplicationTab = ({ jobId, boardId }: TabContentProps) => {
   const enableEditing = () => setEditingMode(true);
   const disableEditing = () => setEditingMode(false);
   return (
-    <div className="flex h-full">
+    <div className="flex h-full flex-col md:flex-row">
       {editingMode && (
         <UpdateJobForm
           currentJob={job!.data}
@@ -51,7 +51,7 @@ export const ApplicationTab = ({ jobId, boardId }: TabContentProps) => {
 
       {!editingMode && (
         <>
-          <div className="w-[60%] border-r-[1px] border-border flex flex-col">
+          <div className="w-full md:w-[60%] md:border-r-[1px] border-border flex flex-col">
             <div className="flex items-start justify-between px-5">
               <JobViewTabHeader>Application Details</JobViewTabHeader>
               <Button
@@ -139,7 +139,7 @@ export const ApplicationTab = ({ jobId, boardId }: TabContentProps) => {
               </div>
             </ScrollArea>
           </div>
-          <div className="w-[40%] px-5">
+          <div className="w-full md:w-[40%] px-5 border-t-[1px] md:border-t-0 border-border pt-4 md:pt-0">
             <JobViewTabHeader className="text-[16px] mb-4">
               Timeline
             </JobViewTabHeader>
@@ -151,7 +151,7 @@ export const ApplicationTab = ({ jobId, boardId }: TabContentProps) => {
   );
 };
 
-export const AiTab = ({ jobId }: { jobId: number }) => {
+export const InsightsTab = ({ jobId }: { jobId: number }) => {
   return (
     <div className="flex h-full">
       <div className="w-full flex flex-col">
