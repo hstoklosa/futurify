@@ -141,4 +141,22 @@ public class JobTimelineService {
                 .map(timelineMapper::mapToResponse)
                 .collect(Collectors.toList());
     }
+
+    /**
+     * Deletes all timeline events for a job
+     *
+     * @param jobId The ID of the job
+     */
+    @Transactional
+    public void deleteAllTimelineEventsByJobId(Integer jobId) {
+        // Check if job exists
+        if (!jobRepository.existsById(jobId)) {
+            throw new ResourceNotFoundException("Job not found with ID: " + jobId);
+        }
+        
+        List<JobTimelineEvent> events = timelineRepository.findAllByJobIdOrderByCreatedAtDesc(jobId);
+        if (!events.isEmpty()) {
+            timelineRepository.deleteAll(events);
+        }
+    }
 } 

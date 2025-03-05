@@ -8,6 +8,7 @@ import dev.hstoklosa.futurify.board.dto.UpdateJobPositionRequest;
 import dev.hstoklosa.futurify.board.dto.UpdateJobRequest;
 import dev.hstoklosa.futurify.board.entity.Board;
 import dev.hstoklosa.futurify.board.entity.Job;
+import dev.hstoklosa.futurify.board.entity.JobEventType;
 import dev.hstoklosa.futurify.board.repository.BoardRepository;
 import dev.hstoklosa.futurify.board.repository.JobRepository;
 import dev.hstoklosa.futurify.common.exception.OperationNotPermittedException;
@@ -38,6 +39,7 @@ public class JobService {
     private final StageRepository stageRepository;
     private final JobMapper jobMapper;
     private final JobTimelineService timelineService;
+    private final NoteService noteService;
 
     public JobResponse getJobById(Integer jobId) {
         Job job = jobRepository.findById(jobId)
@@ -318,5 +320,25 @@ public class JobService {
         LocalDateTime endOfDay = LocalDateTime.now().with(LocalTime.MAX);
         
         return jobRepository.countByUserIdAndCreatedAtBetween(userId, startOfDay, endOfDay);
+    }
+
+    @Transactional
+    public void deleteJob(Integer jobId) {
+        Job job = jobRepository.findById(jobId)
+                .orElseThrow(() -> new ResourceNotFoundException("The requested job application doesn't exist."));
+
+        User currentUser = SecurityUtil.getCurrentUser();
+        if (!currentUser.getId().equals(job.getBoard().getUser().getId())) {
+            throw new OperationNotPermittedException("You aren't permitted to delete this job.");
+        }
+
+        // Delete all associated notes first
+        noteService.deleteAllNotesByJobId(jobId);
+        
+        // Delete all associated timeline events
+        timelineService.deleteAllTimelineEventsByJobId(jobId);
+
+        // Delete the job
+        jobRepository.delete(job);
     }
 }

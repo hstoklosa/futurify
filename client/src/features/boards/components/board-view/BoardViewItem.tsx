@@ -1,11 +1,14 @@
 import React from "react";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { LuMapPin, LuBuilding } from "react-icons/lu";
+import { LuMapPin, LuBuilding, LuTrash, LuExternalLink } from "react-icons/lu";
 
 import { cn } from "@utils/cn";
+import { Button } from "@components/ui/button";
+import { ConfirmationDialog } from "@components/ui/dialog/confirmation-dialog";
 
 import { JobType } from "@schemas/job-application";
+import { useDeleteJob } from "@features/job-applications/api";
 
 type BoardViewItemProps = {
   id: number;
@@ -14,12 +17,22 @@ type BoardViewItemProps = {
   type: JobType;
   location: string;
   createdAt: string;
+  postUrl?: string;
   isDragOverlay?: boolean;
 };
 
 const BoardViewItem = React.forwardRef<HTMLButtonElement, BoardViewItemProps>(
   (
-    { id, title, companyName, type, location, createdAt: _, isDragOverlay = false },
+    {
+      id,
+      title,
+      companyName,
+      type,
+      location,
+      createdAt: _,
+      postUrl,
+      isDragOverlay = false,
+    },
     _ref
   ) => {
     const { attributes, listeners, setNodeRef, transform, transition, isDragging } =
@@ -28,6 +41,8 @@ const BoardViewItem = React.forwardRef<HTMLButtonElement, BoardViewItemProps>(
         data: { type: "item", id },
         disabled: isDragOverlay,
       });
+
+    const deleteJobMutation = useDeleteJob();
 
     // Convert numeric enum to string safely
     let jobType = "";
@@ -84,9 +99,48 @@ const BoardViewItem = React.forwardRef<HTMLButtonElement, BoardViewItemProps>(
             "!border-solid",
             "!bg-background",
             "scale-[1.02]", // Slightly larger when dragging for better visibility
-          ]
+          ],
+          "group relative" // Added group and relative for delete button positioning
         )}
       >
+        {postUrl && (
+          <a
+            href={postUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <Button
+              variant="outlineMuted"
+              className="text-foreground items-center justify-center w-5 h-5 p-1 hidden group-hover:flex absolute top-2 right-9"
+            >
+              <LuExternalLink className="stroke-foreground/50" />
+            </Button>
+          </a>
+        )}
+        <ConfirmationDialog
+          title="Delete Job Application"
+          description="Are you sure you want to delete this job application? This action cannot be undone."
+          triggerBtn={
+            <Button
+              variant="outlineMuted"
+              className="text-foreground items-center justify-center w-5 h-5 p-1 hidden group-hover:flex absolute top-2 right-2"
+            >
+              <LuTrash className="stroke-foreground/50" />
+            </Button>
+          }
+          actionBtn={
+            <Button
+              onClick={(e) => {
+                e.preventDefault();
+                deleteJobMutation.mutate({ jobId: id });
+              }}
+            >
+              Delete
+            </Button>
+          }
+          isAsyncDone={false}
+        />
         <h3 className="flex items-center text-[15px] font-semibold !text-foreground mb-1 truncate">
           {title}
         </h3>

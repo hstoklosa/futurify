@@ -457,6 +457,7 @@ const BoardView = ({ boardId }: BoardViewProps) => {
                             type={job.type}
                             location={job.location}
                             createdAt={job.createdAt}
+                            postUrl={job.postUrl}
                           />
                         </JobViewDialog>
 
@@ -481,6 +482,7 @@ const BoardView = ({ boardId }: BoardViewProps) => {
                   type={activeJob.type}
                   location={activeJob.location}
                   createdAt={activeJob.createdAt}
+                  postUrl={activeJob.postUrl}
                   isDragOverlay={true}
                 />
               </DragOverlay>

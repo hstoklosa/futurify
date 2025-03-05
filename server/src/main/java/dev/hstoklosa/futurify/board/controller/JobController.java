@@ -79,4 +79,10 @@ public class JobController {
         Integer count = jobService.getTodayApplicationsCount(user.getId());
         return ResponseEntity.ok(new ApiResponse<>(200, count, null));
     }
+
+    @DeleteMapping("/{jobId}")
+    public ResponseEntity<ApiResponse<Void>> deleteJob(@PathVariable Integer jobId) {
+        jobService.deleteJob(jobId);
+        return ResponseEntity.ok().body(ResponseFactory.success(null));
+    }
 }
