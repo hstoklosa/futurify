@@ -31,6 +31,7 @@ import { useLogout } from "@features/auth/api/logout";
 import { useActiveBoards } from "@features/boards/api/getActiveBoards";
 import CreateBoard from "@features/boards/components/CreateBoard";
 import ArchiveBoardDialog from "@features/boards/components/ArchiveBoardDialog";
+import useOutsideClick from "@hooks/useOutsideClick";
 
 type SidebarItem = {
   name: string;
@@ -121,6 +122,13 @@ const AppLayout = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const navigate = useNavigate();
 
+  const sidebarRef = useOutsideClick(() => {
+    if (window.innerWidth < 768) {
+      // Only close on mobile
+      setSidebarOpen(false);
+    }
+  });
+
   const { data: currentUser } = useUser();
   const boardsQuery = useActiveBoards({});
   const logoutMutation = useLogout({
@@ -134,9 +142,17 @@ const AppLayout = () => {
 
   return (
     <div className="flex w-full h-full">
+      {/* Mobile overlay */}
+      {sidebarOpen && (
+        <div
+          className="fixed inset-0 bg-[rgba(26,0,82,0.8)] z-20 md:hidden"
+          aria-hidden="true"
+        />
+      )}
       <aside
+        ref={sidebarRef}
         className={cn(
-          "fixed inset-y-0 left-0 z-30 w-[215px] bg-background border-border border-r-[1px] shadow-4xl",
+          "fixed inset-y-0 left-0 z-30 w-[280px] md:w-[215px] bg-background border-border border-r-[1px] shadow-4xl",
           "transform transition-transform duration-300 ease-in-out",
           "md:sticky md:top-0 md:h-screen",
           !sidebarOpen && "translate-x-[-100%] md:translate-x-0"
