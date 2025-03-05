@@ -4,7 +4,7 @@ import { AppContentLayout } from "@components/layout";
 import { LinkButton } from "@components/ui/button";
 import { PathConstants } from "@utils/constants";
 
-import ActiveBoardList from "@features/boards/components/ActiveBoardList";
+import ActiveBoardList from "@/features/boards/components/active-board-list";
 import { DailyGoalProgress } from "@features/job-applications/components/daily-goal-progress";
 
 const Home = () => {

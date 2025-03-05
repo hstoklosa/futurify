@@ -2,7 +2,7 @@ import { FieldValues, useController, UseControllerProps } from "react-hook-form"
 import ReactQuill from "react-quill-new";
 import "react-quill-new/dist/quill.snow.css";
 
-import { FieldWrapper, FieldWrapperPassThroughProps } from "./FieldWrapper";
+import { FieldWrapper, FieldWrapperPassThroughProps } from "./field-wrapper";
 
 type TextEditorProps<TFieldValues extends FieldValues> =
   UseControllerProps<TFieldValues> & FieldWrapperPassThroughProps;

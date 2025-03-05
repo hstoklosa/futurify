@@ -1,4 +1,4 @@
-import { useUser } from "../api/getUser";
+import { useUser } from "../api/get-user";
 
 type AuthLoaderProps = {
   renderLoading: () => React.ReactNode;

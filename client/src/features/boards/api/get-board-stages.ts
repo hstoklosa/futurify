@@ -4,7 +4,7 @@ import { api } from "@lib/api-client";
 import { QueryConfig } from "@lib/react-query";
 import { Stage } from "@/types/api";
 
-import { stageQueryKeys } from "./queryKeys";
+import { stageQueryKeys } from "./query-keys";
 
 const getBoardStages = async (id: string): Promise<{ data: Stage[] }> => {
   return api.get(`/boards/${id}/stages`);

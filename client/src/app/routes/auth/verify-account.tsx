@@ -1,8 +1,8 @@
 import { Navigate, useNavigate } from "react-router-dom";
 
-import VerificationForm from "@features/auth/components/VerificationForm";
-import useAuthStatus from "@hooks/useAuthStatus";
-import { useUser } from "@features/auth/api/getUser";
+import VerificationForm from "@/features/auth/components/verification-form";
+import useAuthStatus from "@/hooks/use-auth-status";
+import { useUser } from "@/features/auth/api/get-user";
 import { AuthLayout } from "@components/layout";
 import { PathConstants } from "@utils/constants";
 

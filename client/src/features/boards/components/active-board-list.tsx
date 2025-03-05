@@ -5,8 +5,8 @@ import { Button } from "@components/ui/button";
 import { formatRelativeTime } from "@utils/format";
 import { PathConstants } from "@utils/constants";
 
-import { useActiveBoards } from "../api/getActiveBoards";
-import CreateBoard from "./CreateBoard";
+import { useActiveBoards } from "../api/get-active-boards";
+import CreateBoard from "./create-board";
 
 const ActiveBoardList = () => {
   const activeBoardsQuery = useActiveBoards({});

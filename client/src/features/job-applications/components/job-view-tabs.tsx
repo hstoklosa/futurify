@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/utils/cn";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
-import { useBoardStages } from "@/features/boards/api/getBoardStages";
+import { useBoardStages } from "@/features/boards/api/get-board-stages";
 import { useGetJob } from "../api/get-job";
 import UpdateJobForm from "./update-job-form";
 import { JobTimeline } from "./job-timeline";

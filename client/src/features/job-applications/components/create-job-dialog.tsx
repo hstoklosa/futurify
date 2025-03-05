@@ -15,8 +15,8 @@ import { enumToArray } from "@utils/format";
 import { ScrollArea } from "@components/ui/scroll-area";
 
 import { JobType, createJobSchema } from "@schemas/job-application";
-import { useActiveBoards } from "@features/boards/api/getActiveBoards";
-import { useBoardStages } from "@features/boards/api/getBoardStages";
+import { useActiveBoards } from "@/features/boards/api/get-active-boards";
+import { useBoardStages } from "@/features/boards/api/get-board-stages";
 import { useCreateJob } from "../api/create-job";
 
 type CreateJobDialogProps = {

@@ -2,7 +2,7 @@ import { describe, it, expect, vi } from "vitest";
 import { render, screen, fireEvent, act } from "@testing-library/react";
 import * as RadixDialog from "@radix-ui/react-dialog";
 
-import ConfirmationDialog from "../ConfirmationDialog";
+import ConfirmationDialog from "../confirmation-dialog";
 import { Button } from "../../../button";
 
 // Mock ScrollArea

@@ -4,7 +4,7 @@ import { MutationConfig } from "@lib/react-query";
 import { api } from "@lib/api-client";
 
 import { BoardInput } from "@/types/board";
-import { getActiveBoardsQueryOptions } from "./getActiveBoards";
+import { getActiveBoardsQueryOptions } from "./get-active-boards";
 
 export const createBoard = async (data: BoardInput): Promise<{ data: number }> => {
   return api.post("/boards", data);

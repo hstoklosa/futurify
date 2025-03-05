@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import LoginForm from "@features/auth/components/LoginForm";
+import LoginForm from "@/features/auth/components/login-form";
 import { AuthLayout } from "@components/layout";
 import { PathConstants } from "@utils/constants";
 

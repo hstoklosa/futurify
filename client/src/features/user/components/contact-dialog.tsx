@@ -6,13 +6,13 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-} from "@components/ui/dialog/Dialog";
+} from "@/components/ui/dialog/dialog";
 import { Form, Input } from "@components/ui/form";
 import { Button } from "@components/ui/button";
 import { ScrollArea } from "@components/ui/scroll-area";
 import { useSendContactMessage } from "../api";
 import { contactSchema, ContactFormValues } from "../schemas/contact-schema";
-import { FieldWrapper } from "@components/ui/form/FieldWrapper";
+import { FieldWrapper } from "@/components/ui/form/field-wrapper";
 
 type ContactDialogProps = {
   triggerButton: React.ReactElement;

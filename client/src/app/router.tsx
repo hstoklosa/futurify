@@ -8,23 +8,23 @@ import { QueryClient, useQueryClient } from "@tanstack/react-query";
 import { RootLayout, AppLayout } from "@components/layout";
 import { PathConstants } from "@utils/constants";
 
-import ProtectedRoute from "./routes/ProtectedRoute";
+import ProtectedRoute from "./routes/protected-route";
 
 /*
  * PUBLIC ROUTES
  */
-const NotFound = React.lazy(() => import("./routes/NotFound"));
-const Landing = React.lazy(() => import("./routes/Landing"));
-const SignUp = React.lazy(() => import("./routes/auth/SignUp"));
-const SignIn = React.lazy(() => import("./routes/auth/SignIn"));
-const VerifyAccount = React.lazy(() => import("./routes/auth/VerifyAccount"));
+const NotFound = React.lazy(() => import("./routes/not-found"));
+const Landing = React.lazy(() => import("./routes/landing"));
+const SignUp = React.lazy(() => import("./routes/auth/sign-up"));
+const SignIn = React.lazy(() => import("./routes/auth/sign-in"));
+const VerifyAccount = React.lazy(() => import("./routes/auth/verify-account"));
 
 /*
  * PROTECTED ROUTES
  */
-const Home = React.lazy(() => import("./routes/dashboard/Home"));
-const ArchivedBoards = React.lazy(() => import("./routes/dashboard/ArchivedBoards"));
-const Board = React.lazy(() => import("./routes/dashboard/Board"));
+const Home = React.lazy(() => import("./routes/dashboard/home"));
+const ArchivedBoards = React.lazy(() => import("./routes/dashboard/archived-boards"));
+const Board = React.lazy(() => import("./routes/dashboard/board"));
 
 const createAppRouter = (queryClient: QueryClient) =>
   createBrowserRouter([

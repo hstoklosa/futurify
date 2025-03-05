@@ -7,7 +7,7 @@ import { Toaster } from "react-hot-toast";
 import { Spinner } from "@components/ui/spinner";
 import { TooltipProvider } from "@components/ui/tooltip";
 import { createQueryClient } from "@lib/react-query";
-import AuthLoader from "@features/auth/components/AuthLoader";
+import AuthLoader from "@/features/auth/components/auth-loader";
 
 const ScreenSpinner = () => (
   <Spinner

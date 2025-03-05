@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 
-import { Dialog, DialogTrigger, DialogContent } from "@components/ui/dialog/Dialog";
+import { Dialog, DialogTrigger, DialogContent } from "@/components/ui/dialog";
 import { Form, Input } from "@components/ui/form";
 import { Button } from "@components/ui/button";
 import { ScrollArea } from "@components/ui/scroll-area";

@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 
 import { AuthLayout } from "@components/layout";
-import RegisterForm from "@features/auth/components/RegisterForm";
+import RegisterForm from "@/features/auth/components/register-form";
 import { PathConstants } from "@utils/constants";
 
 const SignUp = () => {

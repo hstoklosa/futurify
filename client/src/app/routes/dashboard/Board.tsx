@@ -6,10 +6,10 @@ import { AppContentLayout } from "@components/layout";
 import { Spinner } from "@components/ui/spinner";
 import { Button } from "@components/ui/button";
 
-import { getBoardQueryOptions } from "@features/boards/api/getBoard";
-import { getBoardStagesOptions } from "@features/boards/api/getBoardStages";
+import { getBoardQueryOptions } from "@/features/boards/api/get-board";
+import { getBoardStagesOptions } from "@/features/boards/api/get-board-stages";
 import { getJobsOptions } from "@features/job-applications/api/get-jobs";
-import BoardView from "@features/boards/components/board-view/BoardView";
+import BoardView from "@/features/boards/components/board-view/board-view";
 
 /*
  *  TODO: Explore react-router handling vs react-query handling through error bubbling

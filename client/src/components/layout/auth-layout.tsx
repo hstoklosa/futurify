@@ -1,6 +1,6 @@
 import { useLocation, Navigate } from "react-router-dom";
 
-import useAuthStatus from "@hooks/useAuthStatus";
+import useAuthStatus from "@/hooks/use-auth-status";
 import { Head } from "@components/seo";
 import { PathConstants } from "@utils/constants";
 

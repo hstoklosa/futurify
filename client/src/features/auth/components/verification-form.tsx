@@ -2,7 +2,7 @@ import { Form, Input } from "@components/ui/form";
 import { Button } from "@components/ui/button";
 
 import { verificationSchema } from "@/types/auth";
-import { useVerifyEmail } from "../api/verifyEmail";
+import { useVerifyEmail } from "../api/verify-email";
 
 type VerificationFormProps = {
   onSuccess: () => void;

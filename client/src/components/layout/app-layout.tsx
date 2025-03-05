@@ -26,13 +26,13 @@ import { ScrollArea } from "../ui/scroll-area";
 import { PathConstants } from "@utils/constants";
 import { cn } from "@utils/cn";
 
-import { useUser } from "@features/auth/api/getUser";
+import { useUser } from "@/features/auth/api/get-user";
 import { useLogout } from "@features/auth/api/logout";
-import { useActiveBoards } from "@features/boards/api/getActiveBoards";
+import { useActiveBoards } from "@/features/boards/api/get-active-boards";
 import { SettingsDialog, ContactDialog } from "@features/user/components";
-import CreateBoard from "@features/boards/components/CreateBoard";
-import ArchiveBoardDialog from "@features/boards/components/ArchiveBoardDialog";
-import useOutsideClick from "@hooks/useOutsideClick";
+import CreateBoard from "@/features/boards/components/create-board";
+import ArchiveBoardDialog from "@/features/boards/components/archive-board-dialog";
+import useOutsideClick from "@/hooks/use-outside-click";
 
 type SidebarItem = {
   name: string;

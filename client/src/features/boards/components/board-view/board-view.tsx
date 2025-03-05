@@ -20,13 +20,13 @@ import {
 import { useQueryClient } from "@tanstack/react-query";
 
 import { Job } from "@/types/api";
-import { useBoardStages } from "@features/boards/api/getBoardStages";
+import { useBoardStages } from "@/features/boards/api/get-board-stages";
 import { useJobs } from "@features/job-applications/api/get-jobs";
 import { useUpdateJobPosition } from "@features/job-applications/api/update-job-position";
 import { jobQueryKeys } from "@features/job-applications/api/job-query-keys";
 
-import BoardViewContainer from "./BoardViewContainer";
-import BoardViewItem from "./BoardViewItem";
+import BoardViewContainer from "./board-view-container";
+import BoardViewItem from "./board-view-item";
 import JobViewDialog from "@/features/job-applications/components/job-view-dialog";
 
 type BoardViewProps = {

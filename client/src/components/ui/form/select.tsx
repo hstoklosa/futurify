@@ -1,8 +1,8 @@
 import React from "react";
 import { UseFormRegisterReturn } from "react-hook-form";
 
-import { FieldWrapper, FieldWrapperPassThroughProps } from "./FieldWrapper";
-import { cn } from "@/utils/cn";
+import { FieldWrapper, FieldWrapperPassThroughProps } from "./field-wrapper";
+import { cn } from "@utils/cn";
 
 type Option = {
   label: string;

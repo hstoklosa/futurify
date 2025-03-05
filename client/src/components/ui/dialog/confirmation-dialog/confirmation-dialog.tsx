@@ -7,7 +7,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogFooter,
-} from "../Dialog";
+} from "../dialog";
 import { Button } from "../../button";
 
 type ConfirmationDialogProps = {

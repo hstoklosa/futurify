@@ -4,7 +4,7 @@ import { api } from "@lib/api-client";
 import { QueryConfig } from "@lib/react-query";
 import { BoardList } from "@/types/api";
 
-import { boardsQueryKeys } from "./boardsQueryKeys";
+import { boardsQueryKeys } from "./boards-query-keys";
 
 export const getActiveBoards = async (): Promise<{ data: BoardList }> => {
   return api.get("/boards?archived=false&sort=DESC");

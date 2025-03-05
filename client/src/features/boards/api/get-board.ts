@@ -4,7 +4,7 @@ import { api } from "@lib/api-client";
 import { QueryConfig } from "@/lib/react-query";
 import { Board } from "@/types/api";
 
-import { boardsQueryKeys } from "./boardsQueryKeys";
+import { boardsQueryKeys } from "./boards-query-keys";
 
 const getBoard = async (id: string): Promise<{ data: Board }> => {
   return api.get(`/boards/${id}`);

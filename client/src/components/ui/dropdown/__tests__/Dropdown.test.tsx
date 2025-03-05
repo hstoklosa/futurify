@@ -6,7 +6,7 @@ import {
   DropdownMenuTrigger,
   DropdownMenuContent,
   DropdownMenuItem,
-} from "../Dropdown";
+} from "../dropdown";
 
 // Mock Radix Portal and Animation
 vi.mock("@radix-ui/react-dropdown-menu", async () => {

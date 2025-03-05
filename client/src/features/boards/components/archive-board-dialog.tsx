@@ -5,7 +5,7 @@ import { Button } from "@components/ui/button";
 import { ConfirmationDialog } from "@components/ui/dialog/confirmation-dialog";
 import { PathConstants } from "@utils/constants";
 
-import { useUpdateBoard } from "../api/updateBoard";
+import { useUpdateBoard } from "../api/update-board";
 
 const ArchiveBoardDialog = ({ id }: { id: string }) => {
   const navigate = useNavigate();

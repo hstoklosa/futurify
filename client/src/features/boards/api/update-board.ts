@@ -4,8 +4,8 @@ import { MutationConfig } from "@lib/react-query";
 import { api } from "@lib/api-client";
 import { Board } from "@/types/api";
 
-import { getArchivedBoardsQueryOptions } from "./getArchivedBoards";
-import { getActiveBoardsQueryOptions } from "./getActiveBoards";
+import { getArchivedBoardsQueryOptions } from "./get-archived-boards";
+import { getActiveBoardsQueryOptions } from "./get-active-boards";
 
 type ArchiveBoardData = {
   data: {

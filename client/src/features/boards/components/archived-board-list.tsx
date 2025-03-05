@@ -2,8 +2,8 @@ import { Spinner } from "@components/ui/spinner";
 import { Button } from "@components/ui/button";
 import { formatRelativeTime } from "@utils/format";
 
-import { useArchivedBoards } from "../api/getArchivedBoards";
-import { useUpdateBoard } from "../api/updateBoard";
+import { useArchivedBoards } from "../api/get-archived-boards";
+import { useUpdateBoard } from "../api/update-board";
 
 const ActiveBoardList = () => {
   const archivedBoardsQuery = useArchivedBoards({});

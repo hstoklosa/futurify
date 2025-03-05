@@ -1,6 +1,6 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import Button, { ButtonProps } from "./Button";
+import Button, { ButtonProps } from "./button";
 
 type LinkButtonProps = {
   to?: string;

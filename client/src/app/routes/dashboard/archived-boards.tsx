@@ -1,7 +1,7 @@
 import { LuArchive } from "react-icons/lu";
 
 import { AppContentLayout } from "@components/layout";
-import ArchivedBoardList from "@features/boards/components/ArchivedBoardList";
+import ArchivedBoardList from "@/features/boards/components/archived-board-list";
 
 const ArchivedBoards = () => {
   return (

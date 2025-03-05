@@ -3,7 +3,7 @@ import { UseFormRegisterReturn } from "react-hook-form";
 
 import { cn } from "@utils/cn";
 
-import { FieldWrapper, FieldWrapperPassThroughProps } from "./FieldWrapper";
+import { FieldWrapper, FieldWrapperPassThroughProps } from "./field-wrapper";
 
 export type InputProps = {
   label?: string;

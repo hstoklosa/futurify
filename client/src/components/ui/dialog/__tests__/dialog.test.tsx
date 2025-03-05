@@ -9,7 +9,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogFooter,
-} from "../Dialog";
+} from "../dialog";
 
 // Mock ScrollArea as a simple div wrapper
 vi.mock("../scroll-area", () => ({

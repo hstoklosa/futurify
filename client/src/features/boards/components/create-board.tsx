@@ -13,7 +13,7 @@ import { Button } from "@components/ui/button";
 import { createBoardInputSchema } from "@/types/board";
 import { PathConstants } from "@utils/constants";
 
-import { useCreateBoard } from "../api/createBoard";
+import { useCreateBoard } from "../api/create-board";
 
 const CreateBoard = ({ children }: { children: React.ReactNode }) => {
   const [open, setOpen] = useState(false);

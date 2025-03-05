@@ -1,6 +1,6 @@
 import { Navigate } from "react-router-dom";
 
-import useAuthStatus from "@hooks/useAuthStatus";
+import useAuthStatus from "@/hooks/use-auth-status";
 import { PathConstants } from "@utils/constants";
 
 interface ProtectedRouteProps {

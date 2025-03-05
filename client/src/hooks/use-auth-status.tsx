@@ -1,4 +1,4 @@
-import { useUser } from "@/features/auth/api/getUser";
+import { useUser } from "@/features/auth/api/get-user";
 
 const useAuthStatus = () => {
   const { data: currentUser } = useUser();
