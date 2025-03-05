@@ -43,9 +43,24 @@ const dropAnimation: DropAnimation = {
       },
     },
   }),
-  // Use a minimal duration for responsive feeling
-  duration: 120,
+  duration: 150,
   easing: "cubic-bezier(0.25, 1, 0.5, 1)",
+};
+
+// Helper function to find a job by id in the jobs array
+const findJobById = (jobs: Job[], id: number): Job | undefined => {
+  return jobs.find((job) => job.id === id);
+};
+
+// Calculate a new position between two values
+const calculatePosition = (prevPosition: number, nextPosition: number): number => {
+  // If positions are too close, create more space
+  if (Math.abs(nextPosition - prevPosition) < 100) {
+    return nextPosition + 1000;
+  }
+
+  // Default: place in the middle with slight preference toward the next position
+  return prevPosition + (nextPosition - prevPosition) / 2;
 };
 
 const BoardView = ({ boardId }: BoardViewProps) => {
@@ -55,6 +70,11 @@ const BoardView = ({ boardId }: BoardViewProps) => {
   const [activeJob, setActiveJob] = useState<Job | null>(null);
   // State to track which stage the active job is currently over
   const [activeStageId, setActiveStageId] = useState<number | null>(null);
+  // State to track where the dragged item would be dropped (creating space)
+  const [activeDropTarget, setActiveDropTarget] = useState<{
+    stageId: number;
+    index: number;
+  } | null>(null);
 
   // Fetch stages and jobs data
   const stagesQuery = useBoardStages({ id: boardId });
@@ -89,11 +109,6 @@ const BoardView = ({ boardId }: BoardViewProps) => {
     return map;
   }, [jobs, stages]);
 
-  // Find a job by its ID
-  const findJob = (id: number): Job | undefined => {
-    return jobs.data.find((job) => job.id === id);
-  };
-
   // Configure sensors for drag detection
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -105,7 +120,7 @@ const BoardView = ({ boardId }: BoardViewProps) => {
   const handleDragStart = (event: DragStartEvent) => {
     const { active } = event;
     const jobId = active.id as number;
-    const job = findJob(jobId);
+    const job = findJobById(jobs.data, jobId);
 
     if (job) {
       setActiveJob(job);
@@ -113,35 +128,66 @@ const BoardView = ({ boardId }: BoardViewProps) => {
     }
   };
 
-  // Handle drag over - detect when item moves between stages
+  // Handle drag over - detect when item moves between stages and set active drop target
   const handleDragOver = (event: DragOverEvent) => {
     const { active, over } = event;
 
-    if (!over) return;
+    if (!active || !over) return;
 
     const activeJobId = active.id as number;
-    const activeJob = findJob(activeJobId);
+    const activeJob = findJobById(jobs.data, activeJobId);
 
     if (!activeJob) return;
+
+    // Get the current active stage ID
+    const sourceStageId = activeJob.stageId;
+
+    // Determine target stage ID and drop index
+    let targetStageId: number;
+    let dropIndex: number;
 
     // If hovering over a container directly
     if (typeof over.id === "string") {
       // Find the stage by name (container id is the stage name)
       const targetStage = stages.data.find((stage) => stage.name === over.id);
+
       if (targetStage) {
-        setActiveStageId(targetStage.id);
+        targetStageId = targetStage.id;
+        // If dropping into an empty stage or at the end of a stage
+        const stageJobs = stageJobsMap.get(targetStageId) || [];
+        dropIndex = stageJobs.length;
+
+        // Update the active stage ID and drop target
+        setActiveStageId(targetStageId);
+        setActiveDropTarget({ stageId: targetStageId, index: dropIndex });
       }
       return;
     }
 
     // If hovering over another job item
     const overId = over.id as number;
-    const overJob = findJob(overId);
+    const overJob = findJobById(jobs.data, overId);
 
     if (!overJob) return;
 
-    // Always update active stage id to where the item is currently hovering
-    setActiveStageId(overJob.stageId);
+    targetStageId = overJob.stageId;
+
+    // Get jobs in the target stage
+    const targetJobs = stageJobsMap.get(targetStageId) || [];
+    dropIndex = targetJobs.findIndex((job) => job.id === overId);
+
+    // If the active job is in the same stage and before the over job,
+    // we need to adjust the dropIndex to account for the item being removed
+    if (sourceStageId === targetStageId) {
+      const activeIndex = targetJobs.findIndex((job) => job.id === activeJobId);
+      if (activeIndex !== -1 && activeIndex < dropIndex) {
+        dropIndex -= 1;
+      }
+    }
+
+    // Update the active stage ID and drop target
+    setActiveStageId(targetStageId);
+    setActiveDropTarget({ stageId: targetStageId, index: dropIndex + 1 }); // +1 to drop after the item
   };
 
   // Handle drag end - update job positions
@@ -151,12 +197,13 @@ const BoardView = ({ boardId }: BoardViewProps) => {
     // Reset drag state
     setActiveJob(null);
     setActiveStageId(null);
+    setActiveDropTarget(null);
 
     // If no valid drop target, do nothing
     if (!over) return;
 
     const activeJobId = active.id as number;
-    const activeJob = findJob(activeJobId);
+    const activeJob = findJobById(jobs.data, activeJobId);
 
     if (!activeJob) return;
 
@@ -177,59 +224,87 @@ const BoardView = ({ boardId }: BoardViewProps) => {
     // If dropping over an item
     else {
       overJobId = over.id as number;
-      const overJob = findJob(overJobId);
+      const overJob = findJobById(jobs.data, overJobId);
       if (!overJob) return;
 
       targetStageId = overJob.stageId;
     }
 
-    // Get all jobs in source and target stages, sorted by position
+    // Get all jobs in source and target stages
     const sourceJobs = [...(stageJobsMap.get(sourceStageId) || [])];
     const targetJobs = [...(stageJobsMap.get(targetStageId) || [])];
 
     // If source and target are the same stage
     if (sourceStageId === targetStageId) {
-      // Only update if actually changing position
-      if (activeJobId !== overJobId) {
-        // Find the indices of the active and over jobs
-        const activeIndex = sourceJobs.findIndex((job) => job.id === activeJobId);
-        const overIndex = targetJobs.findIndex((job) => job.id === overJobId);
+      // Find the indices of the active and over jobs
+      const activeIndex = sourceJobs.findIndex((job) => job.id === activeJobId);
 
-        if (activeIndex !== -1 && overIndex !== -1) {
-          // Create a new array with the moved item
-          const newJobs = arrayMove(sourceJobs, activeIndex, overIndex);
+      // If dropping on a container, place at the end
+      if (typeof over.id === "string") {
+        // Create a new position that's greater than all existing positions
+        const newPosition =
+          targetJobs.length > 0
+            ? targetJobs[targetJobs.length - 1].position + 1000
+            : 1000;
 
-          // Calculate new position based on surrounding items
-          let newPosition: number;
+        // Perform optimistic update
+        performOptimisticUpdate(activeJobId, targetStageId, newPosition);
 
-          // If moving to the beginning
-          if (overIndex === 0) {
-            newPosition = newJobs[1] ? newJobs[0].position / 2 : 1000;
-          }
-          // If moving to the end
-          else if (overIndex === sourceJobs.length - 1) {
-            newPosition = newJobs[overIndex - 1].position + 1000;
-          }
-          // If moving between items
-          else {
-            const prevPosition = newJobs[overIndex - 1].position;
-            const nextPosition = newJobs[overIndex + 1].position;
-            newPosition = (prevPosition + nextPosition) / 2;
-          }
+        // Update position in backend
+        updateJobPosition.mutate({
+          jobId: activeJobId,
+          boardId,
+          data: {
+            stageId: targetStageId,
+            position: newPosition,
+          },
+        });
 
-          // Perform optimistic update
-          performOptimisticUpdate(activeJobId, targetStageId, newPosition);
+        return;
+      }
 
-          // Update position in backend
-          updateJobPosition.mutate({
-            jobId: activeJobId,
-            boardId,
-            data: {
-              stageId: targetStageId,
-              position: newPosition,
-            },
-          });
+      const overIndex = sourceJobs.findIndex((job) => job.id === overJobId);
+
+      if (activeIndex !== -1 && overIndex !== -1 && activeIndex !== overIndex) {
+        // Create a new array with the moved item
+        const newJobs = arrayMove(sourceJobs, activeIndex, overIndex);
+
+        // Calculate new position based on surrounding items
+        let newPosition: number;
+
+        // If moving to the beginning
+        if (overIndex === 0) {
+          newPosition = newJobs[1] ? newJobs[0].position / 2 : 1000;
         }
+        // If moving to the end
+        else if (overIndex === sourceJobs.length - 1) {
+          newPosition = newJobs[overIndex - 1].position + 1000;
+        }
+        // If moving between items
+        else {
+          // Get the positions of the items before and after
+          const prevPosition = overIndex > 0 ? newJobs[overIndex - 1].position : 0;
+          const nextPosition =
+            overIndex < newJobs.length - 1
+              ? newJobs[overIndex + 1].position
+              : prevPosition + 2000;
+
+          // Calculate a position between them
+          newPosition = calculatePosition(prevPosition, nextPosition);
+        }
+
+        // Perform optimistic update
+        performOptimisticUpdate(activeJobId, targetStageId, newPosition);
+
+        // Update position in backend
+        updateJobPosition.mutate({
+          jobId: activeJobId,
+          boardId,
+          data: {
+            stageId: targetStageId,
+            position: newPosition,
+          },
+        });
       }
     }
     // If moving between different stages
@@ -250,7 +325,7 @@ const BoardView = ({ boardId }: BoardViewProps) => {
 
         // If dropping at the beginning of the list
         if (overIndex === 0) {
-          newPosition = targetJobs[0].position / 2;
+          newPosition = targetJobs.length > 0 ? targetJobs[0].position / 2 : 1000;
         }
         // If dropping at the end of the list
         else if (overIndex === targetJobs.length - 1) {
@@ -260,7 +335,9 @@ const BoardView = ({ boardId }: BoardViewProps) => {
         else {
           const prevPosition = targetJobs[overIndex - 1].position;
           const overPosition = targetJobs[overIndex].position;
-          newPosition = (prevPosition + overPosition) / 2;
+
+          // Calculate a position between them
+          newPosition = calculatePosition(prevPosition, overPosition);
         }
       }
 
@@ -321,6 +398,15 @@ const BoardView = ({ boardId }: BoardViewProps) => {
     queryClient.setQueryData(jobQueryKeys.list(boardId), { data: updatedJobs });
   };
 
+  // Function to determine if an item is the active drop target for creating space
+  const isDropTarget = (stageId: number, index: number) => {
+    return (
+      activeDropTarget !== null &&
+      activeDropTarget.stageId === stageId &&
+      activeDropTarget.index === index
+    );
+  };
+
   return (
     <>
       {stages.data.length > 0 ? (
@@ -350,30 +436,42 @@ const BoardView = ({ boardId }: BoardViewProps) => {
                     items={stageJobIds}
                     isActiveStage={activeStageId === stage.id}
                   >
-                    {stageJobs.map((job) => (
-                      <JobViewDialog
-                        key={job.id}
-                        jobId={job.id}
-                        boardId={Number(boardId)}
-                        title={job.title}
-                        companyName={job.companyName}
-                        createdAt={job.createdAt}
-                      >
-                        <BoardViewItem
-                          id={job.id}
+                    {/* Add a drop indicator if we're dragging and this is the first position */}
+                    {activeJob && isDropTarget(stage.id, 0) && (
+                      <div className="h-[4px] bg-primary rounded my-2 mx-1 transition-all duration-200" />
+                    )}
+
+                    {stageJobs.map((job, index) => (
+                      <React.Fragment key={job.id}>
+                        <JobViewDialog
+                          jobId={job.id}
+                          boardId={Number(boardId)}
                           title={job.title}
                           companyName={job.companyName}
-                          type={job.type}
-                          location={job.location}
                           createdAt={job.createdAt}
-                        />
-                      </JobViewDialog>
+                        >
+                          <BoardViewItem
+                            id={job.id}
+                            title={job.title}
+                            companyName={job.companyName}
+                            type={job.type}
+                            location={job.location}
+                            createdAt={job.createdAt}
+                          />
+                        </JobViewDialog>
+
+                        {/* Add a drop indicator if we're dragging and this position should have a gap */}
+                        {activeJob && isDropTarget(stage.id, index + 1) && (
+                          <div className="h-[4px] bg-primary rounded my-2 mx-1 transition-all duration-200" />
+                        )}
+                      </React.Fragment>
                     ))}
                   </BoardViewContainer>
                 </SortableContext>
               );
             })}
 
+            {/* Drag overlay for visual feedback during dragging */}
             {activeJob && (
               <DragOverlay dropAnimation={dropAnimation}>
                 <BoardViewItem

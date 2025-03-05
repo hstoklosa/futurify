@@ -25,7 +25,8 @@ const BoardViewItem = React.forwardRef<HTMLButtonElement, BoardViewItemProps>(
     const { attributes, listeners, setNodeRef, transform, transition, isDragging } =
       useSortable({
         id: id,
-        data: { type: "item" },
+        data: { type: "item", id },
+        disabled: isDragOverlay,
       });
 
     // Convert numeric enum to string safely
@@ -46,11 +47,20 @@ const BoardViewItem = React.forwardRef<HTMLButtonElement, BoardViewItemProps>(
       }
     }
 
+    // Enhanced style handling for better drag and drop experience
     const style = {
-      transition: isDragOverlay ? undefined : transition,
+      // Only apply transition when not actively dragging for smoother movement
+      transition: isDragging || isDragOverlay ? undefined : transition,
+      // Add transform for position
       transform: isDragOverlay ? undefined : CSS.Transform.toString(transform),
+      // Ensure cursor shows as grabbable
       cursor: "grab",
-      zIndex: isDragOverlay ? 1000 : 1,
+      // Ensure proper stacking during drag operations
+      zIndex: isDragOverlay ? 1000 : isDragging ? 100 : 1,
+      // Don't make the original item invisible, make it semi-transparent instead
+      opacity: isDragging ? 0.4 : 1,
+      // Add box shadow for drag overlay to show elevation
+      boxShadow: isDragOverlay ? "0 5px 15px rgba(0,0,0,0.15)" : undefined,
     } as React.CSSProperties;
 
     return (
@@ -65,7 +75,7 @@ const BoardViewItem = React.forwardRef<HTMLButtonElement, BoardViewItemProps>(
           "hover:shadow-[inset_0_0_0_2px_rgb(var(--primary))] hover:border-transparent",
           "transition-all duration-200 ease-in-out",
           !isDragOverlay && "border-border border-[1px]",
-          isDragging && "opacity-0",
+          isDragging && "border-primary/40",
           isDragOverlay && [
             "shadow-lg",
             "shadow-primary/10",
@@ -73,6 +83,7 @@ const BoardViewItem = React.forwardRef<HTMLButtonElement, BoardViewItemProps>(
             "!border-primary",
             "!border-solid",
             "!bg-background",
+            "scale-[1.02]", // Slightly larger when dragging for better visibility
           ]
         )}
       >
