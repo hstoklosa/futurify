@@ -144,7 +144,7 @@ export const JobTimeline: React.FC<JobTimelineProps> = ({ jobId }) => {
   }
 
   return (
-    <div className="timeline-container mt-2 pr-3 max-h-[calc(100vh-320px)] overflow-y-auto px-2">
+    <div className="timeline-container mt-2 pr-3 px-2">
       <div className="space-y-1">
         {data.data.map((event, index) => (
           <TimelineEvent

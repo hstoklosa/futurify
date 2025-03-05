@@ -90,7 +90,7 @@ const BoardViewItem = React.forwardRef<HTMLButtonElement, BoardViewItemProps>(
         <h3 className="flex items-center text-[15px] font-semibold !text-foreground mb-1 truncate">
           {title}
         </h3>
-        <div className="text-sm ml-0.5 text-foreground/70 space-y-[1px] [&>*]:flex [&>*]:items-center">
+        <div className="text-sm text-foreground/70 space-y-[1px] [&>*]:flex [&>*]:items-center">
           <div className="truncate">
             <LuBuilding className="stroke-foreground/40 mr-2 flex-shrink-0" />
             <span className="truncate">{companyName}</span>
