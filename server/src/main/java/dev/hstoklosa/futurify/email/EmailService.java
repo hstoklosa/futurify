@@ -22,6 +22,9 @@ public class EmailService {
 
     @Value("${spring.mail.username}")
     private String from;
+    
+    @Value("${application.superuser.email}")
+    private String superuserEmail;
 
     /**
      * Sends an account activation email asynchronously.
@@ -46,6 +49,33 @@ public class EmailService {
         );
 
         MimeMessage mimeMessage = constructEmail(recipient, "Futurify - Verify your email", EmailTemplate.ACTIVATE_ACCOUNT, properties);
+        mailSender.send(mimeMessage);
+    }
+    
+    /**
+     * Sends a contact message to the superuser email asynchronously.
+     *
+     * @param senderName            the name of the user sending the message
+     * @param senderEmail           the email of the user sending the message
+     * @param title                 the title of the message
+     * @param message               the content of the message
+     * @throws MessagingException   if there is an error while sending the email
+     */
+    @Async
+    public void sendContactMessage(
+            String senderName,
+            String senderEmail,
+            String title,
+            String message
+    ) throws MessagingException {
+        Map<String, Object> properties = Map.of(
+                "senderName", senderName,
+                "senderEmail", senderEmail,
+                "title", title,
+                "message", message
+        );
+
+        MimeMessage mimeMessage = constructEmail(superuserEmail, "Futurify - Contact Message: " + title, EmailTemplate.CONTACT_MESSAGE, properties);
         mailSender.send(mimeMessage);
     }
 

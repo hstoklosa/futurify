@@ -2,7 +2,8 @@ package dev.hstoklosa.futurify.email;
 
 public enum EmailTemplate {
 
-    ACTIVATE_ACCOUNT("activate_account");
+    ACTIVATE_ACCOUNT("activate_account"),
+    CONTACT_MESSAGE("contact_message");
 
     private final String name;
 

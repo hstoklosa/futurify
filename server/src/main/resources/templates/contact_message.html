@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0"
+    />
+    <title>Contact Message</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #f4f4f4;
+        color: #000000;
+      }
+      .container {
+        max-width: 520px;
+        margin: 10px auto;
+        padding: 20px;
+        background-color: #fff;
+        border-radius: 5px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      }
+      .container p {
+        font-size: 16px;
+      }
+      .container h1 {
+        font-size: 32px;
+      }
+      .container h2 {
+        font-size: 24px;
+        margin-top: 20px;
+      }
+      .container h1,
+      .container h2,
+      .container p {
+        color: #000000;
+      }
+      .message-content {
+        background-color: #f9f9f9;
+        padding: 15px;
+        border-radius: 5px;
+        margin-top: 15px;
+        border-left: 4px solid rgb(106, 79, 235);
+      }
+      .sender-info {
+        margin-top: 20px;
+        font-style: italic;
+        color: #666;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>New Contact Message</h1>
+      <p>You have received a new message from a Futurify user.</p>
+
+      <h2 th:text="${title}"></h2>
+
+      <div class="message-content">
+        <p th:text="${message}"></p>
+      </div>
+
+      <div class="sender-info">
+        <p>Sent by: <strong th:text="${senderName}"></strong></p>
+        <p>Email: <strong th:text="${senderEmail}"></strong></p>
+      </div>
+    </div>
+  </body>
+</html>

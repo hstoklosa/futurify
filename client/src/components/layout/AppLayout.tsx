@@ -29,7 +29,7 @@ import { cn } from "@utils/cn";
 import { useUser } from "@features/auth/api/getUser";
 import { useLogout } from "@features/auth/api/logout";
 import { useActiveBoards } from "@features/boards/api/getActiveBoards";
-import SettingsDialog from "@features/user/components/settings-dialog";
+import { SettingsDialog, ContactDialog } from "@features/user/components";
 import CreateBoard from "@features/boards/components/CreateBoard";
 import ArchiveBoardDialog from "@features/boards/components/ArchiveBoardDialog";
 import useOutsideClick from "@hooks/useOutsideClick";
@@ -48,7 +48,7 @@ const navigation: SidebarItem[] = [
 ];
 
 const buttons: Omit<SidebarItem, "to">[] = [
-  { name: "Help", Icon: LuHelpCircle, disabled: true },
+  { name: "Help", Icon: LuHelpCircle, disabled: false },
   { name: "Settings", Icon: LuSettings, disabled: false },
 ];
 
@@ -251,6 +251,20 @@ const AppLayout = () => {
               if (name === "Settings") {
                 return (
                   <SettingsDialog
+                    key={name}
+                    triggerButton={
+                      <button className="flex items-center w-full min-h-8 px-4 rounded-md hover:bg-primary/5 text-foreground/80 text-sm font-semibold truncate">
+                        <Icon className="w-[17px] h-[17px] mr-2" />
+                        {name}
+                      </button>
+                    }
+                  />
+                );
+              }
+
+              if (name === "Help") {
+                return (
+                  <ContactDialog
                     key={name}
                     triggerButton={
                       <button className="flex items-center w-full min-h-8 px-4 rounded-md hover:bg-primary/5 text-foreground/80 text-sm font-semibold truncate">
