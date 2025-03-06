@@ -8,6 +8,7 @@ import dev.hstoklosa.futurify.board.entity.JobType;
 import dev.hstoklosa.futurify.stage.entity.Stage;
 import dev.hstoklosa.futurify.stage.repository.StageRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.stereotype.Service;
@@ -24,6 +25,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class JobExportService {
 
     private final JobService jobService;
@@ -37,7 +39,9 @@ public class JobExportService {
      */
     @Transactional(readOnly = true)
     public byte[] exportJobsToExcel(Integer boardId) throws IOException {
+        log.info("Exporting jobs to Excel for board ID: {}", boardId);
         List<JobResponse> jobs = jobService.getJobs(boardId);
+        log.info("Found {} jobs to export", jobs.size());
         
         // Get all stage IDs from the jobs
         List<Integer> stageIds = jobs.stream()
@@ -49,7 +53,8 @@ public class JobExportService {
         Map<Integer, Stage> stageMap = stageRepository.findAllById(stageIds).stream()
                 .collect(Collectors.toMap(Stage::getId, Function.identity()));
         
-        try (Workbook workbook = new XSSFWorkbook()) {
+        try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
+            XSSFWorkbook workbook = new XSSFWorkbook();
             Sheet sheet = workbook.createSheet("Job Applications");
             
             // Create header row
@@ -99,9 +104,15 @@ public class JobExportService {
             }
             
             // Write to ByteArrayOutputStream
-            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
             workbook.write(outputStream);
-            return outputStream.toByteArray();
+            workbook.close();
+            outputStream.flush();
+            byte[] result = outputStream.toByteArray();
+            log.info("Successfully generated Excel file of size: {} bytes", result.length);
+            return result;
+        } catch (Exception e) {
+            log.error("Error exporting jobs to Excel: {}", e.getMessage(), e);
+            throw e;
         }
     }
     
@@ -112,7 +123,9 @@ public class JobExportService {
      */
     @Transactional(readOnly = true)
     public byte[] exportJobsToJson(Integer boardId) throws IOException {
+        log.info("Exporting jobs to JSON for board ID: {}", boardId);
         List<JobResponse> jobs = jobService.getJobs(boardId);
+        log.info("Found {} jobs to export", jobs.size());
         
         // Get all stage IDs from the jobs
         List<Integer> stageIds = jobs.stream()
@@ -131,7 +144,7 @@ public class JobExportService {
             enhancedJob.put("title", job.getTitle());
             enhancedJob.put("companyName", job.getCompanyName());
             enhancedJob.put("location", job.getLocation());
-            enhancedJob.put("jobType", job.getType() != null ? job.getType().toString() : null);
+            enhancedJob.put("jobType", formatJobType(job.getType()));
             
             // Add stage name
             String stageName = stageMap.containsKey(job.getStageId()) 
@@ -144,21 +157,30 @@ public class JobExportService {
             enhancedJob.put("description", job.getDescription());
             enhancedJob.put("postUrl", job.getPostUrl());
             enhancedJob.put("position", job.getPosition());
-            enhancedJob.put("createdAt", job.getCreatedAt());
-            enhancedJob.put("updatedAt", job.getUpdatedAt());
+            
+            // Format dates to strings for consistent JSON output
+            enhancedJob.put("createdAt", job.getCreatedAt() != null ? job.getCreatedAt().format(DATE_FORMATTER) : null);
+            enhancedJob.put("updatedAt", job.getUpdatedAt() != null ? job.getUpdatedAt().format(DATE_FORMATTER) : null);
             
             return enhancedJob;
         }).collect(Collectors.toList());
         
-        // Configure ObjectMapper for proper date serialization
-        ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.registerModule(new JavaTimeModule());
-        objectMapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
-        
-        // Write to ByteArrayOutputStream
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        objectMapper.writerWithDefaultPrettyPrinter().writeValue(outputStream, enhancedJobs);
-        return outputStream.toByteArray();
+        try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
+            // Configure ObjectMapper for proper date serialization
+            ObjectMapper objectMapper = new ObjectMapper();
+            objectMapper.registerModule(new JavaTimeModule());
+            objectMapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
+            
+            // Write to ByteArrayOutputStream
+            objectMapper.writerWithDefaultPrettyPrinter().writeValue(outputStream, enhancedJobs);
+            outputStream.flush();
+            byte[] result = outputStream.toByteArray();
+            log.info("Successfully generated JSON file of size: {} bytes", result.length);
+            return result;
+        } catch (Exception e) {
+            log.error("Error exporting jobs to JSON: {}", e.getMessage(), e);
+            throw e;
+        }
     }
     
     /**

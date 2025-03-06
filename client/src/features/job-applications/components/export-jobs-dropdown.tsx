@@ -35,23 +35,61 @@ export const ExportJobsDropdown: React.FC<ExportJobsDropdownProps> = ({
   const { refetch: refetchExcel, isFetching: isExcelFetching } =
     useExportJobsToExcel({
       boardId,
+      queryConfig: {
+        retry: false,
+      },
     });
 
   const { refetch: refetchJson, isFetching: isJsonFetching } = useExportJobsToJson({
     boardId,
+    queryConfig: {
+      retry: false,
+    },
   });
 
   const handleExportExcel = async () => {
-    const { data } = await refetchExcel();
-    if (data) {
-      downloadExcelFile(data, `job_applications_board_${boardId}.xlsx`);
+    try {
+      console.log("Starting Excel export for board:", boardId);
+
+      const result = await refetchExcel();
+
+      if (result.error) {
+        console.error("Excel export error:", result.error);
+        return;
+      }
+
+      if (!result.data) {
+        console.error("No data returned from Excel export");
+        return;
+      }
+
+      console.log("Excel export successful, file size:", result.data.size);
+      downloadExcelFile(result.data, `job_applications_board_${boardId}.xlsx`);
+    } catch (err) {
+      console.error("Excel export error:", err);
     }
   };
 
   const handleExportJson = async () => {
-    const { data } = await refetchJson();
-    if (data) {
-      downloadJsonFile(data, `job_applications_board_${boardId}.json`);
+    try {
+      console.log("Starting JSON export for board:", boardId);
+
+      const result = await refetchJson();
+
+      if (result.error) {
+        console.error("JSON export error:", result.error);
+        return;
+      }
+
+      if (!result.data) {
+        console.error("No data returned from JSON export");
+        return;
+      }
+
+      console.log("JSON export successful, file size:", result.data.size);
+      downloadJsonFile(result.data, `job_applications_board_${boardId}.json`);
+    } catch (err) {
+      console.error("JSON export error:", err);
     }
   };
 

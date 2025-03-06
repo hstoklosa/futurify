@@ -3,6 +3,7 @@ import { queryOptions, useQuery } from "@tanstack/react-query";
 import { QueryConfig } from "@lib/react-query";
 import { api } from "@lib/api-client";
 import { exportQueryKeys } from "./export-query-keys";
+import axios from "axios";
 
 /**
  * Function to export jobs to Excel format
@@ -10,19 +11,27 @@ import { exportQueryKeys } from "./export-query-keys";
  * @returns A Promise that resolves to a Blob containing the Excel file
  */
 const exportJobsToExcel = async (boardId: string): Promise<Blob> => {
-  // Use axios with responseType: "blob" to get binary data
-  const response = await api.request({
-    url: `/jobs/export/excel/board/${boardId}`,
-    method: "GET",
-    responseType: "blob",
-    headers: {
-      Accept: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-    },
-    // Override the default response interceptor to get the raw response
-    transformResponse: [(data) => data],
-  });
+  try {
+    // Use axios directly to ensure proper blob handling
+    const response = await axios({
+      url: `${api.defaults.baseURL}/jobs/export/excel/board/${boardId}`,
+      method: "GET",
+      responseType: "blob",
+      headers: {
+        Accept: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+      },
+      withCredentials: true,
+    });
 
-  return new Blob([response.data]);
+    // Return the response data as a blob with the correct MIME type
+    return new Blob([response.data], {
+      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    });
+  } catch (error) {
+    console.error("Error exporting Excel:", error);
+    throw error;
+  }
 };
 
 /**
@@ -33,6 +42,8 @@ export const exportJobsToExcelOptions = (boardId: string) => {
     queryKey: exportQueryKeys.excelByBoard(boardId),
     queryFn: () => exportJobsToExcel(boardId),
     enabled: false, // This query will not run automatically
+    gcTime: 0, // Don't cache this query
+    retry: 1, // Only retry once if fails
     meta: {
       showToast: true,
       toastMessage: "Failed to export job applications to Excel. Please try again.",
@@ -66,14 +77,19 @@ export const useExportJobsToExcel = ({
  */
 export const downloadExcelFile = (
   blob: Blob,
-  filename = "job_applications.xlsx"
+  filename = `job_applications_board.xlsx`
 ) => {
+  // No need to re-create the blob as it should already have the correct MIME type
   const url = URL.createObjectURL(blob);
   const link = document.createElement("a");
   link.href = url;
   link.download = filename;
   document.body.appendChild(link);
   link.click();
-  document.body.removeChild(link);
-  URL.revokeObjectURL(url);
+
+  // Cleanup
+  setTimeout(() => {
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  }, 100);
 };
