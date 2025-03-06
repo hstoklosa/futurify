@@ -110,7 +110,9 @@ public class JobTimelineService {
 
     /**
      * Records a position change event
+     * This method is no longer used as we don't track position changes within columns
      */
+    /*
     @Transactional
     public void recordPositionChange(Job job, int oldPosition, int newPosition) {
         createTimelineEvent(
@@ -123,6 +125,7 @@ public class JobTimelineService {
                 )
         );
     }
+    */
 
     /**
      * Gets all timeline events for a job

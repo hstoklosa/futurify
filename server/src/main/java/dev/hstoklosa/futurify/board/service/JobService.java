@@ -131,8 +131,7 @@ public class JobService {
             // Same stage, just moving positions
             handlePositionChangeWithinStage(job, currentPosition, targetPosition);
             
-            // Record position change in timeline
-            timelineService.recordPositionChange(job, currentPosition, targetPosition);
+            // We no longer track position changes within columns
         } else {
             // Moving to a different stage
             handlePositionChangeBetweenStages(job, currentStageId, currentPosition, targetStageId, targetPosition);

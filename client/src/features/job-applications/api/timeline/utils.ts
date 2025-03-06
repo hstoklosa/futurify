@@ -41,9 +41,6 @@ export function formatTimelineEvent(
     case "STAGE_CHANGED":
       return `Stage changed from ${details.previousStage} to ${details.newStage}`;
 
-    case "POSITION_CHANGED":
-      return `Position changed from position ${details.previousPosition} to ${details.newPosition}`;
-
     default:
       return JSON.stringify(details);
   }

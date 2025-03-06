@@ -3,7 +3,6 @@ import { format } from "date-fns";
 import {
   LuPlus,
   LuPencil,
-  LuArrowUpDown,
   LuArrowLeftRight,
   LuTrash,
   LuInfo,
@@ -18,7 +17,6 @@ const eventIcons: Record<JobEventType, React.ReactElement> = {
   CREATED: <LuPlus className="h-4 w-4" />,
   UPDATED: <LuPencil className="h-4 w-4" />,
   STAGE_CHANGED: <LuArrowLeftRight className="h-4 w-4" />,
-  POSITION_CHANGED: <LuArrowUpDown className="h-4 w-4" />,
   DELETED: <LuTrash className="h-4 w-4" />,
 };
 
@@ -27,7 +25,6 @@ const eventColors: Record<JobEventType, string> = {
   CREATED: "bg-green-500",
   UPDATED: "bg-blue-500",
   STAGE_CHANGED: "bg-purple-500",
-  POSITION_CHANGED: "bg-amber-500",
   DELETED: "bg-red-500",
 };
 
