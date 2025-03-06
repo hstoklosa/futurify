@@ -111,18 +111,20 @@ export const ExportJobsDropdown: React.FC<ExportJobsDropdownProps> = ({
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
         <DropdownMenuItem
+          className="flex items-center"
           onClick={handleExportExcel}
           disabled={isExcelFetching}
         >
           <FaFileExcel className="mr-2 h-4 w-4 text-green-600" />
-          <span>Export to Excel</span>
+          <span>Excel</span>
         </DropdownMenuItem>
         <DropdownMenuItem
+          className="flex items-center"
           onClick={handleExportJson}
           disabled={isJsonFetching}
         >
           <FaFileCode className="mr-2 h-4 w-4 text-blue-600" />
-          <span>Export to JSON</span>
+          <span>JSON</span>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
