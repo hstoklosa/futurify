@@ -29,6 +29,17 @@ export const CreateNote = ({ jobId, onSuccess }: CreateNoteProps) => {
     }
   };
 
+  const saveButton = (
+    <Button
+      type="submit"
+      // className="w-24"
+      size="md"
+      disabled={createNoteMutation.isPending}
+    >
+      Save
+    </Button>
+  );
+
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
@@ -38,16 +49,8 @@ export const CreateNote = ({ jobId, onSuccess }: CreateNoteProps) => {
         name="content"
         control={control}
         // label="New Note"
+        actions={saveButton}
       />
-      <div className="flex justify-end">
-        <Button
-          type="submit"
-          disabled={createNoteMutation.isPending}
-          className="w-24"
-        >
-          Save
-        </Button>
-      </div>
     </form>
   );
 };

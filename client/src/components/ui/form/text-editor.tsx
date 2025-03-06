@@ -5,7 +5,10 @@ import "react-quill-new/dist/quill.snow.css";
 import { FieldWrapper, FieldWrapperPassThroughProps } from "./field-wrapper";
 
 type TextEditorProps<TFieldValues extends FieldValues> =
-  UseControllerProps<TFieldValues> & FieldWrapperPassThroughProps;
+  UseControllerProps<TFieldValues> &
+    FieldWrapperPassThroughProps & {
+      actions?: React.ReactNode;
+    };
 
 const QuillModules = {
   toolbar: [
@@ -25,6 +28,7 @@ const TextEditor = <TFieldValues extends FieldValues>({
   label,
   control,
   defaultValue,
+  actions,
 }: TextEditorProps<TFieldValues>) => {
   const {
     field: { onChange, onBlur, value, ref },
@@ -37,15 +41,18 @@ const TextEditor = <TFieldValues extends FieldValues>({
 
   return (
     <FieldWrapper label={label}>
-      <ReactQuill
-        theme="snow"
-        className="custom-quill"
-        modules={QuillModules}
-        value={value || ""}
-        onChange={onChange}
-        onBlur={onBlur}
-        ref={ref}
-      />
+      <div className="relative">
+        <ReactQuill
+          theme="snow"
+          className="custom-quill"
+          modules={QuillModules}
+          value={value || ""}
+          onChange={onChange}
+          onBlur={onBlur}
+          ref={ref}
+        />
+        {actions && <div className="absolute bottom-4 right-4">{actions}</div>}
+      </div>
     </FieldWrapper>
   );
 };
