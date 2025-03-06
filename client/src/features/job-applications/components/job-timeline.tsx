@@ -6,6 +6,9 @@ import {
   LuArrowLeftRight,
   LuTrash,
   LuInfo,
+  LuStickyNote,
+  LuPenLine,
+  LuX,
 } from "react-icons/lu";
 
 import { Spinner } from "@components/ui/spinner";
@@ -18,6 +21,9 @@ const eventIcons: Record<JobEventType, React.ReactElement> = {
   UPDATED: <LuPencil className="h-4 w-4" />,
   STAGE_CHANGED: <LuArrowLeftRight className="h-4 w-4" />,
   DELETED: <LuTrash className="h-4 w-4" />,
+  NOTE_CREATED: <LuStickyNote className="h-4 w-4" />,
+  NOTE_UPDATED: <LuPenLine className="h-4 w-4" />,
+  NOTE_DELETED: <LuX className="h-4 w-4" />,
 };
 
 // Colors for different event types
@@ -26,6 +32,9 @@ const eventColors: Record<JobEventType, string> = {
   UPDATED: "bg-blue-500",
   STAGE_CHANGED: "bg-purple-500",
   DELETED: "bg-red-500",
+  NOTE_CREATED: "bg-cyan-500",
+  NOTE_UPDATED: "bg-teal-500",
+  NOTE_DELETED: "bg-rose-500",
 };
 
 interface TimelineEventProps {

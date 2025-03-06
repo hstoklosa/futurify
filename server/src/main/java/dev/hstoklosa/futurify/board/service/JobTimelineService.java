@@ -128,6 +128,80 @@ public class JobTimelineService {
     */
 
     /**
+     * Records a note creation event
+     */
+    @Transactional
+    public void recordNoteCreation(Job job, String noteContent) {
+        // Create a preview of the note content (truncate if too long)
+        String preview = createNotePreview(noteContent);
+        
+        createTimelineEvent(
+                job.getId(),
+                JobEventType.NOTE_CREATED,
+                "Note added to job application",
+                Map.of(
+                        "preview", preview
+                )
+        );
+    }
+
+    /**
+     * Records a note update event
+     */
+    @Transactional
+    public void recordNoteUpdate(Job job, String oldContent, String newContent) {
+        // Create previews of the old and new content
+        String oldPreview = createNotePreview(oldContent);
+        String newPreview = createNotePreview(newContent);
+        
+        createTimelineEvent(
+                job.getId(),
+                JobEventType.NOTE_UPDATED,
+                "Note updated",
+                Map.of(
+                        "previousContent", oldPreview,
+                        "newContent", newPreview,
+                        "preview", newPreview // For simpler display in the UI
+                )
+        );
+    }
+
+    /**
+     * Records a note deletion event
+     */
+    @Transactional
+    public void recordNoteDeletion(Job job, String noteContent) {
+        // Create a preview of the deleted note content
+        String preview = createNotePreview(noteContent);
+        
+        createTimelineEvent(
+                job.getId(),
+                JobEventType.NOTE_DELETED,
+                "Note deleted from job application",
+                Map.of(
+                        "preview", preview
+                )
+        );
+    }
+    
+    /**
+     * Creates a preview of note content by truncating if necessary
+     */
+    private String createNotePreview(String content) {
+        if (content == null) {
+            return "";
+        }
+        
+        // Limit preview to 50 characters
+        int maxLength = 50;
+        if (content.length() <= maxLength) {
+            return content;
+        }
+        
+        return content.substring(0, maxLength) + "...";
+    }
+
+    /**
      * Gets all timeline events for a job
      *
      * @param jobId The ID of the job

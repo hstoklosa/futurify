@@ -52,7 +52,14 @@ export type Job = Entity<{
   stageId: number;
 }>;
 
-export type JobEventType = "CREATED" | "UPDATED" | "STAGE_CHANGED" | "DELETED";
+export type JobEventType =
+  | "CREATED"
+  | "UPDATED"
+  | "STAGE_CHANGED"
+  | "DELETED"
+  | "NOTE_CREATED"
+  | "NOTE_UPDATED"
+  | "NOTE_DELETED";
 
 export type JobTimelineEvent = Entity<{
   jobId: number;

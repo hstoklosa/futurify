@@ -41,6 +41,15 @@ export function formatTimelineEvent(
     case "STAGE_CHANGED":
       return `Stage changed from ${details.previousStage} to ${details.newStage}`;
 
+    case "NOTE_CREATED":
+      return `Added note: ${details.preview || ""}`;
+
+    case "NOTE_UPDATED":
+      return `Updated note: ${details.preview || ""}`;
+
+    case "NOTE_DELETED":
+      return `Deleted note: ${details.preview || ""}`;
+
     default:
       return JSON.stringify(details);
   }
