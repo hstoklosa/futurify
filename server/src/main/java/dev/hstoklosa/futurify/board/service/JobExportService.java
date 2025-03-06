@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import dev.hstoklosa.futurify.board.dto.JobResponse;
+import dev.hstoklosa.futurify.board.dto.NoteResponse;
 import dev.hstoklosa.futurify.board.entity.JobType;
 import dev.hstoklosa.futurify.stage.entity.Stage;
 import dev.hstoklosa.futurify.stage.repository.StageRepository;
@@ -11,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.jsoup.Jsoup;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,6 +32,7 @@ public class JobExportService {
 
     private final JobService jobService;
     private final StageRepository stageRepository;
+    private final NoteService noteService;
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     /**
@@ -53,6 +56,12 @@ public class JobExportService {
         Map<Integer, Stage> stageMap = stageRepository.findAllById(stageIds).stream()
                 .collect(Collectors.toMap(Stage::getId, Function.identity()));
         
+        // Create a map of job ID to list of notes
+        Map<Integer, List<NoteResponse>> jobNotesMap = new HashMap<>();
+        for (JobResponse job : jobs) {
+            jobNotesMap.put(job.getId(), noteService.getNotesByJobId(job.getId()));
+        }
+        
         try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
             XSSFWorkbook workbook = new XSSFWorkbook();
             Sheet sheet = workbook.createSheet("Job Applications");
@@ -64,7 +73,7 @@ public class JobExportService {
             String[] columns = {
                     "ID", "Title", "Company", "Location", "Job Type", 
                     "Stage", "Salary", "Description", "Post URL", 
-                    "Position", "Created At", "Updated At"
+                    "Position", "Created At", "Updated At", "Notes"
             };
             
             for (int i = 0; i < columns.length; i++) {
@@ -96,6 +105,11 @@ public class JobExportService {
                 row.createCell(9).setCellValue(job.getPosition());
                 row.createCell(10).setCellValue(job.getCreatedAt() != null ? job.getCreatedAt().format(DATE_FORMATTER) : "");
                 row.createCell(11).setCellValue(job.getUpdatedAt() != null ? job.getUpdatedAt().format(DATE_FORMATTER) : "");
+                
+                // Format and add notes
+                List<NoteResponse> notes = jobNotesMap.get(job.getId());
+                String formattedNotes = formatNotesForExcel(notes);
+                row.createCell(12).setCellValue(formattedNotes);
             }
             
             // Autosize columns
@@ -137,7 +151,7 @@ public class JobExportService {
         Map<Integer, Stage> stageMap = stageRepository.findAllById(stageIds).stream()
                 .collect(Collectors.toMap(Stage::getId, Function.identity()));
         
-        // Create enhanced job data with stage names
+        // Create enhanced job data with stage names and notes
         List<Map<String, Object>> enhancedJobs = jobs.stream().map(job -> {
             Map<String, Object> enhancedJob = new HashMap<>();
             enhancedJob.put("id", job.getId());
@@ -161,6 +175,10 @@ public class JobExportService {
             // Format dates to strings for consistent JSON output
             enhancedJob.put("createdAt", job.getCreatedAt() != null ? job.getCreatedAt().format(DATE_FORMATTER) : null);
             enhancedJob.put("updatedAt", job.getUpdatedAt() != null ? job.getUpdatedAt().format(DATE_FORMATTER) : null);
+            
+            // Add notes
+            List<NoteResponse> notes = noteService.getNotesByJobId(job.getId());
+            enhancedJob.put("notes", notes.stream().map(this::formatNoteForJson).collect(Collectors.toList()));
             
             return enhancedJob;
         }).collect(Collectors.toList());
@@ -218,5 +236,57 @@ public class JobExportService {
         style.setBorderLeft(BorderStyle.THIN);
         style.setBorderRight(BorderStyle.THIN);
         return style;
+    }
+    
+    /**
+     * Format notes for Excel export
+     * @param notes List of notes to format
+     * @return Formatted string with notes
+     */
+    private String formatNotesForExcel(List<NoteResponse> notes) {
+        if (notes == null || notes.isEmpty()) {
+            return "";
+        }
+        
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < notes.size(); i++) {
+            NoteResponse note = notes.get(i);
+            sb.append(i + 1).append(". ");
+            
+            // Clean HTML from content
+            String cleanContent = Jsoup.parse(note.getContent()).text();
+            sb.append(cleanContent);
+            
+            // Add creation date if available
+            if (note.getCreatedAt() != null) {
+                sb.append(" (").append(note.getCreatedAt().format(DATE_FORMATTER)).append(")");
+            }
+            
+            // Add separator for all but the last note
+            if (i < notes.size() - 1) {
+                sb.append("\n");
+            }
+        }
+        
+        return sb.toString();
+    }
+    
+    /**
+     * Format notes for JSON export
+     * @param note Note to format
+     * @return Map with formatted note data
+     */
+    private Map<String, Object> formatNoteForJson(NoteResponse note) {
+        Map<String, Object> formattedNote = new HashMap<>();
+        formattedNote.put("id", note.getId());
+        
+        // Clean HTML from content
+        String cleanContent = Jsoup.parse(note.getContent()).text();
+        formattedNote.put("content", cleanContent);
+        
+        formattedNote.put("userId", note.getUserId());
+        formattedNote.put("createdAt", note.getCreatedAt() != null ? note.getCreatedAt().format(DATE_FORMATTER) : null);
+        formattedNote.put("updatedAt", note.getUpdatedAt() != null ? note.getUpdatedAt().format(DATE_FORMATTER) : null);
+        return formattedNote;
     }
 } 
