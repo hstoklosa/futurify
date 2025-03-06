@@ -14,7 +14,7 @@ const Home = () => {
         <div className="flex flex-col space-y-8 pt-16">
           <DailyGoalProgress />
 
-          <div className="!mt-12">
+          <div className="!mt-8">
             <div className="flex items-center justify-between border-b border-border pt-4 pb-4 mb-7">
               <div className="flex items-center">
                 <LuKanbanSquare className="stroke-foreground stroke-width-[0.1px] h-6 w-6 mr-3" />
