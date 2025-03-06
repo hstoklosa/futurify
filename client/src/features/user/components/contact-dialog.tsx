@@ -44,10 +44,6 @@ export const ContactDialog = ({ triggerButton }: ContactDialogProps) => {
         <div className="h-full">
           <ScrollArea>
             <div className="p-4">
-              <p className="text-foreground/70 mb-4">
-                Send a message to our team. We'll get back to you as soon as
-                possible.
-              </p>
               <Form
                 schema={contactSchema}
                 onSubmit={handleSubmit}
@@ -75,7 +71,7 @@ export const ContactDialog = ({ triggerButton }: ContactDialogProps) => {
                           error={methods.formState.errors.message}
                         >
                           <textarea
-                            className="bg-background w-full text-[14px] text-foreground/80 placeholder-foreground/50 px-3 py-2 border-border border-[1px] rounded-md min-h-[150px] hover:border-primary focus:border-primary focus:shadow-3xl focus:outline-none focus:ring-0 transition ease-out duration-150"
+                            className="bg-background w-full text-[14px] text-foreground/80 placeholder-foreground/50 px-3 py-2 border-border border-[1px] rounded-md min-h-[100px] hover:border-primary focus:border-primary focus:shadow-3xl focus:outline-none focus:ring-0 transition ease-out duration-150"
                             placeholder="Enter your message"
                             {...methods.register("message")}
                           />
@@ -83,7 +79,7 @@ export const ContactDialog = ({ triggerButton }: ContactDialogProps) => {
                       </div>
                     </div>
 
-                    <div className="pt-4 flex gap-2">
+                    <div className="flex gap-2">
                       <Button
                         type="submit"
                         variant="default"

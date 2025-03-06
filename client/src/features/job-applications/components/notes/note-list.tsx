@@ -33,13 +33,7 @@ export const NoteList = ({ notes, jobId }: NoteListProps) => {
     setEditingNoteId(null);
   };
 
-  if (notes.length === 0) {
-    return (
-      <div className="text-muted-foreground text-sm italic">
-        No notes yet. Create one to get started!
-      </div>
-    );
-  }
+  if (notes.length === 0) return null;
 
   return (
     <div className="space-y-4">
