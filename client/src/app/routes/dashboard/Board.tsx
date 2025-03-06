@@ -5,6 +5,7 @@ import { LuAlertCircle, LuInfo } from "react-icons/lu";
 import { AppContentLayout } from "@components/layout";
 import { Spinner } from "@components/ui/spinner";
 import { Button } from "@components/ui/button";
+import { ExportJobsDropdown } from "@/features/job-applications/components";
 
 import { getBoardQueryOptions } from "@/features/boards/api/get-board";
 import { getBoardStagesOptions } from "@/features/boards/api/get-board-stages";
@@ -81,12 +82,19 @@ const Board = () => {
       {/* TODO: Create AppContentHeader */}
       <div className="flex items-center justify-between md:left-[215px] h-[45px] px-2 border-border border-b sticky top-0 left-0 right-0 bg-background z-10">
         <h1 className="text-secondary text-sm font-bold">{board.data.name}</h1>
-        <Button
-          className="text-white"
-          size="md"
-        >
-          + New
-        </Button>
+        <div className="flex items-center gap-2">
+          <ExportJobsDropdown
+            boardId={id}
+            buttonSize="sm"
+            buttonVariant="ghost"
+          />
+          <Button
+            className="text-white"
+            size="md"
+          >
+            + New
+          </Button>
+        </div>
       </div>
 
       <div className="flex-1 h-[calc(100vh-45px)] overflow-hidden">
