@@ -5,9 +5,7 @@ public enum JobEventType {
     UPDATED,
     DELETED,
     STAGE_CHANGED,
-    // This event type is kept for backwards compatibility but is no longer used
-    POSITION_CHANGED,
-    // Note-related events
+    POSITION_CHANGED, // kept for backwards compatibility but is no longer used
     NOTE_CREATED,
     NOTE_UPDATED,
     NOTE_DELETED

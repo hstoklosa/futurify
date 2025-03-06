@@ -18,12 +18,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@components/ui/tabs/ta
 import { ScrollArea } from "@components/ui/scroll-area";
 import { formatUTCDate } from "@utils/format";
 
-import {
-  ApplicationTab,
-  InsightsTab,
-  InterviewsTab,
-  NotesTab,
-} from "./job-view-tabs";
+import { ApplicationTab, InsightsTab, ActionsTab, NotesTab } from "./job-view-tabs";
 
 type TabItem = {
   name: string;
@@ -34,7 +29,7 @@ type TabItem = {
 const tabs: TabItem[] = [
   { name: "Application", Icon: LuInfo, Content: ApplicationTab },
   { name: "AI Insights", Icon: LuSparkles, Content: InsightsTab },
-  { name: "Interviews", Icon: LuCat, Content: InterviewsTab },
+  { name: "Interviews", Icon: LuCat, Content: ActionsTab },
   { name: "Notes", Icon: LuPenSquare, Content: NotesTab },
 ] as const;
 

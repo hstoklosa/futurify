@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { LuPencil } from "react-icons/lu";
+import { LuPencil, LuPlus } from "react-icons/lu";
 
 import { Spinner } from "@/components/ui/spinner";
 import { Button } from "@/components/ui/button";
@@ -14,6 +14,8 @@ import { JobInsights } from "./job-insights";
 import { CreateNote } from "./notes/create-note";
 import { NoteList } from "./notes/note-list";
 import { useGetJobNotes } from "../api/notes";
+import { CreateActionDialog } from "./";
+import { JobActions } from "./actions";
 
 type TabContentProps = {
   jobId: number;
@@ -66,7 +68,7 @@ export const ApplicationTab = ({ jobId, boardId }: TabContentProps) => {
             </div>
 
             <ScrollArea className="flex-1">
-              <div className="flex flex-col space-y-4 px-5 pb-6">
+              <div className="flex flex-col space-y-4 px-5">
                 <div className="flex flex-col">
                   <span className="text-sm text-muted-foreground">Job Title</span>
                   <span className="text-base">{job.data.title}</span>
@@ -168,18 +170,26 @@ export const InsightsTab = ({ jobId }: { jobId: number }) => {
   );
 };
 
-export const InterviewsTab = () => {
+export const ActionsTab = ({ jobId }: { jobId: number }) => {
   return (
     <div className="flex h-full">
       <div className="w-full flex flex-col">
-        <div className="flex items-start justify-between px-5">
-          <JobViewTabHeader>Interviews</JobViewTabHeader>
+        <div className="flex items-center justify-between px-5">
+          <JobViewTabHeader>Actions</JobViewTabHeader>
+          <CreateActionDialog jobId={jobId}>
+            <Button
+              variant="outlineMuted"
+              size="sm"
+              className="flex items-center justify-center h-6 px-2 py-1"
+            >
+              <LuPlus className="stroke-foreground/50 mr-1 size-[11px]" />
+              <span>Add Action</span>
+            </Button>
+          </CreateActionDialog>
         </div>
-        <ScrollArea className="flex-1">
-          <div className="flex flex-col space-y-4 px-5 pb-6">
-            {/* Interview content will go here */}
-          </div>
-        </ScrollArea>
+        <div className="px-5 pb-6 flex-1">
+          <JobActions jobId={jobId} />
+        </div>
       </div>
     </div>
   );
@@ -191,11 +201,11 @@ export const NotesTab = ({ jobId }: { jobId: number }) => {
   return (
     <div className="flex h-full">
       <div className="w-full flex flex-col">
-        <div className="flex items-start justify-between px-5 py-2">
+        <div className="flex items-start justify-between px-5">
           <JobViewTabHeader>Notes</JobViewTabHeader>
         </div>
         <ScrollArea className="flex-1">
-          <div className="flex flex-col space-y-6 px-5 py-4">
+          <div className="flex flex-col space-y-6 px-5">
             <CreateNote jobId={jobId} />
             {isPending ? (
               <Spinner size="lg" />
@@ -219,7 +229,7 @@ const JobViewTabHeader = ({
   className?: string;
   children: React.ReactNode;
 }) => (
-  <div className={cn("text-base font-semibold text-secondary mb-3", className)}>
+  <div className={cn("text-base font-semibold text-secondary mb-2", className)}>
     {children}
   </div>
 );

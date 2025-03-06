@@ -1,0 +1,26 @@
+package dev.hstoklosa.futurify.board.entity;
+
+public enum ActionType {
+    PREPARE_COVER_LETTER,
+    PREPARE_RESUME,
+    REACH_OUT,
+    GET_REFERENCE,
+    APPLY,
+    FOLLOW_UP,
+    PREPARE_FOR_INTERVIEW,
+    PHONE_SCREEN,
+    PHONE_INTERVIEW,
+    ON_SITE_INTERVIEW,
+    OFFER_RECEIVED,
+    ACCEPT_OFFER,
+    DECLINE_OFFER,
+    REJECTED,
+    EMAIL,
+    MEETING,
+    PHONE_CALL,
+    SEND_AVAILABILITY,
+    ASSIGNMENT,
+    NETWORKING_EVENT,
+    OTHER,
+    WITHDRAWAL
+} 
