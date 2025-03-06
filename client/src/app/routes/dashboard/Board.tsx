@@ -97,7 +97,7 @@ const Board = () => {
         </div>
       </div>
 
-      <div className="flex-1 h-[calc(100vh-45px)] overflow-hidden">
+      <div className="flex-1 h-[calc(100vh-45px)] overflow-x-scroll">
         <BoardView boardId={id} />
       </div>
     </AppContentLayout>

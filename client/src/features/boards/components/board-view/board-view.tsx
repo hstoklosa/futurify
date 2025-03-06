@@ -410,7 +410,7 @@ const BoardView = ({ boardId }: BoardViewProps) => {
   return (
     <>
       {stages.data.length > 0 ? (
-        <div className="px-4 py-2 flex flex-row space-x-4 h-[calc(100vh-64px)]">
+        <div className="flex flex-row h-full">
           <DndContext
             sensors={sensors}
             collisionDetection={closestCorners}

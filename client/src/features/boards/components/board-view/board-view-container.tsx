@@ -35,7 +35,7 @@ const BoardViewContainer = ({
     <div
       ref={setNodeRef}
       className={cn(
-        "relative flex-1 flex flex-col h-[97%] py-4 bg-[rgba(25,4,69,0.01)] shadow-4xl border-border border-[1px] rounded-xl",
+        "relative flex-1 flex flex-col h-full py-4 bg-[rgba(25,4,69,0.01)] shadow-4xl border-border border-r-[1px]",
         isOver &&
           "after:absolute after:z-50 after:inset-0 after:bg-primary/10 after:ring-2 after:ring-primary after:rounded-xl after:pointer-events-none",
         isActiveStage &&
@@ -45,10 +45,10 @@ const BoardViewContainer = ({
       )}
     >
       <div className="flex flex-col justify-center items-center mb-2 px-4">
-        <div className="w-full flex items-center">
+        <div className="w-full flex items-center justify-between">
           <h2
             className={cn(
-              "font-semibold text-lg text-secondary mr-2 tracking-wider",
+              "font-semibold text-lg text-secondary mr-2 tracking-wide",
               (isOver || isActiveStage) && "text-primary"
             )}
           >
